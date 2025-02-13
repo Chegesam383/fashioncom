@@ -11,14 +11,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import { ShoppingCartIcon } from "lucide-react";
-import { Badge } from "./ui/badge";
+
 import Rating from "./ratings";
 
 interface ProductCardProps {
   product: product;
 }
 
-const Category = ({ title }) => {
+const Category = ({ title }: { title: string }) => {
   return (
     <section className="container p-4 mx-auto">
       <h1 className="text-3xl font-bold mb-5">{title}</h1>

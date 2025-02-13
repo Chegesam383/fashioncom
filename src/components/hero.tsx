@@ -21,7 +21,7 @@ export default function CarouselPlugin() {
   const plugin1 = React.useRef(Autoplay({ delay: 5000, playOnInit: true }));
   const plugin2 = React.useRef(Fade());
 
-  const [colors, setColors] = React.useState([]);
+  const [colors, setColors] = React.useState<string[]>([]);
 
   // Prefetch colors
   React.useEffect(() => {
