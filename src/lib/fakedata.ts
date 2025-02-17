@@ -121,3 +121,96 @@ export const products: product[] = [
     },
   },
 ];
+
+export const categories = [
+  {
+    id: 1,
+    name: "Clothes",
+    image: "https://i.imgur.com/QkIa5tT.jpeg",
+    creationAt: "2025-02-16T19:10:42.000Z",
+    updatedAt: "2025-02-16T19:10:42.000Z",
+  },
+  {
+    id: 2,
+    name: "Electronics",
+    image: "https://i.imgur.com/ZANVnHE.jpeg",
+    creationAt: "2025-02-16T19:10:42.000Z",
+    updatedAt: "2025-02-16T19:10:42.000Z",
+
+    subcategories: [
+      {
+        id: 2,
+        name: "Phones",
+        image: "https://i.imgur.com/ZANVnHE.jpeg",
+        creationAt: "2025-02-16T19:10:42.000Z",
+        updatedAt: "2025-02-16T19:10:42.000Z",
+      },
+
+      {
+        id: 2,
+        name: "Tvs",
+        image: "https://i.imgur.com/ZANVnHE.jpeg",
+        creationAt: "2025-02-16T19:10:42.000Z",
+        updatedAt: "2025-02-16T19:10:42.000Z",
+      },
+
+      {
+        id: 2,
+        name: "Music",
+        image: "https://i.imgur.com/ZANVnHE.jpeg",
+        creationAt: "2025-02-16T19:10:42.000Z",
+        updatedAt: "2025-02-16T19:10:42.000Z",
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: "Furniture",
+    image: "https://i.imgur.com/Qphac99.jpeg",
+    creationAt: "2025-02-16T19:10:42.000Z",
+    updatedAt: "2025-02-16T19:10:42.000Z",
+  },
+  {
+    id: 4,
+    name: "Shoes",
+    image: "https://i.imgur.com/qNOjJje.jpeg",
+    creationAt: "2025-02-16T19:10:42.000Z",
+    updatedAt: "2025-02-16T19:10:42.000Z",
+  },
+  {
+    id: 9,
+    name: "Royal Items",
+    image: "https://i.imgur.com/49FiVI0.png",
+    creationAt: "2025-02-16T19:13:39.000Z",
+    updatedAt: "2025-02-16T19:13:39.000Z",
+  },
+  {
+    id: 89,
+    name: "Sara Items",
+    image: "https://i.imgur.com/49FiVI0.png",
+    creationAt: "2025-02-16T20:56:10.000Z",
+    updatedAt: "2025-02-16T20:56:10.000Z",
+  },
+
+  {
+    id: 157,
+    name: "New Category",
+    image: "https://placeimg.com/640/480/any",
+    creationAt: "2025-02-17T03:11:17.000Z",
+    updatedAt: "2025-02-17T03:11:17.000Z",
+  },
+  {
+    id: 158,
+    name: "Books",
+    image: "https://api.lorem.space/image/book?w=150&h=220",
+    creationAt: "2025-02-17T03:40:28.000Z",
+    updatedAt: "2025-02-17T03:40:28.000Z",
+  },
+  {
+    id: 159,
+    name: "MynewCategory",
+    image: "https://placeimg.com/640/480/any",
+    creationAt: "2025-02-17T06:02:59.000Z",
+    updatedAt: "2025-02-17T06:02:59.000Z",
+  },
+];

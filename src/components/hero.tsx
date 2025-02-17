@@ -3,7 +3,7 @@ import * as React from "react";
 import Autoplay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
 
-import { extractColors } from "extract-colors";
+//import { extractColors } from "extract-colors";
 import {
   Carousel,
   CarouselContent,
@@ -16,26 +16,40 @@ import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import Rating from "./ratings";
+import { cn } from "@/lib/utils";
 
 export default function CarouselPlugin() {
   const plugin1 = React.useRef(Autoplay({ delay: 5000, playOnInit: true }));
   const plugin2 = React.useRef(Fade());
 
-  const [colors, setColors] = React.useState<string[]>([]);
+  const banners = [
+    {
+      title: "New Watch arrivals",
+      imageURL: "/banner2.jpg",
+      buttonCaption: "Explore",
+    },
+    {
+      title: "Running shoes available",
+      imageURL: "/banner3.jpg",
+      buttonCaption: "Explore",
+    },
+  ];
+
+  // const [colors, setColors] = React.useState<string[]>([]);
 
   // Prefetch colors
-  React.useEffect(() => {
-    const fetchColors = async () => {
-      const colorPromises = products.map(async (product) => {
-        const pl = await extractColors(product.images[0]);
-        return pl ? pl.reverse()[0]?.hex : "";
-      });
-      const resolvedColors = await Promise.all(colorPromises);
-      setColors(resolvedColors);
-    };
+  // React.useEffect(() => {
+  //  const fetchColors = async () => {
+  //   const colorPromises = products.map(async (product) => {
+  //     const pl = await extractColors(product.images[0]);
+  //     return pl ? pl.reverse()[0]?.hex : "";
+  //   });
+  //   const resolvedColors = await Promise.all(colorPromises);
+  //   setColors(resolvedColors);
+  // };
 
-    fetchColors();
-  }, []);
+  //  fetchColors();
+  // }, []);
 
   return (
     <section className="container p-4 mx-auto">
@@ -46,44 +60,26 @@ export default function CarouselPlugin() {
         onMouseLeave={plugin1.current.reset}
       >
         <CarouselContent>
-          {products.map((product, index) => (
-            <CarouselItem key={product.id}>
-              <div className=" flex gap-0 p-0">
-                <div>
-                  <Image
-                    src={product.images[0]}
-                    height={100}
-                    width={100}
-                    className="h-80 w-80 aspect-square rounded-tl-2xl rounded-bl-2xl"
-                    alt={product.title}
-                  />
-                </div>
-
-                <div
-                  className="flex-1 flex-grow p-4 pl-20 rounded-tr-2xl rounded-br-2xl"
-                  style={{
-                    background: `linear-gradient(to right, ${
-                      colors[index] || ""
-                    }, ${colors[index + 1] || ""}`,
-                  }}
-                >
-                  <h3 className="text-2xl font-bold text-slate-950 mb-5">
-                    {product.title}
-                  </h3>
-                  <p className="text-ellipsis max-w-100 text-black/70">
-                    {product.description.slice(0, 350)}
-                  </p>
-
-                  <div className=" mt-4">
-                    <p className="text-xl font-bold">${product.price}</p>{" "}
-                    <div className="flex align-center gap-2">
-                      <Rating rating={4} long={true} />{" "}
-                      <span className="mt-1">4</span>
-                    </div>
-                  </div>
-
-                  <Button className="mt-10">
-                    Add to cart <ShoppingCart />
+          {banners.map((item, index) => (
+            <CarouselItem key={index}>
+              <div className="relative w-full h-full">
+                <Image
+                  src={item.imageURL}
+                  height={300}
+                  width={600}
+                  alt={item.imageURL}
+                  className="w-full rounded-xl pointer-events-none"
+                />
+                <div className="absolute w-1/3 left-16 md:left-32 top-1/2 transform -translate-y-1/2">
+                  <h2
+                    className={cn(
+                      "text-xl md:text-6xl font-bold mb-4   dark:text-slate-900"
+                    )}
+                  >
+                    {item.title}
+                  </h2>
+                  <Button className="hidden md:block dark:text-slate-950 ">
+                    {item.buttonCaption || "Explore"}
                   </Button>
                 </div>
               </div>
