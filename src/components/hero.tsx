@@ -11,11 +11,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { products } from "@/lib/fakedata";
+
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+
 import { Button } from "./ui/button";
-import Rating from "./ratings";
+
 import { cn } from "@/lib/utils";
 
 export default function CarouselPlugin() {

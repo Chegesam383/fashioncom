@@ -1,7 +1,7 @@
 import React from "react";
 import { product, products } from "@/lib/fakedata";
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Button } from "./ui/button";
 import { Heart, ShoppingCartIcon } from "lucide-react";
 
