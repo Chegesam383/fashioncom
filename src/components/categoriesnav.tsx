@@ -20,7 +20,7 @@ import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import useScroll from "@/lib/usescroll";
 
 export default function CategoryNav() {
-  const { scrollDirection } = useScroll();
+  const { scrollDirection, scrollY } = useScroll();
   return (
     (scrollDirection == "up" || scrollY == 0) && (
       <div
