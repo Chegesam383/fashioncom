@@ -16,8 +16,6 @@ import Image from "next/image";
 
 import { Button } from "./ui/button";
 
-import { cn } from "@/lib/utils";
-
 export default function CarouselPlugin() {
   const plugin1 = React.useRef(Autoplay({ delay: 5000, playOnInit: true }));
   const plugin2 = React.useRef(Fade());
@@ -52,30 +50,29 @@ export default function CarouselPlugin() {
   // }, []);
 
   return (
-    <section className="container p-4 mx-auto">
+    <section className="container  rounded-xl mx-auto mt-2">
       <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
         plugins={[plugin1.current, plugin2.current]}
-        className="w-full "
-        onMouseEnter={plugin1.current.stop}
-        onMouseLeave={plugin1.current.reset}
+        onMouseEnter={() => plugin1.current.stop}
+        onMouseLeave={() => plugin1.current.reset}
       >
         <CarouselContent>
           {banners.map((item, index) => (
             <CarouselItem key={index}>
-              <div className="relative w-full h-full">
+              <div className="relative">
                 <Image
-                  src={item.imageURL}
+                  src={`${item.imageURL}`}
+                  alt={item.imageURL}
                   height={300}
                   width={600}
-                  alt={item.imageURL}
-                  className="w-full rounded-xl pointer-events-none"
+                  className=" rounded-xl pointer-events-none w-full"
                 />
-                <div className="absolute w-1/3 left-16 md:left-32 top-1/2 transform -translate-y-1/2">
-                  <h2
-                    className={cn(
-                      "text-xl md:text-6xl font-bold mb-4   dark:text-slate-900"
-                    )}
-                  >
+                <div className="absolute w-1/3 left-16  top-1/2 transform -translate-y-1/2">
+                  <h2 className="text-xl md:text-6xl font-bold mb-4   dark:text-slate-900">
                     {item.title}
                   </h2>
                   <Button className="hidden md:block dark:text-slate-950 ">

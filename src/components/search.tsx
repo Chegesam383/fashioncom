@@ -3,10 +3,10 @@ import { ArrowRight, Search } from "lucide-react";
 
 export default function SearchBox() {
   return (
-    <div className="space-y-2 w-4/6">
+    <div className="space-y-2 w-full md:w-4/6">
       <div className="relative">
         <Input
-          className="peer pe-9 ps-9  bg-slate-50 dark:bg-slate-800 border shadow-none rounded-2xl"
+          className="peer pe-9 ps-9  bg-muted  border shadow-none rounded-lg"
           placeholder="I am looking for..."
           type="search"
         />

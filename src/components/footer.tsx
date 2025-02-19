@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 p-6 md:py-12 w-full dark:bg-gray-800 container mx-auto">
-      <div className="container max-w-7xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-8 text-sm">
+    <footer className=" p-6 md:py-12 w-full mt-16 border-t bg-slate-50  dark:bg-slate-950  mx-auto">
+      <div className="container mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-8 text-sm">
         <div className="flex flex-col gap-3">
           <Link className="flex items-center gap-2" href="#">
             <h1 className="font-bold">Fashionist</h1>
@@ -37,7 +37,7 @@ export default function Footer() {
           </Link>
         </div>
       </div>
-      <div className="container max-w-7xl mt-8 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="container mx-auto mt-8 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
         <p>© 2024 Fashionist. All rights reserved.</p>
         <div className="flex gap-4">
           <Link className="hover:underline" href="#">

@@ -144,7 +144,7 @@ export default function Rating({ rating, long = true }: ratingprops) {
 
 const NotFilled = () => (
   <svg
-    className="w-4 h-4 text-yellow-500 ms-1"
+    className="w-4 h-4 text-primary ms-1"
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     fill={"gray"}
@@ -156,7 +156,7 @@ const NotFilled = () => (
 
 const Filled = () => (
   <svg
-    className="w-4 h-4 text-yellow-500 ms-1"
+    className="w-4 h-4 text-primary ms-1"
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     fill={"currentColor"}
@@ -168,7 +168,7 @@ const Filled = () => (
 
 const HalfFilled = () => (
   <svg
-    className="w-4 h-4 text-yellow-500 ms-1"
+    className="w-4 h-4 text-primary ms-1"
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     fill={"currentColor"}
