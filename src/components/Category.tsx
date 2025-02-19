@@ -22,9 +22,9 @@ interface ProductCardProps {
 
 const Category = ({ title }: { title: string }) => {
   return (
-    <section className="section">
+    <section className="container mx-auto mt-5 p-4 bg-muted rounded-xl border">
       <div className="p-0 m-0 shadow-none">
-        <div className="text-3xl font-bold my-3">{title}</div>
+        <div className="text-3xl font-bold ">{title}</div>
 
         <div className="">
           <Carousel
@@ -33,14 +33,17 @@ const Category = ({ title }: { title: string }) => {
               align: "start",
             }}
           >
-            <div className="flex gap-2 absolute -top-4 right-10">
+            <div className="flex gap-2 absolute -top-[20px] right-10">
               <CarouselNext className="-" />
               <CarouselPrevious className="" />
             </div>
 
             <CarouselContent>
               {products.map((product, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/4">
+                <CarouselItem
+                  key={index}
+                  className="basis-1/2 md:basis-1/3 lg:basis-1/4"
+                >
                   <ProductCard product={product} />
                 </CarouselItem>
               ))}
@@ -60,22 +63,17 @@ export function ProductCard({ product }: ProductCardProps) {
     : `https://i.imgur.com/${product.images[0]}`;
 
   return (
-    <div
-      key={product.id}
-      className="group rounded transition-all duration-300  p-3 hover:shadow-xl"
-    >
-      <div className="flex flex-col gap-3 justify-between h-[400px]">
-        <Link href={`/product/${product.id}`}>
-          <Image
-            src={imageUrl}
-            alt={product.title}
-            width={200}
-            height={150}
-            className="w-full h-56 object-cover rounded-lg"
-          />
-        </Link>
+    <div key={product.id} className=" p-3">
+      <div className="flex flex-col gap-3 justify-between h-[420px]">
+        <Image
+          src={imageUrl}
+          alt={product.title}
+          width={200}
+          height={150}
+          className="w-full h-56 object-cover rounded-lg"
+        />
         <Link
-          href={`/product/${product.id}`}
+          href=""
           className="line-clamp-2 text-lg  tracking-tight text-gray-900 dark:text-white text-ellipsis "
         >
           {product.title}
@@ -87,12 +85,12 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </div>
         <div className="flex-1">
-          <small className="  text-sm line-clamp-2 text-muted-foreground  text-ellipsis ">
+          <small className="  text-sm line-clamp-3 text-muted-foreground  text-ellipsis ">
             {product.description}
           </small>
         </div>
       </div>
-      <div className="flex gap-2 mt-2">
+      <div className="flex gap-2 justify-end mt-5ggit">
         <Button className="flex-1">
           <ShoppingCartIcon className="size-4" />
           Add to Cart

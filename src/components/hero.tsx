@@ -15,6 +15,7 @@ import {
 import Image from "next/image";
 
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 export default function CarouselPlugin() {
   const plugin1 = React.useRef(Autoplay({ delay: 5000, playOnInit: true }));
@@ -25,32 +26,18 @@ export default function CarouselPlugin() {
       title: "New Watch arrivals",
       imageURL: "/banner2.jpg",
       buttonCaption: "Explore",
+      href: "/shop?category=watches",
     },
     {
       title: "Running shoes available",
       imageURL: "/banner3.jpg",
       buttonCaption: "Explore",
+      href: "/shop?category=running-shoes",
     },
   ];
 
-  // const [colors, setColors] = React.useState<string[]>([]);
-
-  // Prefetch colors
-  // React.useEffect(() => {
-  //  const fetchColors = async () => {
-  //   const colorPromises = products.map(async (product) => {
-  //     const pl = await extractColors(product.images[0]);
-  //     return pl ? pl.reverse()[0]?.hex : "";
-  //   });
-  //   const resolvedColors = await Promise.all(colorPromises);
-  //   setColors(resolvedColors);
-  // };
-
-  //  fetchColors();
-  // }, []);
-
   return (
-    <section className="container  rounded-xl mx-auto mt-2">
+    <section className="container rounded-xl mx-auto mt-2">
       <Carousel
         opts={{
           align: "start",
@@ -75,16 +62,16 @@ export default function CarouselPlugin() {
                   <h2 className="text-xl md:text-6xl font-bold mb-4   dark:text-slate-900">
                     {item.title}
                   </h2>
-                  <Button className="hidden md:block dark:text-slate-950 ">
-                    {item.buttonCaption || "Explore"}
+                  <Button className="hidden md:block dark:text-slate-950">
+                    <Link href={item.href}>
+                      {item.buttonCaption || "Explore"}
+                    </Link>
                   </Button>
                 </div>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselNext className="mr-7" />
-        <CarouselPrevious className="ml-7" />
       </Carousel>
     </section>
   );
