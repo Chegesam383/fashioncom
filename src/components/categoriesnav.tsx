@@ -24,18 +24,18 @@ export default function CategoryNav() {
   return (
     <div
       className={`${
-        scrollDirection == "down" ? "hidden" : "block"
-      } container mx-auto px-4 py-21`}
+        scrollDirection == "up" ? "block" : "hidden"
+      }container mx-auto px-4 py-21 transition-all duration-300`}
     >
       {/* Large Screen Navigation */}
-      <ScrollArea className="w-full whitespace-nowrap">
+      <ScrollArea className="w-full whitespace-nowrap mb-2">
         <div className="flex items-center">
           <CategoriesDropDown />
           {categories.map((item, index) => (
             <div key={index} className="basis-1/7">
               <Link
                 className=" rounded-lg text-center mx-2 text-sm text-nowrap"
-                href="/shop"
+                href={`/shop?category=${item.name}`}
               >
                 {item.name}
               </Link>
