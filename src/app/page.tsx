@@ -9,8 +9,16 @@ export default function Home() {
     <>
       <Hero />
       <FreshSaleSection />
-      <Category title={`Todays's picks`} />
-      <Category title={`Trending`} />
+      <Category
+        title={`Today's picks`}
+        bg="muted"
+        description="We recommend you checking this deals today"
+      />
+      <Category
+        title={`Trending`}
+        bg=""
+        description="Here are the most trending deals"
+      />
       <ShopByCategory />
     </>
   );

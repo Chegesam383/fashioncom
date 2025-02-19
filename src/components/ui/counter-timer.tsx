@@ -4,9 +4,13 @@ import { useState, useEffect } from "react";
 
 interface CountdownTimerProps {
   endDate: Date;
+  showLabels?: boolean;
 }
 
-export default function CountdownTimer({ endDate }: CountdownTimerProps) {
+export default function CountdownTimer({
+  endDate,
+  showLabels = false,
+}: CountdownTimerProps) {
   const calculateTimeLeft = () => {
     const difference = +endDate - +new Date();
     if (difference <= 0) return null;
@@ -32,22 +36,21 @@ export default function CountdownTimer({ endDate }: CountdownTimerProps) {
   }, [endDate]);
 
   return (
-    <div className="text-center mb-12" aria-live="polite">
-      <h3 className="text-2xl font-semibold mb-4 text-primary">
-        Sale Ends In:
-      </h3>
+    <div className="text-center  rounded-xl h-full" aria-live="polite">
       <div className="flex justify-center space-x-4">
         {timeLeft ? (
           Object.entries(timeLeft).map(([interval, value]) => (
-            <div key={interval} className="flex flex-col items-center p-4">
+            <div key={interval} className="flex flex-col items-center ">
               <span className="text-3xl font-bold ">{value}</span>
-              <span className="text-xs uppercase text-muted-foreground">
-                {interval}
-              </span>
+              {showLabels && (
+                <span className="text-xs uppercase text-muted-foreground">
+                  {interval}
+                </span>
+              )}
             </div>
           ))
         ) : (
-          <span className="text-2xl text-white">Time&apos;s up!</span>
+          <span className="text-2xl">Ended</span>
         )}
       </div>
     </div>
