@@ -1,4 +1,8 @@
 export type product = {
+  saleEnds: boolean;
+  bestSeller: boolean;
+  flashSale: boolean;
+  originalPrice: number;
   id: number;
   title: string;
   price: number;
@@ -35,6 +39,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
   {
     id: 44,
@@ -56,6 +64,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
   {
     id: 46,
@@ -77,6 +89,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
   {
     id: 47,
@@ -98,6 +114,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
   {
     id: 48,
@@ -119,6 +139,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
 
   {
@@ -141,6 +165,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
   {
     id: 44,
@@ -162,6 +190,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
   {
     id: 46,
@@ -183,6 +215,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
   {
     id: 47,
@@ -204,6 +240,10 @@ export const products: product[] = [
       creationAt: "2025-02-12T17:30:09.000Z",
       updatedAt: "2025-02-12T17:30:09.000Z",
     },
+    saleEnds: false,
+    bestSeller: false,
+    flashSale: true,
+    originalPrice: 30,
   },
 ];
 

@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { SlidersHorizontal } from "lucide-react";
 import Rating from "@/components/ratings";
 import { products } from "@/lib/fakedata";
-import { ProductCard } from "@/components/Category";
+import ProductCard from "@/components/product-card";
 
 const categories = [
   {

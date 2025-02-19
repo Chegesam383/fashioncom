@@ -10,10 +10,8 @@ export default function FlashSaleDeals() {
     <section className="bg-red-50 dark:bg-blue-950 py-16">
       <div className="container mx-auto px-4">
         <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div>
-            <h2 className="flex items-center text-3xl font-bold">
-              Flash sale deals
-            </h2>
+          <div className="flex flex-col items-center md:block ">
+            <h2 className=" text-3xl font-bold">Flash sale deals</h2>
             <p className="mt-2 text-gray-600">
               Don&apos;t miss out on these amazing deals!
             </p>
