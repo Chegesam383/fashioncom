@@ -8,8 +8,8 @@ import CountdownTimer from "./ui/counter-timer";
 const endDate = new Date(145456586646 + 3 * 24 * 60 * 60 * 1000);
 export default function FlashSaleDeals() {
   return (
-    <section className="bg-red-50 dark:bg-blue-950 py-16">
-      <div className="container mx-auto ">
+    <section className="bg-red-50 dark:bg-blue-950 mt-6  py-10">
+      <div className="p-4 lg:container mx-auto ">
         <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex flex-col items-center md:block ">
             <h2 className=" text-3xl font-bold">Flash sale deals</h2>

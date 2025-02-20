@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased  dark:bg-stone-950 flex flex-col overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased  dark:bg-stone-950 flex flex-col `}
       >
         <ThemeProvider
           attribute="class"

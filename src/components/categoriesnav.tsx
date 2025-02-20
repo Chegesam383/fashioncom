@@ -23,9 +23,7 @@ export default function CategoryNav() {
   const { scrollDirection, scrollY } = useScroll();
   return (
     (scrollDirection == "up" || scrollY == 0) && (
-      <div
-        className={`container mx-auto px-4 py-21 transition-all duration-300`}
-      >
+      <div className={`p-4 lg:container mx-auto  transition-all duration-300`}>
         <div className="flex items-center">
           <ScrollArea className="w-full whitespace-nowrap mb-2 z-0">
             <div className="flex items-center">
