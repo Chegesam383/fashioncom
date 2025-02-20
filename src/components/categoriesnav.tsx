@@ -52,7 +52,7 @@ export default function CategoryNav() {
   );
 }
 
-const RenderMenuItems = ({ items }: { items: unknown }) => {
+const RenderMenuItems = ({ items }: { items: category[] }) => {
   return items.map((item: category, index: number) =>
     item.subcategories ? (
       <DropdownMenuSub key={index}>
@@ -73,7 +73,7 @@ const RenderMenuItems = ({ items }: { items: unknown }) => {
   );
 };
 
-export function CategoriesDropDown({ categories }: { categories: unknown }) {
+export function CategoriesDropDown({ categories }: { categories: category[] }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
