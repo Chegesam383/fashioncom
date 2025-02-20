@@ -68,29 +68,27 @@ function ProductPage({ params }: { params: Promise<{ productId: string }> }) {
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Product Images */}
-        <div className="space-y-6">
-          <div className="aspect-square h-[500px] w-full rounded-2xl overflow-hidden bg-secondary/20 ">
+        <div className="flex gap-2 flex-row-reverse">
+          <div className="flex-1 aspect-square min-h-[500px] w-full rounded-2xl overflow-hidden bg-secondary/20 ">
             <img
               src={selectedColor.image}
               alt={selectedColor.name}
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="flex flex-wrap  gap-3">
+          <div className="flex flex-col overflow-y-auto  gap-3">
             {COLORS.map((color) => (
-              <button
+              <img
                 key={color.name}
                 onClick={() => setSelectedColor(color)}
-                className={`color-option ${
-                  selectedColor.name === color.name ? "selected" : ""
-                }`}
-              >
-                <img
-                  src={color.image}
-                  alt={color.name}
-                  className=" h-28  rounded-xl aspect-square object-cover"
-                />
-              </button>
+                src={color.image}
+                alt={color.name}
+                className={` ${
+                  selectedColor.name === color.name
+                    ? "border-4 border-primary opacity-100"
+                    : "opacity-70"
+                } rounded-xl h-20`}
+              />
             ))}
           </div>
         </div>
@@ -117,19 +115,17 @@ function ProductPage({ params }: { params: Promise<{ productId: string }> }) {
             </h3>
             <div className="flex flex-wrap gap-4">
               {COLORS.map((color) => (
-                <button
+                <img
                   key={color.name}
                   onClick={() => setSelectedColor(color)}
-                  className={`color-option ${
-                    selectedColor.name === color.name ? "selected" : ""
-                  }`}
-                >
-                  <img
-                    src={color.image}
-                    alt={color.name}
-                    className=" h-14 rounded"
-                  />
-                </button>
+                  src={color.image}
+                  alt={color.name}
+                  className={` ${
+                    selectedColor.name === color.name
+                      ? "border-4 border-primary"
+                      : ""
+                  } rounded-xl h-14`}
+                />
               ))}
             </div>
           </div>

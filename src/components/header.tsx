@@ -10,7 +10,7 @@ import { Badge } from "./ui/badge";
 
 const Header = () => {
   return (
-    <header className="border-b sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto p-4 flex  items-center justify-between gap-4 md:flex-nowrap">
         {/* Logo */}
         <Link href="/" className="font-bold text-xl text-primary gradient">

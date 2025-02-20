@@ -18,6 +18,15 @@ export type product = {
     updatedAt: string;
   };
 };
+
+export type category = {
+  id: number;
+  name: string;
+  image: string;
+  creationAt: string;
+  updatedAt: string;
+  subcategories?: category[];
+};
 export const products: product[] = [
   {
     id: 43,
@@ -141,7 +150,7 @@ export const products: product[] = [
     },
     saleEnds: false,
     bestSeller: false,
-    flashSale: true,
+    flashSale: false,
     originalPrice: 30,
   },
 
@@ -247,7 +256,7 @@ export const products: product[] = [
   },
 ];
 
-export const categories = [
+export const categories: category[] = [
   {
     id: 1,
     name: "Clothes",
@@ -269,6 +278,23 @@ export const categories = [
         image: "https://i.imgur.com/ZANVnHE.jpeg",
         creationAt: "2025-02-16T19:10:42.000Z",
         updatedAt: "2025-02-16T19:10:42.000Z",
+
+        subcategories: [
+          {
+            id: 2,
+            name: "Phones",
+            image: "https://i.imgur.com/ZANVnHE.jpeg",
+            creationAt: "2025-02-16T19:10:42.000Z",
+            updatedAt: "2025-02-16T19:10:42.000Z",
+          },
+          {
+            id: 2,
+            name: "Phones",
+            image: "https://i.imgur.com/ZANVnHE.jpeg",
+            creationAt: "2025-02-16T19:10:42.000Z",
+            updatedAt: "2025-02-16T19:10:42.000Z",
+          },
+        ],
       },
 
       {

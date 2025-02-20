@@ -1,10 +1,8 @@
 "use client";
 
 import React from "react";
-import { categories } from "@/lib/fakedata";
+import { categories, category } from "@/lib/fakedata";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { LayoutGrid } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,6 +14,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { LayoutGrid } from "lucide-react";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import useScroll from "@/lib/usescroll";
 
@@ -26,30 +26,54 @@ export default function CategoryNav() {
       <div
         className={`container mx-auto px-4 py-21 transition-all duration-300`}
       >
-        {/* Large Screen Navigation */}
-        <ScrollArea className="w-full whitespace-nowrap mb-2">
-          <div className="flex items-center">
-            <CategoriesDropDown />
-            {categories.map((item, index) => (
-              <div key={index} className="basis-1/7">
-                <Link
-                  className=" rounded-lg text-center mx-2 text-sm text-nowrap"
-                  href={`/shop?category=${item.name}`}
-                >
-                  {item.name}
-                </Link>
-              </div>
-            ))}
-          </div>
+        <div className="flex items-center">
+          <ScrollArea className="w-full whitespace-nowrap mb-2 z-0">
+            <div className="flex items-center">
+              <CategoriesDropDown categories={categories} />
+              {[...categories, ...categories]
+                .slice(0, 12)
+                .map((item, index) => (
+                  <div key={index} className="basis-1/7">
+                    <Link
+                      className=" rounded-lg text-center mx-2 text-sm text-nowrap"
+                      href={`/shop?category=${item.name}`}
+                    >
+                      {item.name}
+                    </Link>
+                  </div>
+                ))}
+            </div>
 
-          <ScrollBar orientation="horizontal" className="invisible h-0 w-0" />
-        </ScrollArea>
+            <ScrollBar orientation="horizontal" className="invisible h-0 w-0" />
+          </ScrollArea>
+        </div>
       </div>
     )
   );
 }
 
-export function CategoriesDropDown() {
+const RenderMenuItems = ({ items }: { items: unknown }) => {
+  return items.map((item: category, index: number) =>
+    item.subcategories ? (
+      <DropdownMenuSub key={index}>
+        <DropdownMenuSubTrigger className="hover:bg-gray-200">
+          {item.name}
+        </DropdownMenuSubTrigger>
+        <DropdownMenuPortal>
+          <DropdownMenuSubContent>
+            <RenderMenuItems items={item.subcategories} />
+          </DropdownMenuSubContent>
+        </DropdownMenuPortal>
+      </DropdownMenuSub>
+    ) : (
+      <DropdownMenuItem key={index} className="hover:bg-gray-200">
+        {item.name}
+      </DropdownMenuItem>
+    )
+  );
+};
+
+export function CategoriesDropDown({ categories }: { categories: unknown }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -65,22 +89,7 @@ export function CategoriesDropDown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-52">
         <DropdownMenuGroup>
-          {categories.map((item, index) =>
-            item.subcategories ? (
-              <DropdownMenuSub key={index}>
-                <DropdownMenuSubTrigger>{item.name}</DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    {item.subcategories.map((sub, idx) => (
-                      <DropdownMenuItem key={idx}>{sub.name}</DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            ) : (
-              <DropdownMenuItem key={index}>{item.name}</DropdownMenuItem>
-            )
-          )}
+          <RenderMenuItems items={categories} />
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
