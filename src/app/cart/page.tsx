@@ -66,7 +66,7 @@ const CartPage = () => {
 
 export default CartPage;
 
-export function Checkout({ subtotal }: { subtotal: number }) {
+function Checkout({ subtotal }: { subtotal: number }) {
   return (
     <Card className="p-6 border-0 flex flex-col gap-4 rounded-lg  h-full">
       <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
