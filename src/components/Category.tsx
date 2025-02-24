@@ -43,7 +43,7 @@ const Category = ({
               {products.map((product, index) => (
                 <CarouselItem
                   key={index}
-                  className="xxs:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                  className="xxs:basis-1/2 md:basis-1/4 lg:basis-1/5"
                 >
                   <ProductCard product={product} />
                 </CarouselItem>

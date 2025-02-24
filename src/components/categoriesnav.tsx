@@ -23,20 +23,22 @@ export default function CategoryNav() {
   const { scrollDirection, scrollY } = useScroll();
   return (
     (scrollDirection == "up" || scrollY == 0) && (
-      <div className={`p-4 lg:container mx-auto  transition-all duration-300`}>
+      <div
+        className={`flex  px-4 lg:container mx-auto rounded-lg  transition-all duration-300`}
+      >
         <div className="flex items-center">
           <ScrollArea className="w-full whitespace-nowrap mb-2 z-0">
             <div className="flex items-center">
               <CategoriesDropDown categories={categories} />
-              {[...categories, ...categories]
-                .slice(0, 12)
+              {["Best Sellers", "Top rated", "Your history", "On offer", ""]
+                .slice(0, 20)
                 .map((item, index) => (
                   <div key={index} className="basis-1/7">
                     <Link
-                      className=" rounded-lg text-center mx-2 text-sm text-nowrap"
-                      href={`/shop?category=${item.name}`}
+                      className=" rounded-lg text-center mx-4 md:mx-4 text-sm text-nowrap"
+                      href={`/shop?category=${item}`}
                     >
-                      {item.name}
+                      {item}
                     </Link>
                   </div>
                 ))}
@@ -54,7 +56,7 @@ const RenderMenuItems = ({ items }: { items: category[] }) => {
   return items.map((item: category, index: number) =>
     item.subcategories ? (
       <DropdownMenuSub key={index}>
-        <DropdownMenuSubTrigger className="hover:bg-gray-200">
+        <DropdownMenuSubTrigger className="hover:bg-muted">
           {item.name}
         </DropdownMenuSubTrigger>
         <DropdownMenuPortal>
@@ -64,7 +66,7 @@ const RenderMenuItems = ({ items }: { items: category[] }) => {
         </DropdownMenuPortal>
       </DropdownMenuSub>
     ) : (
-      <DropdownMenuItem key={index} className="hover:bg-gray-200">
+      <DropdownMenuItem key={index} className="hover:bg-muted">
         {item.name}
       </DropdownMenuItem>
     )
@@ -78,7 +80,7 @@ export function CategoriesDropDown({ categories }: { categories: category[] }) {
         <Button variant="outline">
           All categories
           <LayoutGrid
-            className="-me-1 ms-2 opacity-60"
+            className="-me-1 ms-2 opacity-60 "
             size={16}
             strokeWidth={2}
             aria-hidden="true"

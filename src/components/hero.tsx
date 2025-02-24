@@ -8,6 +8,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 import Image from "next/image";
@@ -35,7 +37,7 @@ export default function CarouselPlugin() {
   ];
 
   return (
-    <section className="p-4 lg:container rounded-xl mx-auto mt-2">
+    <section className="px-14 lg:container rounded-xl mx-auto mt-2">
       <Carousel
         opts={{
           align: "start",
@@ -45,6 +47,8 @@ export default function CarouselPlugin() {
         onMouseEnter={() => plugin1.current.stop}
         onMouseLeave={() => plugin1.current.reset}
       >
+        <CarouselNext />
+        <CarouselPrevious />
         <CarouselContent>
           {banners.map((item, index) => (
             <CarouselItem key={index}>
@@ -56,11 +60,11 @@ export default function CarouselPlugin() {
                   width={600}
                   className=" rounded-xl pointer-events-none w-full"
                 />
-                <div className="absolute w-1/3 left-16  top-1/2 transform -translate-y-1/2">
-                  <h2 className="text-xl md:text-6xl font-bold mb-4   dark:text-slate-900">
-                    {item.title}
+                <div className="absolute w-1/3 left-4  top-1/2 transform -translate-y-1/2">
+                  <h2 className="leading-tight text-2xl md:text-6xl font-bold mb-4 ">
+                    {item.title.substring(0, 80)}
                   </h2>
-                  <Button className="hidden md:block dark:text-slate-950">
+                  <Button>
                     <Link href={item.href}>
                       {item.buttonCaption || "Explore"}
                     </Link>

@@ -3,11 +3,12 @@ import { product } from "@/lib/fakedata";
 import Image from "next/image";
 
 import { Button } from "./ui/button";
-import { Heart, ShoppingCartIcon, Timer } from "lucide-react";
+import { Heart, Timer } from "lucide-react";
 
 import Rating from "./ratings";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
+import AddToCart from "./add-to-cart";
 
 interface ProductCardProps {
   product: product;
@@ -25,7 +26,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div
       key={product.id}
-      className=" p-3 bg-white shadow-none dark:bg-slate-950 relative transition-shadow rounded-xl hover:shadow-lg"
+      className=" p-3 bg-background/60 backdrop-blur   relative transition-shadow rounded-xl hover:shadow-lg"
     >
       <div className="flex flex-col gap-4  h-[420px] ">
         {!product.flashSale && (
@@ -82,10 +83,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
       <div className="flex gap-2  ">
-        <Button className="flex-1">
-          <ShoppingCartIcon className="size-4" />
-          Add to Cart
-        </Button>
+        <AddToCart product={product} />
         <Button size={"icon"} variant={"outline"}>
           <Heart className="size-4" />
         </Button>

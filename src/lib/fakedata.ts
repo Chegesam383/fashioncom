@@ -3,7 +3,7 @@ export type product = {
   bestSeller: boolean;
   flashSale: boolean;
   originalPrice: number;
-  id: number;
+  id: string;
   title: string;
   price: number;
   description: string;
@@ -11,7 +11,7 @@ export type product = {
   creationAt: string;
   updatedAt: string;
   category: {
-    id: number;
+    id: string;
     name: string;
     image: string;
     creationAt: string;
@@ -20,7 +20,7 @@ export type product = {
 };
 
 export type category = {
-  id: number;
+  id: string;
   name: string;
   image: string;
   creationAt: string;
@@ -29,7 +29,7 @@ export type category = {
 };
 export const products: product[] = [
   {
-    id: 43,
+    id: "43",
     title: "Change data ",
     price: 100,
     description:
@@ -42,7 +42,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-13T03:21:23.000Z",
     category: {
-      id: 4,
+      id: "4",
       name: "Shoes",
       image: "https://i.imgur.com/qNOjJje.jpeg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -54,7 +54,7 @@ export const products: product[] = [
     originalPrice: 30,
   },
   {
-    id: 44,
+    id: "44",
     title: "Classic Blue Suede Casual",
     price: 39,
     description:
@@ -67,7 +67,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-13T02:41:34.000Z",
     category: {
-      id: 4,
+      id: "4",
       name: "Shoes",
       image: "https://i.imgur.com/qNOjJje.jpeg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -79,7 +79,7 @@ export const products: product[] = [
     originalPrice: 30,
   },
   {
-    id: 46,
+    id: "46",
     title: "Sleek All-Terrain",
     price: 37,
     description:
@@ -92,7 +92,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-13T02:46:11.000Z",
     category: {
-      id: 5,
+      id: "5",
       name: "Miscellaneous",
       image: "https://i.imgur.com/BG8J0Fj.jpg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -104,7 +104,7 @@ export const products: product[] = [
     originalPrice: 30,
   },
   {
-    id: 47,
+    id: "47",
     title: "Radiant Citrus Eau data sasa",
     price: 900,
     description:
@@ -117,7 +117,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-13T03:21:45.000Z",
     category: {
-      id: 5,
+      id: "5",
       name: "Miscellaneous",
       image: "https://i.imgur.com/BG8J0Fj.jpg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -129,7 +129,7 @@ export const products: product[] = [
     originalPrice: 30,
   },
   {
-    id: 48,
+    id: "48",
     title: "Sleek Olive Green Hardshell Carry-On Luggage",
     price: 48,
     description:
@@ -142,7 +142,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-12T17:30:09.000Z",
     category: {
-      id: 5,
+      id: "5",
       name: "Miscellaneous",
       image: "https://i.imgur.com/BG8J0Fj.jpg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -155,7 +155,7 @@ export const products: product[] = [
   },
 
   {
-    id: 43,
+    id: "43",
     title: "Change data ",
     price: 100,
     description:
@@ -168,7 +168,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-13T03:21:23.000Z",
     category: {
-      id: 4,
+      id: "4",
       name: "Shoes",
       image: "https://i.imgur.com/qNOjJje.jpeg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -180,7 +180,7 @@ export const products: product[] = [
     originalPrice: 30,
   },
   {
-    id: 44,
+    id: "44",
     title: "Classic Blue Suede Casual",
     price: 39,
     description:
@@ -193,7 +193,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-13T02:41:34.000Z",
     category: {
-      id: 4,
+      id: "4",
       name: "Shoes",
       image: "https://i.imgur.com/qNOjJje.jpeg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -205,7 +205,7 @@ export const products: product[] = [
     originalPrice: 30,
   },
   {
-    id: 46,
+    id: "46",
     title: "Sleek All-Terrain",
     price: 37,
     description:
@@ -218,7 +218,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-13T02:46:11.000Z",
     category: {
-      id: 5,
+      id: "5",
       name: "Miscellaneous",
       image: "https://i.imgur.com/BG8J0Fj.jpg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -230,7 +230,7 @@ export const products: product[] = [
     originalPrice: 30,
   },
   {
-    id: 47,
+    id: "47",
     title: "Radiant Citrus Eau data sasa",
     price: 900,
     description:
@@ -243,7 +243,7 @@ export const products: product[] = [
     creationAt: "2025-02-12T17:30:09.000Z",
     updatedAt: "2025-02-13T03:21:45.000Z",
     category: {
-      id: 5,
+      id: "5",
       name: "Miscellaneous",
       image: "https://i.imgur.com/BG8J0Fj.jpg",
       creationAt: "2025-02-12T17:30:09.000Z",
@@ -258,14 +258,14 @@ export const products: product[] = [
 
 export const categories: category[] = [
   {
-    id: 1,
+    id: "1",
     name: "Clothes",
     image: "https://i.imgur.com/QkIa5tT.jpeg",
     creationAt: "2025-02-16T19:10:42.000Z",
     updatedAt: "2025-02-16T19:10:42.000Z",
   },
   {
-    id: 2,
+    id: "1d2",
     name: "Electronics",
     image: "https://i.imgur.com/ZANVnHE.jpeg",
     creationAt: "2025-02-16T19:10:42.000Z",
@@ -273,7 +273,7 @@ export const categories: category[] = [
 
     subcategories: [
       {
-        id: 2,
+        id: "1d2",
         name: "Phones",
         image: "https://i.imgur.com/ZANVnHE.jpeg",
         creationAt: "2025-02-16T19:10:42.000Z",
@@ -281,14 +281,14 @@ export const categories: category[] = [
 
         subcategories: [
           {
-            id: 2,
+            id: "1d2",
             name: "Phones",
             image: "https://i.imgur.com/ZANVnHE.jpeg",
             creationAt: "2025-02-16T19:10:42.000Z",
             updatedAt: "2025-02-16T19:10:42.000Z",
           },
           {
-            id: 2,
+            id: "1d2",
             name: "Phones",
             image: "https://i.imgur.com/ZANVnHE.jpeg",
             creationAt: "2025-02-16T19:10:42.000Z",
@@ -298,7 +298,7 @@ export const categories: category[] = [
       },
 
       {
-        id: 2,
+        id: "1d2",
         name: "Tvs",
         image: "https://i.imgur.com/ZANVnHE.jpeg",
         creationAt: "2025-02-16T19:10:42.000Z",
@@ -306,7 +306,7 @@ export const categories: category[] = [
       },
 
       {
-        id: 2,
+        id: "1d2",
         name: "Music",
         image: "https://i.imgur.com/ZANVnHE.jpeg",
         creationAt: "2025-02-16T19:10:42.000Z",
@@ -315,28 +315,28 @@ export const categories: category[] = [
     ],
   },
   {
-    id: 3,
+    id: "1d2",
     name: "Furniture",
     image: "https://i.imgur.com/Qphac99.jpeg",
     creationAt: "2025-02-16T19:10:42.000Z",
     updatedAt: "2025-02-16T19:10:42.000Z",
   },
   {
-    id: 4,
+    id: "1d2",
     name: "Shoes",
     image: "https://i.imgur.com/qNOjJje.jpeg",
     creationAt: "2025-02-16T19:10:42.000Z",
     updatedAt: "2025-02-16T19:10:42.000Z",
   },
   {
-    id: 9,
+    id: "1d2",
     name: "Royal Items",
     image: "https://i.imgur.com/49FiVI0.png",
     creationAt: "2025-02-16T19:13:39.000Z",
     updatedAt: "2025-02-16T19:13:39.000Z",
   },
   {
-    id: 89,
+    id: "1d2",
     name: "Sara Items",
     image: "https://i.imgur.com/49FiVI0.png",
     creationAt: "2025-02-16T20:56:10.000Z",
@@ -344,21 +344,21 @@ export const categories: category[] = [
   },
 
   {
-    id: 157,
+    id: "1d2",
     name: "New Category",
     image: "https://placeimg.com/640/480/any",
     creationAt: "2025-02-17T03:11:17.000Z",
     updatedAt: "2025-02-17T03:11:17.000Z",
   },
   {
-    id: 158,
+    id: "1d2",
     name: "Books",
     image: "https://api.lorem.space/image/book?w=150&h=220",
     creationAt: "2025-02-17T03:40:28.000Z",
     updatedAt: "2025-02-17T03:40:28.000Z",
   },
   {
-    id: 159,
+    id: "1d2",
     name: "MynewCategory",
     image: "https://placeimg.com/640/480/any",
     creationAt: "2025-02-17T06:02:59.000Z",

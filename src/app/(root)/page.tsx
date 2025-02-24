@@ -2,12 +2,14 @@ import Category from "@/components/Category";
 import FreshSaleSection from "@/components/frashsale";
 
 import Hero from "@/components/hero";
+import InfoSection from "@/components/info-section";
 import ShopByCategory from "@/components/shopBycategory";
 
 export default function Home() {
   return (
     <>
       <Hero />
+      <InfoSection />
       <FreshSaleSection />
       <Category
         title={`Today's picks`}

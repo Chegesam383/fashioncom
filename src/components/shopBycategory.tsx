@@ -1,104 +1,102 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-
+import { useRef, useState, useEffect, useCallback } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/lib/fakedata";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function ShopByCategory() {
-  const carouselRef = useRef<HTMLDivElement>(null);
+export default function CategorySection() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const checkScroll = () => {
-    if (carouselRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+  const checkScroll = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
       setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10); // 10px threshold
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
     }
-  };
+  }, []);
 
   useEffect(() => {
     checkScroll();
     window.addEventListener("resize", checkScroll);
     return () => window.removeEventListener("resize", checkScroll);
-  }, []); // Removed carouselRef from dependencies
+  }, [checkScroll]);
 
-  const scroll = (direction: "left" | "right") => {
-    if (carouselRef.current) {
-      const scrollAmount = carouselRef.current.clientWidth * 0.8;
-      carouselRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
+  const scroll = useCallback((direction: "left" | "right") => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollAmount = container.clientWidth / 2;
+      const currentScroll = container.scrollLeft;
+      const targetScroll =
+        direction === "left"
+          ? Math.max(0, currentScroll - scrollAmount)
+          : Math.min(
+              container.scrollWidth - container.clientWidth,
+              currentScroll + scrollAmount
+            );
+
+      container.scrollTo({
+        left: targetScroll,
         behavior: "smooth",
       });
-      setTimeout(checkScroll, 300);
     }
-  };
+  }, []);
 
   return (
-    <section className="bg-slate-50 dark:bg-slate-950 py-16">
+    <section className="py-12 bg-gray-100">
       <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold">Shop by categories</h2>
-          <p className="mt-2 text-gray-600">Explore popular categories</p>
-        </div>
+        <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
         <div className="relative">
           <div
-            ref={carouselRef}
-            className="flex overflow-x-auto py-4 snap-x snap-mandatory scrollbar-hide"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch",
-            }}
+            ref={scrollContainerRef}
+            className="flex overflow-x-auto space-x-4 p-4 no-scrollbar"
+            onScroll={checkScroll}
           >
-            {categories.slice(0, 8).map((category, index) => (
-              <div
-                key={category.name}
-                className={`flex-none w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5 xl:w-1/6 px-0 snap-start ${
-                  index === categories.length - 1 ? "mr-[100vw]" : ""
-                }`}
-              >
-                <div className="group rounded-xl shadow-none p-0 m-0 hover:shadow-lg transition-all duration-300 h-full">
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="h-40 w-40">
-                      <img
-                        src={category.image}
-                        width={400}
-                        height={400}
-                        alt={category.image}
-                        className="aspect-square rounded-xl h-full w-full object-cover m-0"
-                      />
-                    </div>
-                    <span className="text-sm font-medium text-center">
+            {categories.map((category, index) => (
+              <div key={index} className="flex-none w-40">
+                <div className="bg-white rounded-lg  overflow-hidden">
+                  <img
+                    src={category.image || "/placeholder.svg"}
+                    alt={category.name}
+                    width={200}
+                    height={200}
+                    className="w-full h-40 object-cover"
+                  />
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-center">
                       {category.name}
-                    </span>
+                    </h3>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          {canScrollLeft && (
+          <div className="absolute left-0 top-0 bottom-0 flex items-center bg-gradient-to-r from-gray-100 to-transparent pr-4">
             <Button
               variant="outline"
               size="icon"
-              className="absolute left-2 top-1/2 transform -translate-y-1/2  backdrop-blur-sm"
+              className="h-8 w-8 rounded-full"
               onClick={() => scroll("left")}
+              disabled={!canScrollLeft}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-          )}
-          {canScrollRight && (
+          </div>
+          <div className="absolute right-0 top-0 bottom-0 flex items-center bg-gradient-to-l from-gray-100 to-transparent pl-4">
             <Button
               variant="outline"
               size="icon"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2  backdrop-blur-sm"
+              className="h-8 w-8 rounded-full"
               onClick={() => scroll("right")}
+              disabled={!canScrollRight}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
-          )}
+          </div>
         </div>
       </div>
     </section>
