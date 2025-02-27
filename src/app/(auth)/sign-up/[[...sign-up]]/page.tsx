@@ -19,7 +19,13 @@ import Link from "next/link";
 
 export default function SignUpPage() {
   return (
-    <div className="grid w-full grow items-center px-4 sm:justify-center place-content-center min-h-[100vh]">
+    <div className="grid w-full grow items-center px-4 justify-center place-content-center min-h-screen">
+      <Link
+        href="/"
+        className="font-bold  text-center text-xl text-primary gradient mb-4"
+      >
+        Fashionist
+      </Link>
       <SignUp.Root>
         <Clerk.Loading>
           {(isGlobalLoading) => (
@@ -27,8 +33,10 @@ export default function SignUpPage() {
               <SignUp.Step name="start">
                 <Card className="w-full sm:w-96">
                   <CardHeader>
-                    <CardTitle>Create your account</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-center">
+                      Create your account
+                    </CardTitle>
+                    <CardDescription className="text-center">
                       Welcome! Please fill in the details to get started.
                     </CardDescription>
                   </CardHeader>

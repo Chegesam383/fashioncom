@@ -24,9 +24,7 @@ export default function CategoryNav() {
   return (
     (scrollDirection == "up" || scrollY == 0) && (
       <nav className={`mt-4 pt-1 bg-slate-800`}>
-        <div
-          className={`flex px-4 lg:container  mx-auto rounded-lg  transition-all duration-300`}
-        >
+        <div className={`flex px-4 lg:container  mx-auto rounded-lg`}>
           <div className="flex items-center">
             <ScrollArea className="w-[100vw] whitespace-nowrap mb-2 z-0">
               <div className="flex items-center">
@@ -34,7 +32,7 @@ export default function CategoryNav() {
                 {["Best Sellers", "Top rated", "Your history", "On offer"].map(
                   (item, index) => (
                     <Link
-                      className=" flex rounded-lg text-white text-center mx-4 md:mx-4 text-sm text-nowrap"
+                      className="flex rounded-lg text-white text-center p-4 text-sm text-nowrap hover:bg-muted"
                       href={`/shop?category=${item}`}
                       key={index}
                     >

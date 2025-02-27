@@ -15,7 +15,7 @@ const InfoItem = ({
   color: string;
 }) => (
   <div
-    className={`flex items-center p-6 rounded-lg shadow transition-transform hover:scale-105 ${bgColor}`}
+    className={`flex items-center p-6 rounded-lg shadow transition-transform hover:scale-[1.02] ${bgColor}`}
   >
     <div className="text-4xl mr-4">
       <Icon className={color} />

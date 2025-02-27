@@ -18,7 +18,13 @@ import Link from "next/link";
 
 export default function SignInPage() {
   return (
-    <div className="grid w-full grow items-center px-4 sm:justify-center min-h-[100vh] place-content-center">
+    <div className="grid w-full grow items-center px-4 justify-center  place-content-center min-h-screen">
+      <Link
+        href="/"
+        className="font-bold  text-center text-xl text-primary gradient mb-4"
+      >
+        Fashionist
+      </Link>
       <SignIn.Root>
         <Clerk.Loading>
           {(isGlobalLoading) => (
@@ -26,8 +32,8 @@ export default function SignInPage() {
               <SignIn.Step name="start">
                 <Card className="w-full sm:w-96">
                   <CardHeader>
-                    <CardTitle>Sign in to Fashionist</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-center">Sign in </CardTitle>
+                    <CardDescription className="text-center">
                       Welcome back! Please sign in to continue
                     </CardDescription>
                   </CardHeader>

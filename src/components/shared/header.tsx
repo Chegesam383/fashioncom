@@ -4,7 +4,7 @@ import { LogOut, Settings, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { MoonIcon, SunIcon } from "lucide-react";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,13 +76,16 @@ const CartIcon = () => {
   const { subtotal, count } = useCartStore();
   const [shake, setShake] = useState(false);
 
-  React.useEffect(() => {
-    if (count > 0) {
+  const prevCountRef = useRef(count);
+
+  useEffect(() => {
+    if (count !== prevCountRef.current) {
       setShake(true);
       const timer = setTimeout(() => {
         setShake(false);
-      }, 500); // Shake duration
-      return () => clearTimeout(timer); // Cleanup on unmount
+      }, 500);
+      prevCountRef.current = count;
+      return () => clearTimeout(timer);
     }
   }, [count]);
 
@@ -119,15 +122,9 @@ const Accountbtn = () => {
       signOut={signOut}
     />
   ) : (
-    <Link href="/sign-in" className="flex items-center md:gap-3 gap-2 group">
-      <span className="text-muted-foreground">
-        <User2 />
-      </span>
-      <div className="hidden md:flex flex-col ">
-        <small className="text-xs text-muted-foreground">Welcome</small>
-        <span className="text-sm font-semibold text-white">Sign In</span>
-      </div>
-    </Link>
+    <div>
+      <AnauthenticatedUserDropDown />
+    </div>
   );
 };
 
@@ -165,7 +162,7 @@ const AccountDropdown = ({
           </div>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 dark">
+      <DropdownMenuContent className="w-56 dark" side="bottom">
         <div className="flex gap-2 mb-4">
           <span>Theme</span>
           <ModeToggle />
@@ -188,6 +185,42 @@ const AccountDropdown = ({
           <LogOut />
           <span onClick={() => signOut()}>Log out</span>
         </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const AnauthenticatedUserDropDown = () => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div className="flex items-center md:gap-3 gap-2 group cursor-pointer">
+          <span className="text-muted-foreground">
+            <User2 />
+          </span>
+          <div className="hidden md:flex flex-col ">
+            <small className="text-xs text-muted-foreground">Hello,</small>
+            <span className="text-sm font-semibold text-white">
+              Sign In/sign Up
+            </span>
+          </div>
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56 dark" side="bottom">
+        <div className="flex gap-2 mb-4">
+          <span>Theme</span>
+          <ModeToggle />
+        </div>
+
+        <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <Link href={"sign-in"}>Sign In</Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem>
+            <Link href={"sign-up"}>Sign Up</Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

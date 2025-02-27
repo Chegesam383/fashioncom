@@ -6,6 +6,7 @@ import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
 
 import { ClerkProvider } from "@clerk/nextjs";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,9 +38,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Header categoryNavHidden />
             <main className="flex-1">{children}</main>
-            <Footer />
           </ThemeProvider>
         </body>
       </html>

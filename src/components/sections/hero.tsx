@@ -37,7 +37,7 @@ export default function CarouselPlugin() {
   ];
 
   return (
-    <section className="px-14 lg:container rounded-xl mx-auto mt-2">
+    <section className="px-14 lg:px-4 lg:container rounded-xl mx-auto mt-2">
       <Carousel
         opts={{
           align: "start",

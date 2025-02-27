@@ -40,7 +40,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             alt={product.title}
             width={200}
             height={150}
-            className="w-full h-56 object-cover rounded-lg"
+            className="w-full h-56 object-cover rounded-lg hover:scale-[1.02] transition-transform"
           />
         </Link>
         <Link
