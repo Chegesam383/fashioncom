@@ -30,10 +30,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} `}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col overflow-x-hidden`}
+        >
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >

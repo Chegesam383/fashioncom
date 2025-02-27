@@ -16,38 +16,39 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid } from "lucide-react";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import useScroll from "@/lib/usescroll";
 
 export default function CategoryNav() {
   const { scrollDirection, scrollY } = useScroll();
   return (
     (scrollDirection == "up" || scrollY == 0) && (
-      <div
-        className={`flex  px-4 lg:container mx-auto rounded-lg  transition-all duration-300`}
-      >
-        <div className="flex items-center">
-          <ScrollArea className="w-full whitespace-nowrap mb-2 z-0">
-            <div className="flex items-center">
-              <CategoriesDropDown categories={categories} />
-              {["Best Sellers", "Top rated", "Your history", "On offer", ""]
-                .slice(0, 20)
-                .map((item, index) => (
-                  <div key={index} className="basis-1/7">
+      <nav className={`mt-4 pt-1 bg-slate-800`}>
+        <div
+          className={`flex px-4 lg:container  mx-auto rounded-lg  transition-all duration-300`}
+        >
+          <div className="flex items-center">
+            <ScrollArea className="w-[100vw] whitespace-nowrap mb-2 z-0">
+              <div className="flex items-center">
+                <CategoriesDropDown categories={categories} />
+                {["Best Sellers", "Top rated", "Your history", "On offer"].map(
+                  (item, index) => (
                     <Link
-                      className=" rounded-lg text-center mx-4 md:mx-4 text-sm text-nowrap"
+                      className=" flex rounded-lg text-white text-center mx-4 md:mx-4 text-sm text-nowrap"
                       href={`/shop?category=${item}`}
+                      key={index}
                     >
                       {item}
                     </Link>
-                  </div>
-                ))}
-            </div>
+                  )
+                )}
+              </div>
 
-            <ScrollBar orientation="horizontal" className="invisible h-0 w-0" />
-          </ScrollArea>
+              <ScrollBar orientation="horizontal" className="sr-only" />
+            </ScrollArea>
+          </div>
         </div>
-      </div>
+      </nav>
     )
   );
 }
@@ -77,7 +78,7 @@ export function CategoriesDropDown({ categories }: { categories: category[] }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="bg-slate-900 text-white">
           All categories
           <LayoutGrid
             className="-me-1 ms-2 opacity-60 "

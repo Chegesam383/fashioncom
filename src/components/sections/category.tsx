@@ -8,7 +8,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import ProductCard from "./product-card";
+import ProductCard from "../product/product-card";
+import { Card } from "../ui/card";
 
 const Category = ({
   title,
@@ -21,7 +22,7 @@ const Category = ({
 }) => {
   return (
     <section className={`bg-${bg} py-16`}>
-      <div className="p-4 lg:container mx-auto ">
+      <Card className="p-4 py-6 lg:container mx-auto ">
         <div className="mb-8">
           <h2 className="text-3xl font-bold">{title}</h2>
           <p className="mt-2 text-gray-600">{description}</p>
@@ -43,7 +44,7 @@ const Category = ({
               {products.map((product, index) => (
                 <CarouselItem
                   key={index}
-                  className="xxs:basis-1/2 md:basis-1/4 lg:basis-1/5"
+                  className=" sm:basis-1/2  md:basis-1/3  lg:basis-1/4 xl:basis-1/5"
                 >
                   <ProductCard product={product} />
                 </CarouselItem>
@@ -51,7 +52,7 @@ const Category = ({
             </CarouselContent>
           </Carousel>
         </div>
-      </div>
+      </Card>
     </section>
   );
 };

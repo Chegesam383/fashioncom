@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "img.clerk.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "placeimg.com",
         pathname: "/**", // Allow any path
       },
@@ -25,7 +30,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: " api.lorem.space",
+        hostname: "api.lorem.space",
         pathname: "/**", // Allow any path
       },
     ],

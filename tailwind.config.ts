@@ -10,6 +10,13 @@ export default {
   theme: {
     extend: {
       keyframes: {
+        shake: {
+          "0%": { transform: "translateX(0)" },
+          "25%": { transform: "translateX(-5px)" },
+          "50%": { transform: "translateX(5px)" },
+          "75%": { transform: "translateX(-5px)" },
+          "100%": { transform: "translateX(0)" },
+        },
         "caret-blink": {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
@@ -17,6 +24,7 @@ export default {
       },
       animation: {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
+        shake: "shake 0.5s ease-in-out",
       },
       screens: {
         xxs: "430px",

@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/lib/fakedata";
+import Image from "next/image";
 
 export default function CategorySection() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -58,7 +59,7 @@ export default function CategorySection() {
             {categories.map((category, index) => (
               <div key={index} className="flex-none w-40">
                 <div className="bg-white rounded-lg  overflow-hidden">
-                  <img
+                  <Image
                     src={category.image || "/placeholder.svg"}
                     alt={category.name}
                     width={200}

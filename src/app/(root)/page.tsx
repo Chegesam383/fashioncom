@@ -1,9 +1,9 @@
-import Category from "@/components/Category";
-import FreshSaleSection from "@/components/frashsale";
+import Category from "@/components/sections/category";
+import FreshSaleSection from "@/components/sections/frashsale";
 
-import Hero from "@/components/hero";
-import InfoSection from "@/components/info-section";
-import ShopByCategory from "@/components/shopBycategory";
+import Hero from "@/components/sections/hero";
+import InfoSection from "@/components/sections/info-section";
+import ShopByCategory from "@/components/sections/shop-by-category";
 
 export default function Home() {
   return (

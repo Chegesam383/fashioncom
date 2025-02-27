@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+import { ThemeProvider } from "@/components/shared/theme-provider";
+import Header from "@/components/shared/header";
+import Footer from "@/components/shared/footer";
 
 import { ClerkProvider } from "@clerk/nextjs";
 
@@ -30,12 +30,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased  flex flex-col `}
-        >
+        <body className={`${geistSans.variable} ${geistMono.variable} `}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >

@@ -11,3 +11,7 @@ export function formatPrice(price: number): string {
     currency: "USD",
   }).format(price);
 }
+
+export const formatDate = (date: Date) => {
+  return date.toISOString().split("T")[0];
+};

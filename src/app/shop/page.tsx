@@ -20,9 +20,10 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { SlidersHorizontal } from "lucide-react";
-import Rating from "@/components/ratings";
+
 import { products } from "@/lib/fakedata";
-import ProductCard from "@/components/product-card";
+import ProductCard from "@/components/product/product-card";
+import RatingFilter from "@/components/rating/rating-filter";
 
 const categories = [
   {
@@ -158,14 +159,7 @@ export default function ShopPage() {
                 <div>
                   <h3 className="text-sm font-medium mb-2">Minimum Rating</h3>
                   <div className="flex flex-col gap-2">
-                    {[5, 4, 3, 2, 1].map((rating) => (
-                      <div className="flex gap-4 items-center" key={rating}>
-                        <Rating long rating={rating} />{" "}
-                        <small className="text-muted-foreground">
-                          {rating} star
-                        </small>
-                      </div>
-                    ))}
+                    <RatingFilter />
                   </div>
                 </div>
               </div>
@@ -254,12 +248,7 @@ export default function ShopPage() {
           <div>
             <h3 className="text-sm font-medium mb-2">Minimum Rating</h3>
             <div className="flex flex-col gap-2">
-              {[5, 4, 3, 2, 1].map((rating) => (
-                <div className="flex gap-4 items-center" key={rating}>
-                  <Rating long rating={rating} />{" "}
-                  <small className="text-muted-foreground">{rating} star</small>
-                </div>
-              ))}
+              <RatingFilter />
             </div>
           </div>
         </div>
@@ -280,7 +269,7 @@ export default function ShopPage() {
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {products.map((product, i) => (
               <ProductCard product={product} key={i} />
             ))}

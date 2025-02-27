@@ -2,10 +2,10 @@ import React from "react";
 import { product } from "@/lib/fakedata";
 import Image from "next/image";
 
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Heart, Timer } from "lucide-react";
 
-import Rating from "./ratings";
+import Rating from "../rating/ratings";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import AddToCart from "./add-to-cart";
@@ -61,7 +61,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
           <div className="flex align-center gap-2">
-            <Rating rating={4} long={false} /> <span className="mt-1">4</span>
+            <Rating rating={4} long={false} />{" "}
+            <span className="mt-1 text-muted-foreground">4.8</span>
           </div>
         </div>
         <div className="">

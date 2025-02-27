@@ -1,6 +1,6 @@
 import React from "react";
 import { Trophy } from "lucide-react";
-import ProductCard from "@/components/product-card";
+import ProductCard from "@/components/product/product-card";
 import { products } from "@/lib/fakedata";
 
 export function BestSellers() {

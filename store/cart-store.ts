@@ -2,20 +2,38 @@ import { product } from "@/lib/fakedata";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export interface CartProduct extends product {
+export interface CartProduct
+  extends Pick<product, "images" | "originalPrice" | "title" | "id" | "price"> {
   quantity: number;
 }
 
-type State = {
-  products: CartProduct[];
-  subtotal: number;
-};
+export interface PromoCode {
+  code: string;
+  discount: number; // percentage discount
+  expiry?: Date; // optional expiry
+}
 
 export type Actions = {
   addToCart: (product: CartProduct) => void;
   removeFromCart: (productId: string) => void;
   updateCartProduct: (productId: string, quantity: number) => void;
   clearCart: () => void;
+  setTax: (tax: number) => void;
+  setDiscount: (discount: number) => void;
+  setPromoCode: (promoCode: PromoCode | null) => void;
+  setShippingCost: (shippingCost: number) => void; // Setter for shipping cost
+  setGrandTotal: () => void;
+};
+
+export type State = {
+  products: CartProduct[];
+  subtotal: number;
+  count: number;
+  tax: number;
+  discount: number;
+  promoCode: PromoCode | null;
+  shippingCost: number; // Shipping cost
+  grandTotal: number;
 };
 
 export const useCartStore = create<State & Actions>()(
@@ -23,6 +41,12 @@ export const useCartStore = create<State & Actions>()(
     (set) => ({
       products: [],
       subtotal: 0,
+      count: 0,
+      tax: 0,
+      discount: 0,
+      promoCode: null,
+      shippingCost: 0, // Initialize shipping cost
+      grandTotal: 0,
 
       addToCart: (product) =>
         set((state) => {
@@ -41,12 +65,29 @@ export const useCartStore = create<State & Actions>()(
             updatedProducts = [...state.products, product];
           }
 
+          const newCount = updatedProducts.reduce(
+            (acc, item) => acc + item.quantity,
+            0
+          );
+
+          const newSubtotal = updatedProducts.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+          );
+
+          // Recalculate discount based on the promo code
+          let newDiscount = state.discount;
+          if (state.promoCode) {
+            newDiscount = (newSubtotal * state.promoCode.discount) / 100;
+          }
+
           return {
             products: updatedProducts,
-            subtotal: updatedProducts.reduce(
-              (acc, item) => acc + item.price * item.quantity,
-              0
-            ),
+            subtotal: newSubtotal,
+            count: newCount,
+            discount: newDiscount,
+            grandTotal:
+              newSubtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
           };
         }),
 
@@ -55,12 +96,44 @@ export const useCartStore = create<State & Actions>()(
           const updatedProducts = state.products.filter(
             (item) => item.id !== productId
           );
+
+          const newCount = updatedProducts.reduce(
+            (acc, item) => acc + item.quantity,
+            0
+          );
+
+          const newSubtotal = updatedProducts.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+          );
+
+          // Recalculate discount based on the promo code
+          let newDiscount = state.discount;
+          if (state.promoCode) {
+            newDiscount = (newSubtotal * state.promoCode.discount) / 100;
+          }
+
+          // If the cart is empty, reset the discount and promo code
+          if (newCount === 0) {
+            newDiscount = 0;
+            return {
+              products: updatedProducts,
+              subtotal: newSubtotal,
+              count: newCount,
+              discount: newDiscount,
+              promoCode: null, // Reset promo code if cart is empty
+              grandTotal:
+                newSubtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
+            };
+          }
+
           return {
             products: updatedProducts,
-            subtotal: updatedProducts.reduce(
-              (acc, item) => acc + item.price * item.quantity,
-              0
-            ),
+            subtotal: newSubtotal,
+            count: newCount,
+            discount: newDiscount,
+            grandTotal:
+              newSubtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
           };
         }),
 
@@ -72,19 +145,89 @@ export const useCartStore = create<State & Actions>()(
             item.id === productId ? { ...item, quantity } : item
           );
 
+          const newCount = updatedProducts.reduce(
+            (acc, item) => acc + item.quantity,
+            0
+          );
+
+          const newSubtotal = updatedProducts.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+          );
+
+          // Recalculate discount based on the promo code
+          let newDiscount = state.discount;
+          if (state.promoCode) {
+            newDiscount = (newSubtotal * state.promoCode.discount) / 100;
+          }
+
           return {
             products: updatedProducts,
-            subtotal: updatedProducts.reduce(
-              (acc, item) => acc + item.price * item.quantity,
-              0
-            ),
+            subtotal: newSubtotal,
+            count: newCount,
+            discount: newDiscount,
+            grandTotal:
+              newSubtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
           };
         }),
 
-      clearCart: () => set({ products: [], subtotal: 0 }),
+      clearCart: () =>
+        set({
+          products: [],
+          subtotal: 0,
+          count: 0,
+          grandTotal: 0,
+          discount: 0, // Reset discount
+          promoCode: null, // Reset promo code
+        }),
+
+      setTax: (tax) =>
+        set((state) => ({
+          tax,
+          grandTotal:
+            state.subtotal + tax + state.shippingCost - state.discount, // recalculate grandTotal
+        })),
+
+      setDiscount: (discount) =>
+        set((state) => ({
+          discount,
+          grandTotal:
+            state.subtotal + state.tax + state.shippingCost - discount, // recalculate grandTotal
+        })),
+
+      setPromoCode: (promoCode) =>
+        set((state) => {
+          let newDiscount = 0;
+          if (
+            promoCode &&
+            (!promoCode.expiry || promoCode.expiry > new Date())
+          ) {
+            newDiscount = (state.subtotal * promoCode.discount) / 100; // Apply promo code discount
+          }
+          return {
+            promoCode,
+            discount: newDiscount,
+            grandTotal:
+              state.subtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
+          };
+        }),
+
+      // New action to set shipping cost
+      setShippingCost: (shippingCost) =>
+        set((state) => ({
+          shippingCost,
+          grandTotal:
+            state.subtotal + state.tax + shippingCost - state.discount, // recalculate grandTotal
+        })),
+
+      setGrandTotal: () =>
+        set((state) => ({
+          grandTotal:
+            state.subtotal + state.tax + state.shippingCost - state.discount,
+        })),
     }),
     {
-      name: "cart-storage", // Key for localStorage
+      name: "cart-storage",
     }
   )
 );

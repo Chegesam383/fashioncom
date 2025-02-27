@@ -1,15 +1,16 @@
 import React from "react";
 import { Timer } from "lucide-react";
-import ProductCard from "./product-card";
+import ProductCard from "../product/product-card";
 
 import { products } from "@/lib/fakedata";
-import CountdownTimer from "./ui/counter-timer";
+import CountdownTimer from "../ui/counter-timer";
+import { Card } from "../ui/card";
 //const endDate = new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000);
 const endDate = new Date(145456586646 + 3 * 24 * 60 * 60 * 1000);
 export default function FlashSaleDeals() {
   return (
-    <section className="bg-red-50 dark:bg-blue-950 mt-6  py-10">
-      <div className="p-4 lg:container mx-auto ">
+    <section className=" mt-6  py-10">
+      <Card className="p-4 lg:container mx-auto ">
         <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex flex-col items-center md:block ">
             <h2 className=" text-3xl font-bold">Flash sale deals</h2>
@@ -24,12 +25,12 @@ export default function FlashSaleDeals() {
             </span>
           </div>
         </div>
-        <div className="grid  gap-4 xxs:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 ">
+        <div className="grid gap-4 xxs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
           {products.slice(0, 10).map((product, index) => (
             <ProductCard key={index} product={product} />
           ))}
         </div>
-      </div>
+      </Card>
     </section>
   );
 }
