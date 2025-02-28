@@ -15,7 +15,7 @@ const InfoItem = ({
   color: string;
 }) => (
   <div
-    className={`flex items-center p-6 rounded-lg shadow transition-transform hover:scale-[1.02] ${bgColor}`}
+    className={`flex items-center py-2 px-4 rounded-lg transition-transform hover:scale-[1.02] ${bgColor}`}
   >
     <div className="text-4xl mr-4">
       <Icon className={color} />
@@ -29,28 +29,28 @@ const InfoItem = ({
 
 export default function InfoSection() {
   return (
-    <section className="py-8 bg-muted/70">
+    <section className="py-6 mt-4 bg-muted/70">
       <div className="lg:container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           <InfoItem
             icon={Truck}
             title="Free Shipping"
             description="On orders over $20"
-            bgColor="bg-purple-200/70"
+            bgColor="bg-purple-50"
             color="text-purple-950"
           />
           <InfoItem
             icon={RotateCcw}
             title="30 Days Return"
             description="Money back guarantee"
-            bgColor="bg-pink-200/70"
+            bgColor="bg-pink-50"
             color="text-pink-950"
           />
           <InfoItem
             icon={ShieldCheck}
             title="Secure Payments"
             description="100% protected transactions"
-            bgColor="bg-red-200/70"
+            bgColor="bg-red-50"
             color="text-red-950"
           />
         </div>

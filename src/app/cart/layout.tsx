@@ -30,7 +30,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} `}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} md:mt:24 mt-16`}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

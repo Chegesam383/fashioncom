@@ -1,9 +1,9 @@
-import { product } from "@/lib/fakedata";
+import { Product } from "@/lib/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface CartProduct
-  extends Pick<product, "images" | "originalPrice" | "title" | "id" | "price"> {
+  extends Pick<Product, "imageUrls" | "name" | "id" | "price" | "attributes"> {
   quantity: number;
 }
 
@@ -15,8 +15,8 @@ export interface PromoCode {
 
 export type Actions = {
   addToCart: (product: CartProduct) => void;
-  removeFromCart: (productId: string) => void;
-  updateCartProduct: (productId: string, quantity: number) => void;
+  removeFromCart: (product: CartProduct) => void;
+  updateCartProduct: (product: CartProduct, quantity: number) => void;
   clearCart: () => void;
   setTax: (tax: number) => void;
   setDiscount: (discount: number) => void;
@@ -50,14 +50,20 @@ export const useCartStore = create<State & Actions>()(
 
       addToCart: (product) =>
         set((state) => {
-          const existingProduct = state.products.find(
-            (item) => item.id === product.id
-          );
+          const existingProduct = state.products.find((item) => {
+            return (
+              item.id === product.id &&
+              JSON.stringify(item.attributes) ===
+                JSON.stringify(product.attributes)
+            );
+          });
           let updatedProducts;
 
           if (existingProduct) {
             updatedProducts = state.products.map((item) =>
-              item.id === product.id
+              item.id === product.id &&
+              JSON.stringify(item.attributes) ===
+                JSON.stringify(product.attributes)
                 ? { ...item, quantity: item.quantity + 1 }
                 : item
             );
@@ -71,7 +77,7 @@ export const useCartStore = create<State & Actions>()(
           );
 
           const newSubtotal = updatedProducts.reduce(
-            (acc, item) => acc + item.price * item.quantity,
+            (acc, item) => acc + Number(item.price) * item.quantity,
             0
           );
 
@@ -91,11 +97,15 @@ export const useCartStore = create<State & Actions>()(
           };
         }),
 
-      removeFromCart: (productId) =>
+      removeFromCart: (product) =>
         set((state) => {
-          const updatedProducts = state.products.filter(
-            (item) => item.id !== productId
-          );
+          const updatedProducts = state.products.filter((item) => {
+            return !(
+              item.id === product.id &&
+              JSON.stringify(item.attributes) ===
+                JSON.stringify(product.attributes)
+            );
+          });
 
           const newCount = updatedProducts.reduce(
             (acc, item) => acc + item.quantity,
@@ -103,7 +113,7 @@ export const useCartStore = create<State & Actions>()(
           );
 
           const newSubtotal = updatedProducts.reduce(
-            (acc, item) => acc + item.price * item.quantity,
+            (acc, item) => acc + Number(item.price) * item.quantity,
             0
           );
 
@@ -137,13 +147,17 @@ export const useCartStore = create<State & Actions>()(
           };
         }),
 
-      updateCartProduct: (productId, quantity) =>
+      updateCartProduct: (product, quantity) =>
         set((state) => {
           if (quantity < 1) return state;
 
-          const updatedProducts = state.products.map((item) =>
-            item.id === productId ? { ...item, quantity } : item
-          );
+          const updatedProducts = state.products.map((item) => {
+            return item.id === product.id &&
+              JSON.stringify(item.attributes) ===
+                JSON.stringify(product.attributes)
+              ? { ...item, quantity }
+              : item;
+          });
 
           const newCount = updatedProducts.reduce(
             (acc, item) => acc + item.quantity,
@@ -151,7 +165,7 @@ export const useCartStore = create<State & Actions>()(
           );
 
           const newSubtotal = updatedProducts.reduce(
-            (acc, item) => acc + item.price * item.quantity,
+            (acc, item) => acc + Number(item.price) * item.quantity,
             0
           );
 

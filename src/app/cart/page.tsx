@@ -16,15 +16,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useId, useState } from "react";
 import { formatPrice } from "@/lib/utils";
 
-// Type definitions
 type CartItemProps = {
   item: {
     id: string;
-    title: string;
-    price: number;
-    images: string[];
+    name: string;
+    price: string;
+    imageUrls: string[] | null;
     quantity: number;
-    originalPrice: number;
+    attributes: { selectedAttributes: { [key: string]: string }[] };
   };
   removeFromCart: (id: string) => void;
 };
@@ -48,58 +47,66 @@ const expectedDelivaryDate: {
 };
 
 // Component for CartItem
-const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => (
-  <div className="flex gap-4">
-    <Link href={"product/" + item.id}>
-      <Image
-        src={item.images[0]}
-        alt={item.title}
-        width={100}
-        height={80}
-        className="rounded-md object-cover w-36 h-full "
-      />
-    </Link>
-    <div className="flex-1 space-y-1">
-      <div className="flex justify-between">
-        <div className="space-y-2">
-          <Link href={"product/" + item.id}>
-            <h3 className="font-bold">{item.title}</h3>
-          </Link>
-          <p>
-            <span className="font-medium">
-              ${(item.price * item.quantity).toFixed(2)}
-            </span>
+const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
+  const attributeString = item.attributes?.selectedAttributes
+    ?.map((attr) => {
+      const [key, value] = Object.entries(attr)[0];
+      return `${key} - ${value}`;
+    })
+    .join(", ");
 
-            {item.quantity > 1 && (
-              <small className="text-muted-foreground">
-                {" "}
-                ${item.price} each
-              </small>
-            )}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Color - Red . Size - XL
-          </p>
-        </div>
-        <div className="align-top mt-2">
-          <Rating rating={4} long={true} />
-        </div>
-      </div>
+  return (
+    <div className="flex flex-col xxs:flex-row items-center gap-4">
+      <Link href={"product/" + item.id}>
+        <Image
+          src={item.imageUrls?.[0] || "/placeholder.png"}
+          alt={item.name}
+          width={100}
+          height={80}
+          className="rounded-md object-cover w-36 h-36"
+        />
+      </Link>
+      <div className="flex-1 space-y-1">
+        <div className="flex justify-between">
+          <div className="space-y-2">
+            <Link href={"product/" + item.id}>
+              <h3 className="font-bold">{item.name}</h3>
+            </Link>
+            <p>
+              <span className="font-medium">
+                ${(Number(item.price) * item.quantity).toFixed(2)}
+              </span>
 
-      <div className="flex items-center justify-between gap-3">
-        <QauntityButton productInCart={item} />
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => removeFromCart(item.id)}
-          className="justify-self-end"
-        >
-          <Trash2 className="w-5 h-5 text-red-500" />
-        </Button>
+              {item.quantity > 1 && (
+                <small className="text-muted-foreground">
+                  {" "}
+                  ${item.price} each
+                </small>
+              )}
+            </p>
+            <p className="text-sm text-muted-foreground">{attributeString}</p>
+          </div>
+
+          <div className="hidden md:block align-top mt-2">
+            <Rating rating={4} long={true} />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <QauntityButton productInCart={item} />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => removeFromCart(item.id)}
+            className="justify-self-end"
+          >
+            <Trash2 className="w-5 h-5 text-red-500" />
+          </Button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Component for Empty Cart
 const EmptyCart: React.FC = () => (
@@ -148,7 +155,7 @@ const DeliverySection: React.FC<DeliverySectionProps> = ({ subtotal }) => {
   };
 
   return (
-    <Card className="col-span-3 shadow-sm w-full h-fit">
+    <Card className="col-span-3 shadow-sm w-full h-fit mx-auto">
       <CardContent className="p-6">
         <h2 className="text-xl font-semibold mb-4">Delivery</h2>
         <div className="space-y-6">
@@ -234,12 +241,11 @@ const DeliverySection: React.FC<DeliverySectionProps> = ({ subtotal }) => {
   );
 };
 
-// Main ShoppingCart Component
 export default function ShoppingCart() {
   const { subtotal, products, removeFromCart, clearCart } = useCartStore();
 
   return (
-    <section className="min-h-screen p-4 md:p-6">
+    <section className="min-h-screen p-4 md:p-6 ">
       <div className="lg:container mx-auto flex justify-between items-center ">
         <div className="flex w-full lg:w-[70%] justify-between">
           <h2 className="text-3xl font-semibold mb-4">Cart</h2>
@@ -256,7 +262,7 @@ export default function ShoppingCart() {
         </div>
         <div className="div"></div>
       </div>
-      <div className="lg:container mx-auto w-full grid gap-4 lg:grid-cols-10">
+      <div className="lg:container mx-auto w-full lg:grid gap-4 space-y-2 lg:space-y-0 grid-cols-10">
         {/* Cart Section */}
         <Card className="col-span-7 shadow-sm h-fit">
           <CardContent className="p-6">
@@ -317,7 +323,7 @@ function ShippingSelector() {
           </label>
           <label className="group-data-[state=paid]:text-primary relative z-10 inline-flex h-full min-w-8 cursor-pointer items-center justify-center px-4 whitespace-nowrap transition-colors select-none">
             <span>
-              <p className="group-data-[state=paid]:text-black transition-colors group-data-[state=free]:text-muted-foreground">
+              <p className="group-data-[state=paid]:text-primary transition-colors group-data-[state=free]:text-muted-foreground">
                 Express ({formatPrice(subtotal * (SHIPPING_PERCENT / 100))})
               </p>
             </span>

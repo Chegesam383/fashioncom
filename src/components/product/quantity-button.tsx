@@ -1,44 +1,52 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
 import { CartProduct, useCartStore } from "../../../store/cart-store";
 
-const QauntityButton = ({
-  productInCart,
-  isLarge = false,
-}: {
+interface QauntityButtonProps {
   productInCart: CartProduct;
   isLarge?: boolean;
+}
+
+const QauntityButton: React.FC<QauntityButtonProps> = ({
+  productInCart,
+  isLarge = false,
 }) => {
   const { updateCartProduct, removeFromCart } = useCartStore();
+
+  const handleIncrement = () => {
+    updateCartProduct(productInCart, productInCart.quantity + 1);
+  };
+
+  const handleDecrement = () => {
+    if (productInCart.quantity > 1) {
+      updateCartProduct(productInCart, productInCart.quantity - 1);
+    } else {
+      removeFromCart(productInCart);
+    }
+  };
+
   return (
-    <div className=" rounded-full  bg-muted w-fit">
+    <div className="flex items-center gap-2">
       <Button
-        size="icon"
-        className={`rounded-full ${!isLarge && "h-7 w-7"}`}
-        variant="outline"
-        onClick={() => {
-          if (productInCart.quantity <= 1) {
-            removeFromCart(productInCart.id);
-          } else {
-            updateCartProduct(productInCart.id, productInCart.quantity - 1);
-          }
-        }}
+        variant="default"
+        size={"icon"}
+        onClick={handleDecrement}
+        className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
       >
-        <Minus />
+        -
       </Button>
-      <span className="p-3">{productInCart.quantity}</span>
+      <span className={isLarge ? "text-lg   flex-1" : "  flex-1"}>
+        {productInCart.quantity}
+      </span>
       <Button
-        size="icon"
-        className={`rounded-full ${!isLarge && "h-7 w-7"}`}
-        variant="outline"
-        onClick={() =>
-          updateCartProduct(productInCart.id, productInCart.quantity + 1)
-        }
+        variant="default"
+        size={"icon"}
+        onClick={handleIncrement}
+        className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
       >
-        <Plus />
+        +
       </Button>
     </div>
   );

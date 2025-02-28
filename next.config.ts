@@ -30,7 +30,18 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "api.lorem.space",
+        hostname: "source.unsplash.com",
+        pathname: "/**", // Allow any path
+      },
+
+      {
+        protocol: "https",
+        hostname: "loremflickr.com",
+        pathname: "/**", // Allow any path
+      },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
         pathname: "/**", // Allow any path
       },
     ],

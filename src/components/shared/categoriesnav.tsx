@@ -32,7 +32,7 @@ export default function CategoryNav() {
                 {["Best Sellers", "Top rated", "Your history", "On offer"].map(
                   (item, index) => (
                     <Link
-                      className="flex rounded-lg text-white text-center p-4 text-sm text-nowrap hover:bg-muted"
+                      className="flex rounded-lg text-white text-center opacity-75 px-4 text-sm text-nowrap hover:opacity-100"
                       href={`/shop?category=${item}`}
                       key={index}
                     >
@@ -86,7 +86,7 @@ export function CategoriesDropDown({ categories }: { categories: category[] }) {
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-52">
+      <DropdownMenuContent className="min-w-52" align="start">
         <DropdownMenuGroup>
           <RenderMenuItems items={categories} />
         </DropdownMenuGroup>

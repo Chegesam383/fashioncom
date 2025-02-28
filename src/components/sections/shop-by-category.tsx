@@ -1,66 +1,35 @@
-"use client";
-
-import { useRef, useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { categories } from "@/lib/fakedata";
+import { getCategories } from "@/actions/categoryActions";
 import Image from "next/image";
+import Link from "next/link";
+import Empty from "../shared/empty";
 
-export default function CategorySection() {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+export default async function CategorySection() {
+  const categories = await getCategories();
 
-  const checkScroll = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      const { scrollLeft, scrollWidth, clientWidth } = container;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkScroll();
-    window.addEventListener("resize", checkScroll);
-    return () => window.removeEventListener("resize", checkScroll);
-  }, [checkScroll]);
-
-  const scroll = useCallback((direction: "left" | "right") => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      const scrollAmount = container.clientWidth / 2;
-      const currentScroll = container.scrollLeft;
-      const targetScroll =
-        direction === "left"
-          ? Math.max(0, currentScroll - scrollAmount)
-          : Math.min(
-              container.scrollWidth - container.clientWidth,
-              currentScroll + scrollAmount
-            );
-
-      container.scrollTo({
-        left: targetScroll,
-        behavior: "smooth",
-      });
-    }
-  }, []);
-
+  if (!categories || categories.length === 0) {
+    return (
+      <div className="container mx-auto px-4">
+        <h2 className="text-2xl font-bold my-4">Shop by Category</h2>
+        <Empty whatsEmpty="categories" />
+      </div>
+    );
+  }
   return (
-    <section className="py-12 bg-gray-100">
+    <section className="py-12 ">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
         <div className="relative">
-          <div
-            ref={scrollContainerRef}
-            className="flex overflow-x-auto space-x-4 p-4 no-scrollbar"
-            onScroll={checkScroll}
-          >
-            {categories.map((category, index) => (
-              <div key={index} className="flex-none w-40">
-                <div className="bg-white rounded-lg  overflow-hidden">
+          <div className="flex overflow-x-auto space-x-4 p-4 no-scrollbar">
+            {categories.map((category) => (
+              <Link
+                href={`/shop?category=${category.name.toLocaleLowerCase()}`}
+                key={category.id}
+                className="flex-none w-40"
+              >
+                <div className=" rounded-lg  overflow-hidden">
                   <Image
-                    src={category.image || "/placeholder.svg"}
+                    //todo src={category.imageUrl || "/placeholder.png"}
+                    src={"/placeholder.png"}
                     alt={category.name}
                     width={200}
                     height={200}
@@ -72,30 +41,8 @@ export default function CategorySection() {
                     </h3>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
-          </div>
-          <div className="absolute left-0 top-0 bottom-0 flex items-center bg-gradient-to-r from-gray-100 to-transparent pr-4">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 rounded-full"
-              onClick={() => scroll("left")}
-              disabled={!canScrollLeft}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="absolute right-0 top-0 bottom-0 flex items-center bg-gradient-to-l from-gray-100 to-transparent pl-4">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 rounded-full"
-              onClick={() => scroll("right")}
-              disabled={!canScrollRight}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 "use client";
-import { LogOut, Settings, User } from "lucide-react";
+import { LogIn, LogOut, Settings, User, UserRoundPen } from "lucide-react";
 
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
@@ -11,6 +10,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -25,13 +25,14 @@ import { categories } from "@/lib/fakedata";
 import Image from "next/image";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
+import { formatPrice } from "@/lib/utils";
 const Header = ({
   categoryNavHidden = false,
 }: {
   categoryNavHidden?: boolean;
 }) => {
   return (
-    <header className="sticky dark border-b top-0 z-50 w-full bg-background shadow">
+    <header className="fixed dark border-b mb-64 top-0 z-50 w-full bg-background shadow overflow-visible">
       <nav className=" lg:container p-4 pb-2 mx-auto flex  items-center justify-between gap-4 ">
         <div>
           <Link
@@ -73,24 +74,30 @@ const Header = ({
 export default Header;
 
 const CartIcon = () => {
-  const { subtotal, count } = useCartStore();
+  const { subtotal, count, products } = useCartStore();
   const [shake, setShake] = useState(false);
 
-  const prevCountRef = useRef(count);
+  const prevCountRef = useRef(0);
 
   useEffect(() => {
-    if (count !== prevCountRef.current) {
+    if (!Array.isArray(products)) {
+      return;
+    }
+
+    if (products.length != prevCountRef.current) {
       setShake(true);
       const timer = setTimeout(() => {
         setShake(false);
       }, 500);
-      prevCountRef.current = count;
+
+      prevCountRef.current = products.length;
+
       return () => clearTimeout(timer);
     }
-  }, [count]);
+  }, [products]);
 
   return (
-    <Link href={"/cart"} className="flex items-center md:gap-3 gap-2 group">
+    <Link href="/cart" className="flex items-center md:gap-3 gap-2 group">
       <span className="text-muted-foreground">
         <div className={`relative ${shake ? "animate-shake" : ""}`}>
           <ShoppingCart className="text-muted-foreground" />
@@ -102,7 +109,7 @@ const CartIcon = () => {
       <div className="hidden md:flex flex-col ">
         <small className="text-xs text-muted-foreground">Your Cart</small>
         <span className="text-sm font-semibold text-white">
-          ${subtotal.toFixed(2)}
+          {formatPrice(subtotal)}
         </span>
       </div>
     </Link>
@@ -162,9 +169,8 @@ const AccountDropdown = ({
           </div>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 dark" side="bottom">
-        <div className="flex gap-2 mb-4">
-          <span>Theme</span>
+      <DropdownMenuContent className="w-56 dark" avoidCollisions>
+        <div className="flex gap-2 m-4 mt-2">
           <ModeToggle />
         </div>
 
@@ -183,7 +189,9 @@ const AccountDropdown = ({
         </DropdownMenuGroup>
         <DropdownMenuItem>
           <LogOut />
-          <span onClick={() => signOut()}>Log out</span>
+          <span onClick={() => signOut()} className="w-full">
+            Log out
+          </span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -206,22 +214,31 @@ const AnauthenticatedUserDropDown = () => {
           </div>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 dark" side="bottom">
-        <div className="flex gap-2 mb-4">
-          <span>Theme</span>
-          <ModeToggle />
-        </div>
+      <DropdownMenuPortal>
+        <DropdownMenuContent className="w-56 dark relative" align="start">
+          <div className="flex gap-2 m-4 mt-2">
+            <ModeToggle />
+          </div>
 
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Link href={"sign-in"}>Sign In</Link>
-          </DropdownMenuItem>
+          <DropdownMenuSeparator />
 
-          <DropdownMenuItem>
-            <Link href={"sign-up"}>Sign Up</Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <LogIn className="opacity-75" />
+              <Link href={"sign-in"} className="w-full h-full">
+                Sign In
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <UserRoundPen className="opacity-75" />
+              <Link href={"sign-up"} className="w-full  h-full">
+                Sign Up
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
     </DropdownMenu>
   );
 };
@@ -238,22 +255,33 @@ function ModeToggle() {
   };
 
   return (
-    <div className="inline-flex items-center gap-2">
+    <div
+      className="group inline-flex items-center gap-2"
+      data-state={checked ? "checked" : "unchecked"}
+    >
+      <span
+        id={`${id}-off`}
+        className="group-data-[state=checked]:text-muted-foreground/70 flex-1 cursor-pointer text-right text-sm font-medium"
+        aria-controls={id}
+        onClick={handleToggle}
+      >
+        <MoonIcon size={16} aria-hidden="true" />
+      </span>
       <Switch
         id={id}
         checked={checked}
         onCheckedChange={handleToggle}
-        aria-label="Toggle theme"
-        className="dark"
+        aria-labelledby={`${id}-off ${id}-on`}
+        aria-label="Toggle between dark and light mode"
       />
-      <Label htmlFor={id}>
-        <span className="sr-only">Toggle theme</span>
-        {checked ? (
-          <SunIcon size={16} aria-hidden="true" />
-        ) : (
-          <MoonIcon size={16} aria-hidden="true" />
-        )}
-      </Label>
+      <span
+        id={`${id}-on`}
+        className="group-data-[state=unchecked]:text-muted-foreground/70 flex-1 cursor-pointer text-left text-sm font-medium"
+        aria-controls={id}
+        onClick={() => setChecked(true)}
+      >
+        <SunIcon size={16} aria-hidden="true" />
+      </span>
     </div>
   );
 }

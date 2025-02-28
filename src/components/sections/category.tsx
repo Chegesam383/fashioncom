@@ -1,6 +1,4 @@
 import React from "react";
-import { products } from "@/lib/fakedata";
-
 import {
   Carousel,
   CarouselContent,
@@ -10,8 +8,10 @@ import {
 } from "@/components/ui/carousel";
 import ProductCard from "../product/product-card";
 import { Card } from "../ui/card";
+import { getProducts } from "@/actions/productActions";
+import Empty from "../shared/empty";
 
-const Category = ({
+const Category = async ({
   title,
   bg,
   description,
@@ -20,6 +20,18 @@ const Category = ({
   bg: string;
   description: string;
 }) => {
+  const products = await getProducts();
+
+  if (!products || products.length === 0)
+    return (
+      <Card className="p-4  lg:container mx-auto mt-6">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold">{title}</h2>
+          <p className="mt-2 text-gray-600">{description}</p>
+        </div>
+        <Empty whatsEmpty="products" />
+      </Card>
+    );
   return (
     <section className={`bg-${bg} py-16`}>
       <Card className="p-4 py-6 lg:container mx-auto ">

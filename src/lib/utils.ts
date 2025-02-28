@@ -5,11 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatPrice(price: number): string {
+export function formatPrice(price: number | string): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(price);
+  }).format(Number(price));
 }
 
 export const formatDate = (date: Date) => {
