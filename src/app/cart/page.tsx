@@ -6,7 +6,7 @@ import { ShoppingCart as ShoppingIcon, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { useCartStore } from "../../../store/cart-store";
+import { CartProduct, useCartStore } from "../../../store/cart-store";
 import QauntityButton from "@/components/product/quantity-button";
 import { Separator } from "@/components/ui/separator";
 
@@ -25,7 +25,7 @@ type CartItemProps = {
     quantity: number;
     attributes: { selectedAttributes: { [key: string]: string }[] };
   };
-  removeFromCart: (id: string) => void;
+  removeFromCart: (product: CartProduct) => void;
 };
 
 type DeliverySectionProps = {
@@ -97,7 +97,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => removeFromCart(item.id)}
+            onClick={() => removeFromCart(item)}
             className="justify-self-end"
           >
             <Trash2 className="w-5 h-5 text-red-500" />
@@ -141,16 +141,12 @@ const DeliverySection: React.FC<DeliverySectionProps> = ({ subtotal }) => {
       (p) => p.code.trim() === promoCodeTxt.trim()
     );
 
-    // If no promo code is found, show an error message
     if (!promo) {
       setPromoMsg("Invalid promocode!");
-      // Don't reset the promo code in the store
     } else {
-      // If promo code is valid, apply the discount
-
       setPromoMsg("Promo code applied! -valid codes are WELCOME5 and SAVE10");
       setDiscount((subtotal * promo.discount) / 100);
-      if (subtotal > 0) setPromoCode(promo); // Update the promo code in the store
+      if (subtotal > 0) setPromoCode(promo);
     }
   };
 

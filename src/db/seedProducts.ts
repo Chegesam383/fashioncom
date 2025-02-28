@@ -105,7 +105,7 @@ export async function seedProducts() {
                     faker.number.float({
                       min: -0.1,
                       max: 0.2,
-                      precision: 0.01,
+                      fractionDigits: 2,
                     }))
                 ).toFixed(2),
               });
