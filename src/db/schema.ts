@@ -25,10 +25,16 @@ export const products = pgTable("products", {
   stock: integer("stock").notNull().default(0),
   rating: numeric("rating", { precision: 3, scale: 2 }),
   isActive: boolean("isActive").notNull().default(true),
-  attributes: jsonb("attributes").$type<{
-    attributeCombinations: { [key: string]: any }[];
-    availableAttributes: { [key: string]: any[] };
-  }>(),
+  attributes: jsonb("attributes")
+    .$type<{
+      attributeCombinations: { [key: string]: any }[];
+      availableAttributes: { [key: string]: any[] };
+    }>()
+    .default({
+      attributeCombinations: [],
+      availableAttributes: {},
+    })
+    .notNull(),
   createdAt: timestamp("createdAt"),
   updatedAt: timestamp("updatedAt").defaultNow(),
 });

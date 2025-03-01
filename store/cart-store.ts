@@ -6,6 +6,7 @@ import {
   removeFromCartAction,
   updateCartItemAction,
   clearCartAction,
+  getCartItemsAction,
 } from "@/actions/cartActions";
 
 export interface CartProduct
@@ -36,6 +37,7 @@ export type Actions = {
   setPromoCode: (promoCode: PromoCode | null) => void;
   setShippingCost: (shippingCost: number) => void;
   setGrandTotal: () => void;
+  hydrateFromDatabase: (userId: string | null | undefined) => Promise<void>;
 };
 
 export type State = {
@@ -300,9 +302,9 @@ export const useCartStore = create<State & Actions>()(
 
         if (userId) {
           try {
-            const response = await clearCartAction(); // Call server action
+            const response = await clearCartAction();
             if (!response.success) {
-              set(() => previousState); // Revert state on failure
+              set(() => previousState);
               console.error("Server error: Failed to clear cart");
               // Optionally, display an error message
             }
@@ -318,18 +320,18 @@ export const useCartStore = create<State & Actions>()(
         set((state) => ({
           tax,
           grandTotal:
-            state.subtotal + tax + state.shippingCost - state.discount, // recalculate grandTotal
+            state.subtotal + tax + state.shippingCost - state.discount,
         })),
       //offline
       setDiscount: (discount) =>
         set((state) => ({
           discount,
           grandTotal:
-            state.subtotal + state.tax + state.shippingCost - discount, // recalculate grandTotal
+            state.subtotal + state.tax + state.shippingCost - discount,
         })),
 
       //ofline only
-      //todo go onine
+      //todo go online
       setPromoCode: (promoCode) =>
         set((state) => {
           let newDiscount = 0;
@@ -343,7 +345,7 @@ export const useCartStore = create<State & Actions>()(
             promoCode,
             discount: newDiscount,
             grandTotal:
-              state.subtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
+              state.subtotal + state.tax + state.shippingCost - newDiscount,
           };
         }),
 
@@ -361,6 +363,53 @@ export const useCartStore = create<State & Actions>()(
           grandTotal:
             state.subtotal + state.tax + state.shippingCost - state.discount,
         })),
+
+      hydrateFromDatabase: async (userId) => {
+        if (!userId) return; // Do nothing if no userId
+
+        try {
+          const cartItems = await getCartItemsAction();
+          if (cartItems && cartItems.length > 0) {
+            const hydratedProducts = cartItems.map((item) => ({
+              id: item.productId,
+              quantity: item.quantity,
+              attributes: item.attributes,
+              name: item.name ?? "",
+              price: item.price ?? "0",
+              imageUrls: Array.isArray(item.imageUrls) ? item.imageUrls : [],
+            }));
+
+            set({ products: hydratedProducts });
+            // Recalculate count, subtotal, discount, grandTotal
+            const newCount = hydratedProducts.reduce(
+              (acc, item) => acc + item.quantity,
+              0
+            );
+
+            const newSubtotal = hydratedProducts.reduce(
+              (acc, item) => acc + Number(item.price) * item.quantity,
+              0
+            );
+
+            let newDiscount = get().discount;
+            if (get().promoCode) {
+              newDiscount =
+                (newSubtotal * (get().promoCode?.discount ?? 0)) / 100;
+            }
+
+            set({
+              products: hydratedProducts,
+              count: newCount,
+              subtotal: newSubtotal,
+              discount: newDiscount,
+              grandTotal:
+                newSubtotal + get().tax + get().shippingCost - newDiscount,
+            });
+          }
+        } catch (error) {
+          console.error("Error hydrating cart from database:", error);
+        }
+      },
     }),
     {
       name: "cart-storage",

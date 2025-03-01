@@ -27,7 +27,7 @@ const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
   return (
     <div className="flex items-center gap-2">
       <Button
-        variant="secondary"
+        variant="default"
         size={"icon"}
         onClick={handleDecrement}
         className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
@@ -35,7 +35,7 @@ const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
       >
         -
       </Button>
-      <span className={isLarge ? "text-lg flex-1" : "flex-1"}>{quantity}</span>
+      <span className={isLarge ? "text-lg flex-1" : "flex-1"}>{quantity}q</span>
       <Button
         variant="secondary"
         size={"icon"}

@@ -122,13 +122,13 @@ const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
         quantity: localQuantity,
       };
 
+      setIsModalOpen(false);
+
       if (isLoaded && userId) {
         await addToCart(modifiedProduct, userId);
       } else {
         await addToCart(modifiedProduct, null);
       }
-
-      setIsModalOpen(false);
     }
   };
 

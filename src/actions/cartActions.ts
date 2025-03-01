@@ -2,7 +2,7 @@
 "use server";
 
 import { db } from "@/db";
-import { cart } from "@/db/schema";
+import { cart, products } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
@@ -17,11 +17,14 @@ export async function addToCartAction(
     return { success: false, error: "Unauthorized" };
   }
 
+  //user_2tcPVO1OWHLtqUuDFSxHDe8m532
+  console.log(userId);
+
   try {
     await db
       .insert(cart)
       .values({
-        userId: userId,
+        userId: "3c7f70a0-3d18-451b-aa1c-e15f805dfdd7",
         productId: productId,
         attributes: attributes,
         quantity: quantity,
@@ -54,7 +57,7 @@ export async function updateCartItemAction(
       .set({ quantity: quantity })
       .where(
         and(
-          eq(cart.userId, userId),
+          eq(cart.userId, "3c7f70a0-3d18-451b-aa1c-e15f805dfdd7"),
           eq(cart.productId, productId),
           eq(cart.attributes, attributes)
         )
@@ -81,7 +84,7 @@ export async function removeFromCartAction(
       .delete(cart)
       .where(
         and(
-          eq(cart.userId, userId),
+          eq(cart.userId, "3c7f70a0-3d18-451b-aa1c-e15f805dfdd7"),
           eq(cart.productId, productId),
           eq(cart.attributes, attributes)
         )
@@ -90,7 +93,7 @@ export async function removeFromCartAction(
     return { success: true };
   } catch (error) {
     console.error("Error removing cart item:", error);
-    return { success: false, error: "Failed to remove cart item" };
+    return { success: false, error: "Failed to remove cart item" + error };
   }
 }
 
@@ -99,11 +102,34 @@ export async function getCartItemsAction() {
   if (!userId) {
     return null;
   }
+
   try {
-    const items = await db.select().from(cart).where(eq(cart.userId, userId));
-    return items;
+    const cartWithProducts = await db
+      .select({
+        productId: cart.productId,
+        attributes: cart.attributes,
+        quantity: cart.quantity,
+
+        name: products.name,
+        price: products.price,
+        imageUrls: products.imageUrls,
+      })
+      .from(cart)
+      .leftJoin(products, eq(cart.productId, products.id))
+      .where(eq(cart.userId, userId));
+
+    const cartItemsWithProducts = cartWithProducts.map((item) => ({
+      productId: item.productId,
+      attributes: item.attributes,
+      quantity: item.quantity,
+      name: item.name,
+      price: item.price,
+      imageUrls: item.imageUrls,
+    }));
+
+    return cartItemsWithProducts;
   } catch (error) {
-    console.error("Error getting cart items:", error);
+    console.error("Error getting cart items with products:", error);
     return null;
   }
 }
@@ -115,7 +141,9 @@ export async function clearCartAction() {
   }
 
   try {
-    await db.delete(cart).where(eq(cart.userId, userId));
+    await db
+      .delete(cart)
+      .where(eq(cart.userId, "3c7f70a0-3d18-451b-aa1c-e15f805dfdd7"));
     revalidatePath("/cart");
     return { success: true };
   } catch (error) {
