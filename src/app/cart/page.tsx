@@ -15,6 +15,7 @@ import Rating from "@/components/rating/ratings";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useId, useState } from "react";
 import { formatPrice } from "@/lib/utils";
+import { useAuth } from "@clerk/nextjs";
 
 type CartItemProps = {
   item: {
@@ -25,7 +26,10 @@ type CartItemProps = {
     quantity: number;
     attributes: { selectedAttributes: { [key: string]: string }[] };
   };
-  removeFromCart: (product: CartProduct) => void;
+  removeFromCart: (
+    product: CartProduct,
+    userId: string | null
+  ) => Promise<void>;
 };
 
 type DeliverySectionProps = {
@@ -48,6 +52,7 @@ const expectedDelivaryDate: {
 
 // Component for CartItem
 const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
+  const { userId } = useAuth();
   const attributeString = item.attributes?.selectedAttributes
     ?.map((attr) => {
       const [key, value] = Object.entries(attr)[0];
@@ -97,7 +102,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => removeFromCart(item)}
+            onClick={() => removeFromCart(item, userId || null)}
             className="justify-self-end"
           >
             <Trash2 className="w-5 h-5 text-red-500" />
@@ -239,6 +244,7 @@ const DeliverySection: React.FC<DeliverySectionProps> = ({ subtotal }) => {
 
 export default function ShoppingCart() {
   const { subtotal, products, removeFromCart, clearCart } = useCartStore();
+  const { userId } = useAuth();
 
   return (
     <section className="min-h-screen p-4 md:p-6 ">
@@ -249,7 +255,7 @@ export default function ShoppingCart() {
             <Button
               size={"sm"}
               variant={"outline"}
-              onClick={clearCart}
+              onClick={() => clearCart(userId || null)}
               className="text-red-500"
             >
               <Trash2 /> Clear cart
@@ -268,7 +274,12 @@ export default function ShoppingCart() {
               ) : (
                 products.map((item, index) => (
                   <div key={index}>
-                    <CartItem item={item} removeFromCart={removeFromCart} />
+                    <CartItem
+                      item={item}
+                      removeFromCart={(product) =>
+                        removeFromCart(product, userId || null)
+                      }
+                    />
                     <Separator
                       className={`${
                         index == products.length - 1 && "hidden"

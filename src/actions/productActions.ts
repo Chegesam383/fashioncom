@@ -1,5 +1,5 @@
 "use server";
-import { db } from "@/db/index";
+import { db } from "@/db";
 import { products, productCategories } from "@/db/schema";
 import { Product } from "@/lib/types";
 import { eq } from "drizzle-orm";

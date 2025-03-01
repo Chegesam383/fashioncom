@@ -9,6 +9,7 @@ import {
   timestamp,
   jsonb,
   integer,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const products = pgTable("products", {
@@ -139,22 +140,33 @@ export const payments = pgTable("payments", {
   updatedAt: timestamp(),
 });
 
-export const cart = pgTable("cart", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("userId")
-    .references(() => users.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  productId: uuid("productId")
-    .references(() => products.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  quantity: integer("quantity").notNull(),
-  createdAt: timestamp("createdAt").defaultNow(),
-  updatedAt: timestamp(),
-});
+export const cart = pgTable(
+  "cart",
+  {
+    userId: uuid("userId")
+      .references(() => users.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    productId: uuid("productId")
+      .references(() => products.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    quantity: integer("quantity").notNull(),
+
+    attributes: jsonb("attributes").notNull(),
+    createdAt: timestamp("createdAt").defaultNow(),
+    updatedAt: timestamp(),
+  },
+  (table) => {
+    return {
+      userProductAttributesKey: primaryKey({
+        columns: [table.userId, table.productId, table.attributes],
+      }),
+    };
+  }
+);
 
 export const coupons = pgTable("coupons", {
   id: uuid("id").primaryKey().defaultRandom(),

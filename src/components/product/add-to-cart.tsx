@@ -3,8 +3,8 @@
 import { ShoppingCartIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
-import { useCartStore } from "../../../store/cart-store";
-import QauntityButton from "./quantity-button";
+import { CartProduct, useCartStore } from "../../../store/cart-store";
+import QuantityAdjuster from "./general-quantity-button"; // Import the new component
 import { Product } from "@/lib/types";
 import {
   Dialog,
@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { useAuth } from "@clerk/nextjs";
 
 interface AddToCartProps {
   product: Product;
@@ -22,6 +23,7 @@ interface AddToCartProps {
 }
 
 const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
+  const { userId, isLoaded } = useAuth();
   const { products, addToCart } = useCartStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState<
@@ -30,6 +32,10 @@ const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
   const [currentPrice, setCurrentPrice] = useState<string | number | undefined>(
     product.price
   );
+  const [localProductInCart, setLocalProductInCart] = useState<
+    CartProduct | undefined
+  >(undefined);
+  const [localQuantity, setLocalQuantity] = useState(1);
 
   const productInCart = products.find((item) => {
     return (
@@ -49,27 +55,45 @@ const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
       product.attributes &&
       product.attributes.attributeCombinations
     ) {
-      const selectedCombination = product.attributes.attributeCombinations.find(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (combination: { [x: string]: any }) => {
-          return Object.entries(selectedAttributes).every(
-            ([key, value]) => String(combination[key]) === String(value)
+      const allAttributesSelected = Object.keys(
+        product.attributes.availableAttributes
+      ).every((key) => selectedAttributes[key]);
+
+      if (allAttributesSelected) {
+        const selectedCombination =
+          product.attributes.attributeCombinations.find(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (combination: { [x: string]: any }) => {
+              return Object.entries(selectedAttributes).every(
+                ([key, value]) => String(combination[key]) === String(value)
+              );
+            }
           );
+        if (selectedCombination && selectedCombination.price) {
+          setCurrentPrice(selectedCombination.price);
+        } else {
+          setCurrentPrice(product?.price);
         }
-      );
-      if (selectedCombination && selectedCombination.price) {
-        setCurrentPrice(selectedCombination.price);
       } else {
         setCurrentPrice(product?.price);
       }
     }
-  }, [selectedAttributes, product]);
+    setLocalProductInCart(productInCart);
+  }, [selectedAttributes, product, products, productInCart]);
 
   const handleAttributeChange = (attribute: string, value: string) => {
-    setSelectedAttributes({ ...selectedAttributes, [attribute]: value });
+    setSelectedAttributes((prevAttributes) => {
+      if (prevAttributes[attribute] === value) {
+        const newAttributes = { ...prevAttributes };
+        delete newAttributes[attribute];
+        return newAttributes;
+      } else {
+        return { ...prevAttributes, [attribute]: value };
+      }
+    });
   };
 
-  const handleAddToCartClick = () => {
+  const handleAddToCartClick = async () => {
     if (
       product &&
       product.attributes &&
@@ -77,11 +101,15 @@ const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
     ) {
       setIsModalOpen(true);
     } else if (product) {
-      addToCart({ ...product, quantity: 1 });
+      if (isLoaded && userId) {
+        await addToCart({ ...product, quantity: 1 }, userId);
+      } else {
+        await addToCart({ ...product, quantity: 1 }, null);
+      }
     }
   };
 
-  const handleAddToCartFromModal = () => {
+  const handleAddToCartFromModal = async () => {
     if (product) {
       const modifiedProduct = {
         ...product,
@@ -91,9 +119,15 @@ const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
             ([key, value]) => ({ [key]: value })
           ),
         },
-        quantity: 1,
+        quantity: localQuantity,
       };
-      addToCart(modifiedProduct);
+
+      if (isLoaded && userId) {
+        await addToCart(modifiedProduct, userId);
+      } else {
+        await addToCart(modifiedProduct, null);
+      }
+
       setIsModalOpen(false);
     }
   };
@@ -106,15 +140,16 @@ const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
       (key) => selectedAttributes[key]
     );
 
-  const showQuantityButtonInModal = isAddButtonEnabled && productInCart;
+  const handleQuantityChange = async (quantity: number) => {
+    setLocalQuantity(quantity);
+    if (localProductInCart && isLoaded && userId) {
+      await addToCart({ ...localProductInCart, quantity: quantity }, userId);
+    } else if (localProductInCart && isLoaded && !userId) {
+      await addToCart({ ...localProductInCart, quantity: quantity }, null);
+    }
+  };
 
-  return productInCart &&
-    product.attributes &&
-    Object.keys(product.attributes.availableAttributes).length === 0 ? (
-    <div className="flex-1 items-center gap-2">
-      <QauntityButton productInCart={productInCart} isLarge />
-    </div>
-  ) : (
+  return (
     <>
       <div className="flex-1">
         <Button className="flex-1 w-full" onClick={handleAddToCartClick}>
@@ -179,17 +214,39 @@ const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
                 )
               )}
           </div>
-          <DialogFooter>
-            {showQuantityButtonInModal ? (
-              <QauntityButton productInCart={productInCart} isLarge />
-            ) : (
-              <Button
-                disabled={!isAddButtonEnabled}
-                onClick={handleAddToCartFromModal}
-              >
-                Add to Cart
-              </Button>
-            )}
+          <DialogFooter className="flex gap-2">
+            <div className="w-fit">
+              {localProductInCart ? (
+                <QuantityAdjuster
+                  quantity={localProductInCart.quantity}
+                  onQuantityChange={(newQuantity) => {
+                    if (newQuantity > 0) {
+                      addToCart(
+                        {
+                          ...localProductInCart,
+                          quantity: newQuantity,
+                        },
+                        userId || null
+                      );
+                    }
+                  }}
+                  isLarge
+                />
+              ) : (
+                <QuantityAdjuster
+                  quantity={localQuantity}
+                  onQuantityChange={handleQuantityChange}
+                  isLarge
+                />
+              )}
+            </div>
+            <Button
+              disabled={!!localProductInCart || !isAddButtonEnabled}
+              onClick={handleAddToCartFromModal}
+              className="flex-1"
+            >
+              {localProductInCart ? "In Cart" : "Add to Cart"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

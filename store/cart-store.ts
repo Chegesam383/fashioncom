@@ -1,6 +1,12 @@
 import { Product } from "@/lib/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import {
+  addToCartAction,
+  removeFromCartAction,
+  updateCartItemAction,
+  clearCartAction,
+} from "@/actions/cartActions";
 
 export interface CartProduct
   extends Pick<Product, "imageUrls" | "name" | "id" | "price" | "attributes"> {
@@ -14,14 +20,21 @@ export interface PromoCode {
 }
 
 export type Actions = {
-  addToCart: (product: CartProduct) => void;
-  removeFromCart: (product: CartProduct) => void;
-  updateCartProduct: (product: CartProduct, quantity: number) => void;
-  clearCart: () => void;
+  addToCart: (product: CartProduct, userId: string | null) => Promise<void>;
+  removeFromCart: (
+    product: CartProduct,
+    userId: string | null
+  ) => Promise<void>;
+  updateCartProduct: (
+    product: CartProduct,
+    quantity: number,
+    userId: string | null
+  ) => Promise<void>;
+  clearCart: (userId: string | null) => Promise<void>;
   setTax: (tax: number) => void;
   setDiscount: (discount: number) => void;
   setPromoCode: (promoCode: PromoCode | null) => void;
-  setShippingCost: (shippingCost: number) => void; // Setter for shipping cost
+  setShippingCost: (shippingCost: number) => void;
   setGrandTotal: () => void;
 };
 
@@ -38,7 +51,7 @@ export type State = {
 
 export const useCartStore = create<State & Actions>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       products: [],
       subtotal: 0,
       count: 0,
@@ -48,7 +61,9 @@ export const useCartStore = create<State & Actions>()(
       shippingCost: 0, // Initialize shipping cost
       grandTotal: 0,
 
-      addToCart: (product) =>
+      addToCart: async (product, userId: string | null) => {
+        const previousState = get();
+
         set((state) => {
           const existingProduct = state.products.find((item) => {
             return (
@@ -81,7 +96,6 @@ export const useCartStore = create<State & Actions>()(
             0
           );
 
-          // Recalculate discount based on the promo code
           let newDiscount = state.discount;
           if (state.promoCode) {
             newDiscount = (newSubtotal * state.promoCode.discount) / 100;
@@ -93,11 +107,42 @@ export const useCartStore = create<State & Actions>()(
             count: newCount,
             discount: newDiscount,
             grandTotal:
-              newSubtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
+              newSubtotal + state.tax + state.shippingCost - newDiscount,
           };
-        }),
+        });
 
-      removeFromCart: (product) =>
+        if (userId) {
+          try {
+            const response = await addToCartAction(
+              product.id,
+              product.attributes?.selectedAttributes?.reduce(
+                (
+                  acc: Record<string, string>,
+                  curr: Record<string, string>
+                ) => ({
+                  ...acc,
+                  ...curr,
+                }),
+                {}
+              ) || {},
+              product.quantity
+            );
+
+            if (!response.success) {
+              set(() => previousState);
+              console.error("Server error: Failed to add to cart");
+              // todo display an error message to the user
+            }
+          } catch (error) {
+            set(() => previousState); // Revert to previous state
+            console.error("Server error: Failed to add to cart", error);
+            // todo display an error message to the user
+          }
+        }
+      },
+
+      removeFromCart: async (product, userId: string | null) => {
+        const previousState = get();
         set((state) => {
           const updatedProducts = state.products.filter((item) => {
             return !(
@@ -145,9 +190,37 @@ export const useCartStore = create<State & Actions>()(
             grandTotal:
               newSubtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
           };
-        }),
+        });
 
-      updateCartProduct: (product, quantity) =>
+        if (userId) {
+          try {
+            const response = await removeFromCartAction(
+              product.id,
+              product.attributes?.selectedAttributes?.reduce(
+                (
+                  acc: Record<string, string>,
+                  curr: Record<string, string>
+                ) => ({
+                  ...acc,
+                  ...curr,
+                }),
+                {}
+              ) || {}
+            );
+
+            if (!response.success) {
+              set(() => previousState);
+              console.error("Server error: Failed to remove from cart");
+            }
+          } catch (error) {
+            set(() => previousState);
+            console.error("Server error: Failed to remove from cart", error);
+          }
+        }
+      },
+
+      updateCartProduct: async (product, quantity, userId: string | null) => {
+        const previousState = get();
         set((state) => {
           if (quantity < 1) return state;
 
@@ -183,25 +256,71 @@ export const useCartStore = create<State & Actions>()(
             grandTotal:
               newSubtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
           };
-        }),
+        });
 
-      clearCart: () =>
+        if (userId) {
+          try {
+            const response = await updateCartItemAction(
+              product.id,
+              product.attributes?.selectedAttributes?.reduce(
+                (
+                  acc: Record<string, string>,
+                  curr: Record<string, string>
+                ) => ({
+                  ...acc,
+                  ...curr,
+                }),
+                {}
+              ) || {},
+              quantity
+            );
+
+            if (!response.success) {
+              set(() => previousState);
+              console.error("Server error: Failed to update cart item");
+            }
+          } catch (error) {
+            set(() => previousState);
+            console.error("Server error: Failed to update cart item", error);
+          }
+        }
+      },
+
+      clearCart: async (userId) => {
+        const previousState = get();
+
         set({
           products: [],
           subtotal: 0,
           count: 0,
           grandTotal: 0,
-          discount: 0, // Reset discount
-          promoCode: null, // Reset promo code
-        }),
+          discount: 0,
+          promoCode: null,
+        });
 
+        if (userId) {
+          try {
+            const response = await clearCartAction(); // Call server action
+            if (!response.success) {
+              set(() => previousState); // Revert state on failure
+              console.error("Server error: Failed to clear cart");
+              // Optionally, display an error message
+            }
+          } catch (error) {
+            set(() => previousState); // Revert state on error
+            console.error("Server error: Failed to clear cart", error);
+            // Optionally, display an error message
+          }
+        }
+      },
+      //offline
       setTax: (tax) =>
         set((state) => ({
           tax,
           grandTotal:
             state.subtotal + tax + state.shippingCost - state.discount, // recalculate grandTotal
         })),
-
+      //offline
       setDiscount: (discount) =>
         set((state) => ({
           discount,
@@ -209,6 +328,8 @@ export const useCartStore = create<State & Actions>()(
             state.subtotal + state.tax + state.shippingCost - discount, // recalculate grandTotal
         })),
 
+      //ofline only
+      //todo go onine
       setPromoCode: (promoCode) =>
         set((state) => {
           let newDiscount = 0;
@@ -226,14 +347,15 @@ export const useCartStore = create<State & Actions>()(
           };
         }),
 
-      // New action to set shipping cost
+      // ofline only
       setShippingCost: (shippingCost) =>
         set((state) => ({
           shippingCost,
           grandTotal:
-            state.subtotal + state.tax + shippingCost - state.discount, // recalculate grandTotal
+            state.subtotal + state.tax + shippingCost - state.discount,
         })),
 
+      //ofline only
       setGrandTotal: () =>
         set((state) => ({
           grandTotal:

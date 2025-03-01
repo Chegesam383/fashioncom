@@ -15,14 +15,20 @@ const InfoItem = ({
   color: string;
 }) => (
   <div
-    className={`flex items-center py-2 px-4 rounded-lg transition-transform hover:scale-[1.02] ${bgColor}`}
+    className={`flex flex-col lg:flex-row justify-center items-center py-2 px-2 rounded-lg transition-transform hover:scale-[1.02] ${bgColor}`}
   >
     <div className="text-4xl mr-4">
       <Icon className={color} />
     </div>
     <div>
-      <h3 className={`text-lg font-semibold ${color} mb-1`}>{title}</h3>
-      <p className={`text-sm ${color}`}>{description}</p>
+      <h3
+        className={`text-lg lg:text-left font-semibold ${color} mb-1 text-center`}
+      >
+        {title}
+      </h3>
+      <p className={`text-sm ${color} text-center lg:text-left`}>
+        {description}
+      </p>
     </div>
   </div>
 );
@@ -31,7 +37,7 @@ export default function InfoSection() {
   return (
     <section className="py-6 mt-4 bg-muted/70">
       <div className="lg:container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <InfoItem
             icon={Truck}
             title="Free Shipping"

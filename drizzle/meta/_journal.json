@@ -15,6 +15,20 @@
       "when": 1740760501771,
       "tag": "0001_glorious_korath",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1740784207120,
+      "tag": "0002_sudden_bloodscream",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1740786400821,
+      "tag": "0003_perpetual_fenris",
+      "breakpoints": true
     }
   ]
 }

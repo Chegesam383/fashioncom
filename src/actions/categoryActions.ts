@@ -1,5 +1,5 @@
 "use server";
-import { db } from "@/db/index";
+import { db } from "@/db";
 import { productCategories } from "@/db/schema";
 import { Category } from "@/lib/types";
 export async function getCategories(): Promise<Category[]> {
