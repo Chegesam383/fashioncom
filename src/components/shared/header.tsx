@@ -18,14 +18,14 @@ import Link from "next/link";
 import React from "react";
 import SearchBox from "./search";
 import { ShoppingCart, User2 } from "lucide-react";
-import CategoryNav, { CategoriesDropDown } from "./categoriesnav";
+import CategoryNav from "./categoriesnav";
 import { Badge } from "../ui/badge";
 import { useCartStore } from "../../../store/cart-store";
-import { categories } from "@/lib/fakedata";
 import Image from "next/image";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { formatPrice } from "@/lib/utils";
+import { CategoriesDropDown } from "./categories-dropdown";
 const Header = ({
   categoryNavHidden = false,
 }: {
@@ -44,7 +44,7 @@ const Header = ({
 
           {categoryNavHidden && (
             <div className="hidden lg:inline-block">
-              <CategoriesDropDown categories={categories} />
+              <CategoriesDropDown />
             </div>
           )}
         </div>

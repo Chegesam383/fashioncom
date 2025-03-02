@@ -27,8 +27,7 @@ export default function ProductPage({
     undefined
   );
 
-  const resolvedParams = use(params);
-  const id = resolvedParams.productId;
+  const id = use(params).productId;
 
   useEffect(() => {
     async function fetchProduct() {

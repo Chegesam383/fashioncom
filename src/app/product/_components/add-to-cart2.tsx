@@ -11,8 +11,8 @@ import { useAuth } from "@clerk/nextjs";
 
 interface AddToCartNoModalProps {
   product: Product;
-  setCurrentPrice: (price: string | number | undefined) => void;
-  currentPrice: string | number | undefined;
+  setCurrentPrice: (price: string | number | undefined) => void; //from usestate hook
+  currentPrice: string | number | undefined; //from usestate hook
 }
 
 const AddToCartNoModal: React.FC<AddToCartNoModalProps> = ({
@@ -143,8 +143,9 @@ const AddToCartNoModal: React.FC<AddToCartNoModalProps> = ({
         <div className="w-fit">
           {localProductInCart ? (
             <QuantityAdjuster
-              quantity={localProductInCart.quantity}
+              quantity={localQuantity} // Use localQuantity here
               onQuantityChange={(newQuantity) => {
+                setLocalQuantity(newQuantity); // Update localQuantity
                 if (newQuantity > 0) {
                   addToCart(
                     { ...localProductInCart, quantity: newQuantity },

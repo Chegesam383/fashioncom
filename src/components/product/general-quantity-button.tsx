@@ -35,7 +35,7 @@ const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
       >
         -
       </Button>
-      <span className={isLarge ? "text-lg flex-1" : "flex-1"}>{quantity}q</span>
+      <span className={isLarge ? "text-lg flex-1" : "flex-1"}>{quantity}</span>
       <Button
         variant="secondary"
         size={"icon"}

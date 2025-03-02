@@ -1,0 +1,2 @@
+ALTER TABLE "products" ALTER COLUMN "attributes" SET DEFAULT '{"attributeCombinations":[],"availableAttributes":{}}'::jsonb;--> statement-breakpoint
+ALTER TABLE "products" ALTER COLUMN "attributes" SET NOT NULL;

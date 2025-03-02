@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "i.imgur.com",
+        hostname: "cdn.dummyjson.com",
         pathname: "/**", // Allow any path
       },
       {

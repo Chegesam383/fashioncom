@@ -1,23 +1,18 @@
 "use client";
 
-import React from "react";
-import { categories, category } from "@/lib/fakedata";
+import { category } from "@/lib/fakedata";
 import Link from "next/link";
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { LayoutGrid } from "lucide-react";
+
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import useScroll from "@/lib/usescroll";
+import { CategoriesDropDown } from "./categories-dropdown";
 
 export default function CategoryNav() {
   const { scrollDirection, scrollY } = useScroll();
@@ -28,7 +23,7 @@ export default function CategoryNav() {
           <div className="flex items-center">
             <ScrollArea className="w-[100vw] whitespace-nowrap mb-2 z-0">
               <div className="flex items-center">
-                <CategoriesDropDown categories={categories} />
+                <CategoriesDropDown />
                 {["Best Sellers", "Top rated", "Your history", "On offer"].map(
                   (item, index) => (
                     <Link
@@ -71,26 +66,3 @@ const RenderMenuItems = ({ items }: { items: category[] }) => {
     )
   );
 };
-
-export function CategoriesDropDown({ categories }: { categories: category[] }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="bg-slate-900 text-white">
-          All categories
-          <LayoutGrid
-            className="-me-1 ms-2 opacity-60 "
-            size={16}
-            strokeWidth={2}
-            aria-hidden="true"
-          />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="min-w-52" align="start">
-        <DropdownMenuGroup>
-          <RenderMenuItems items={categories} />
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}

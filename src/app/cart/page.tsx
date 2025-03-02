@@ -53,6 +53,7 @@ const expectedDelivaryDate: {
 // Component for CartItem
 const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
   const { userId } = useAuth();
+
   const attributeString = item.attributes?.selectedAttributes
     ?.map((attr) => {
       const [key, value] = Object.entries(attr)[0];
@@ -79,7 +80,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
             </Link>
             <p>
               <span className="font-medium">
-                ${(Number(item.price) * item.quantity).toFixed(2)}
+                {formatPrice(Number(item.price) * item.quantity)}
               </span>
 
               {item.quantity > 1 && (
@@ -89,7 +90,9 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
                 </small>
               )}
             </p>
-            <p className="text-sm text-muted-foreground">{attributeString}</p>
+            <p className="text-sm text-muted-foreground text-wrap">
+              {attributeString}
+            </p>
           </div>
 
           <div className="hidden md:block align-top mt-2">
@@ -339,6 +342,7 @@ function ShippingSelector() {
         </RadioGroup>
       </div>
       <small className="text-muted-foreground mt-2">
+        {/* todo add a date lib */}
         Expected delivery in {expectedDelivaryDate[selectedValue]}
       </small>
     </div>

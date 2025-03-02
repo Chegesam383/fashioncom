@@ -1,8 +1,8 @@
 "use server";
 import { db } from "@/db";
 import { productCategories } from "@/db/schema";
-import { Category } from "@/lib/types";
-export async function getCategories(): Promise<Category[]> {
+import { ProductCategory } from "@/lib/types";
+export async function getCategories(): Promise<ProductCategory[]> {
   try {
     const categories = await db.select().from(productCategories);
     return categories;

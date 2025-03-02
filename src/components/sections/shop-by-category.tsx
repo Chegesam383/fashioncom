@@ -28,8 +28,7 @@ export default async function CategorySection() {
               >
                 <div className=" rounded-lg  overflow-hidden">
                   <Image
-                    //todo src={category.imageUrl || "/placeholder.png"}
-                    src={"/placeholder.png"}
+                    src={category.imageUrl || "/placeholder.png"}
                     alt={category.name}
                     width={200}
                     height={200}

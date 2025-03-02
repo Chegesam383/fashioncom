@@ -18,7 +18,6 @@ export async function addToCartAction(
   }
 
   //user_2tcPVO1OWHLtqUuDFSxHDe8m532
-  console.log(userId);
 
   try {
     await db
