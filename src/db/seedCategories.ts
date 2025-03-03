@@ -164,7 +164,10 @@ async function seedCategoriesAndSubcategories() {
       ],
     };
 
-    for (const category of categories) {
+    for (const category of categories as {
+      name: string;
+      slug: keyof typeof subcategoryMap;
+    }[]) {
       const existingCategory = await db
         .select()
         .from(productCategories)
