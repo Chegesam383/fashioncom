@@ -10,6 +10,9 @@
 //   try {
 //     console.log("🌱 Seeding products...");
 
+//     await db.delete(products);
+//     console.log("🗑️ Deleted existing products.");
+
 //     const existingCategories = await db.select().from(productCategories);
 
 //     if (existingCategories.length === 0) {
@@ -28,8 +31,19 @@
 
 //     const dummyJsonProductsFormatted = dummyJsonProducts.map((product: any) => {
 //       const category =
-//         existingCategories.find((cat) => cat.name === product.category) || null;
+//         existingCategories.find(
+//           (cat) =>
+//             cat.name.trim().toLowerCase() ===
+//             product.category.trim().toLowerCase()
+//         ) || null;
+
 //       const categoryId = category ? category.id : null;
+
+//       if (!categoryId) {
+//         console.warn(
+//           `⚠️ Category not found for product: ${product.title}, category: ${product.category}`
+//         );
+//       }
 
 //       const productSubcategoryIds = existingSubcategories
 //         .filter((subcategory) => subcategory.categoryId === categoryId)
@@ -56,8 +70,8 @@
 //         rating: product.rating.toString(),
 //         isActive: true,
 //         attributes: {
-//           attributeCombinations: attributeCombinations,
-//           availableAttributes: availableAttributes,
+//           attributeCombinations: attributeCombinations || [],
+//           availableAttributes: availableAttributes || {},
 //         },
 //         createdAt: new Date(),
 //         updatedAt: new Date(),
@@ -92,36 +106,32 @@
 //   }
 // ): {
 //   attributeCombinations: { [key: string]: string | number }[];
-//   availableAttributes: Record<string, string>;
+//   availableAttributes: Record<string, string[]>;
 // } {
-//   const attributeCombinations: { [key: string]: string | number }[] = [];
-//   let availableAttributes: Record<string, string> = {};
+//   let attributeCombinations: { [key: string]: string | number }[] = [];
+//   let availableAttributes: Record<string, string[]> = {};
 
 //   switch (category?.name) {
-//     case "Fashion":
-//       const colors = faker.helpers.arrayElements([
-//         faker.color.human(),
-//         faker.color.human(),
-//         faker.color.human(),
-//       ]);
-//       const sizes = ["S", "M", "L", "XL", "8", "9", "10", "11"];
+//     case "smartphones":
+//       const storagesPhones = ["64GB", "128GB", "256GB"];
+//       const processorsPhones = ["A14", "A15", "Snapdragon 888"];
 
 //       availableAttributes = {
-//         color: colors.join(", "),
-//         size: sizes.join(", "),
+//         storage: storagesPhones,
+//         processor: processorsPhones,
 //       };
 
-//       for (const color of colors) {
-//         for (const size of sizes) {
+//       for (const storage of storagesPhones) {
+//         for (const processor of processorsPhones) {
 //           attributeCombinations.push({
-//             color: color,
-//             size: size,
+//             storage: storage,
+//             processor: processor,
 //             price: (
 //               parseFloat(product.price.toString()) *
 //               (1 +
 //                 faker.number.float({
-//                   min: -0.2,
-//                   max: 0.3,
+//                   min: -0.1,
+//                   max: 0.2,
 //                   fractionDigits: 2,
 //                 }))
 //             ).toFixed(2),
@@ -129,13 +139,13 @@
 //         }
 //       }
 //       break;
-//     case "Electronics":
+//     case "laptops":
 //       const storages = ["64GB", "128GB", "256GB"];
 //       const processors = ["A14", "A15", "Snapdragon 888"];
 
 //       availableAttributes = {
-//         storage: storages.join(", "),
-//         processor: processors.join(", "),
+//         storage: storages,
+//         processor: processors,
 //       };
 
 //       for (const storage of storages) {
@@ -156,13 +166,40 @@
 //         }
 //       }
 //       break;
+//     case "fragrances":
+//       const fragranceTypes = ["Floral", "Woody", "Citrus", "Oriental"];
+//       const sizes = ["30ml", "50ml", "100ml"];
+
+//       availableAttributes = {
+//         type: fragranceTypes,
+//         size: sizes,
+//       };
+
+//       for (const type of fragranceTypes) {
+//         for (const size of sizes) {
+//           attributeCombinations.push({
+//             type: type,
+//             size: size,
+//             price: (
+//               parseFloat(product.price.toString()) *
+//               (1 +
+//                 faker.number.float({
+//                   min: -0.15,
+//                   max: 0.25,
+//                   fractionDigits: 2,
+//                 }))
+//             ).toFixed(2),
+//           });
+//         }
+//       }
+//       break;
 //     default:
 //       const materials = ["Leather", "Cotton", "Wool", "Synthetic"];
 //       const styles = ["Casual", "Formal", "Sporty", "Classic"];
 
 //       availableAttributes = {
-//         material: materials.join(", "),
-//         style: styles.join(", "),
+//         material: materials,
+//         style: styles,
 //       };
 
 //       for (const material of materials) {
@@ -176,7 +213,6 @@
 //       }
 //       break;
 //   }
-
 //   return { attributeCombinations, availableAttributes };
 // }
 

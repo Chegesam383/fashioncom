@@ -25,7 +25,7 @@ import Image from "next/image";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { formatPrice } from "@/lib/utils";
-import { CategoriesDropDown } from "./categories-dropdown";
+import CategoriesDropDown from "./categories-dropdown";
 const Header = ({
   categoryNavHidden = false,
 }: {
@@ -118,7 +118,7 @@ const CartIcon = () => {
 
 const Accountbtn = () => {
   const { isSignedIn, user } = useUser();
-  console.log(useClerk());
+
   const { signOut } = useClerk();
 
   return isSignedIn ? (
@@ -164,7 +164,9 @@ const AccountDropdown = ({
             )}
           </span>
           <div className="hidden md:flex flex-col ">
-            <small className="text-xs text-muted-foreground">{userName}</small>
+            <small className="text-xs text-muted-foreground">
+              hello, {userName}
+            </small>
             <span className="text-sm font-semibold text-white">{`Account & orders`}</span>
           </div>
         </div>
@@ -207,7 +209,7 @@ const AnauthenticatedUserDropDown = () => {
             <User2 />
           </span>
           <div className="hidden md:flex flex-col ">
-            <small className="text-xs text-muted-foreground">Hello,</small>
+            <small className="text-xs text-muted-foreground">Hello</small>
             <span className="text-sm font-semibold text-white">
               Sign In/sign Up
             </span>

@@ -30,3 +30,38 @@ export async function getSubcategoryById(id: string) {
     return undefined;
   }
 }
+
+export async function getSubcategoriesByCategoryId(categoryId: string) {
+  try {
+    const subcategory = await db
+      .select()
+      .from(productSubcategories)
+      .where(eq(productSubcategories.categoryId, categoryId));
+
+    if (subcategory.length > 0) {
+      return subcategory;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching subcategory by ID:", error);
+    return undefined;
+  }
+}
+
+export async function getSubcategoryBySlug(
+  slug: string
+): Promise<ProductSubcategory | null> {
+  try {
+    const result = await db
+      .select()
+      .from(productSubcategories)
+      .where(eq(productSubcategories.slug, slug))
+      .limit(1)
+      .then((rows) => rows[0] || null);
+    return result;
+  } catch (error) {
+    console.error("Error fetching subcategory by slug:", error);
+    return null;
+  }
+}

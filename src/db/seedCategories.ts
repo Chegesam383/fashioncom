@@ -6,22 +6,35 @@ async function seedCategoriesAndSubcategories() {
   try {
     console.log("🌱 Seeding categories and subcategories...");
 
+    await db.delete(productSubcategories);
+    console.log("🗑️ Deleted existing subcategories.");
+    await db.delete(productCategories);
+    console.log("🗑️ Deleted existing categories.");
+
     const response = await fetch("https://dummyjson.com/products/categories");
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const categories = await response.json(); // Changed to "categories"
+    const categories = await response.json();
 
     const subcategoryMap = {
-      Beauty: [
-        "Makeup",
-        "Skincare",
-        "Haircare",
-        "Fragrances",
-        "Tools & Accessories",
-        "Bath & Body",
+      smartphones: [
+        "Android Phones",
+        "iPhones",
+        "Budget Phones",
+        "Flagship Phones",
+        "Foldable Phones",
+        "Refurbished Phones",
       ],
-      Fragrances: [
+      laptops: [
+        "Gaming Laptops",
+        "Ultrabooks",
+        "Business Laptops",
+        "Chromebooks",
+        "2-in-1 Laptops",
+        "Macbooks",
+      ],
+      fragrances: [
         "Perfumes",
         "Colognes",
         "Body Sprays",
@@ -29,17 +42,16 @@ async function seedCategoriesAndSubcategories() {
         "Gift Sets",
         "Candles & Diffusers",
       ],
-      Furniture: [
-        "Sofas & Couches",
-        "Beds",
-        "Tables",
-        "Chairs",
-        "Storage",
-        "Outdoor Furniture",
-        "Office Furniture",
-        "Kids Furniture",
+      skincare: [
+        "Cleansers",
+        "Moisturizers",
+        "Serums",
+        "Masks",
+        "Toners",
+        "Exfoliators",
+        "Sunscreen",
       ],
-      Groceries: [
+      groceries: [
         "Fruits & Vegetables",
         "Dairy & Eggs",
         "Meat & Seafood",
@@ -49,7 +61,7 @@ async function seedCategoriesAndSubcategories() {
         "Frozen Foods",
         "Snacks",
       ],
-      "Home Decoration": [
+      "home-decoration": [
         "Wall Decor",
         "Lighting",
         "Textiles",
@@ -58,104 +70,17 @@ async function seedCategoriesAndSubcategories() {
         "Rugs",
         "Vases",
       ],
-      "Kitchen Accessories": [
-        "Cookware",
-        "Bakeware",
-        "Utensils & Gadgets",
-        "Tableware",
+      furniture: [
+        "Sofas & Couches",
+        "Beds",
+        "Tables",
+        "Chairs",
         "Storage",
-        "Appliances",
-        "Cleaning Supplies",
+        "Outdoor Furniture",
+        "Office Furniture",
+        "Kids Furniture",
       ],
-      Laptops: [
-        "Gaming Laptops",
-        "Ultrabooks",
-        "Business Laptops",
-        "Chromebooks",
-        "2-in-1 Laptops",
-        "Macbooks",
-      ],
-      "Mens Shirts": [
-        "T-Shirts",
-        "Dress Shirts",
-        "Casual Shirts",
-        "Polos",
-        "Tank Tops",
-        "Sweatshirts",
-      ],
-      "Mens Shoes": [
-        "Sneakers",
-        "Dress Shoes",
-        "Boots",
-        "Sandals",
-        "Loafers",
-        "Slippers",
-      ],
-      "Mens Watches": [
-        "Luxury Watches",
-        "Smartwatches",
-        "Sports Watches",
-        "Casual Watches",
-        "Dress Watches",
-        "Pocket Watches",
-      ],
-      "Mobile Accessories": [
-        "Cases & Covers",
-        "Chargers",
-        "Screen Protectors",
-        "Headphones",
-        "Power Banks",
-        "Memory Cards",
-      ],
-      Motorcycle: [
-        "Motorcycles",
-        "Helmets",
-        "Gear & Accessories",
-        "Parts",
-        "Tires",
-        "Maintenance",
-      ],
-      "Skin Care": [
-        "Cleansers",
-        "Moisturizers",
-        "Serums",
-        "Masks",
-        "Toners",
-        "Exfoliators",
-        "Sunscreen",
-      ],
-      Smartphones: [
-        "Android Phones",
-        "iPhones",
-        "Budget Phones",
-        "Flagship Phones",
-        "Foldable Phones",
-        "Refurbished Phones",
-      ],
-      "Sports Accessories": [
-        "Yoga & Fitness",
-        "Team Sports",
-        "Outdoor Recreation",
-        "Water Sports",
-        "Winter Sports",
-        "Racket Sports",
-      ],
-      Sunglasses: [
-        "Aviator",
-        "Wayfarer",
-        "Cat Eye",
-        "Sports Sunglasses",
-        "Polarized",
-        "Designer",
-      ],
-      Tablets: [
-        "Android Tablets",
-        "iPads",
-        "Windows Tablets",
-        "Drawing Tablets",
-        "Kids Tablets",
-      ],
-      Tops: [
+      tops: [
         "T-shirts",
         "Blouses",
         "Tank Tops",
@@ -163,16 +88,7 @@ async function seedCategoriesAndSubcategories() {
         "Hoodies",
         "Jackets",
       ],
-      Vehicle: ["Cars", "Trucks", "SUVs", "Motorcycles", "Vans", "Boats"],
-      "Womens Bags": [
-        "Handbags",
-        "Totes",
-        "Shoulder Bags",
-        "Clutches",
-        "Backpacks",
-        "Wallets",
-      ],
-      "Womens Dresses": [
+      "womens-dresses": [
         "Casual Dresses",
         "Formal Dresses",
         "Party Dresses",
@@ -180,15 +96,7 @@ async function seedCategoriesAndSubcategories() {
         "Cocktail Dresses",
         "Summer Dresses",
       ],
-      "Womens Jewellery": [
-        "Necklaces",
-        "Earrings",
-        "Bracelets",
-        "Rings",
-        "Anklets",
-        "Body Jewellery",
-      ],
-      "Womens Shoes": [
+      "womens-shoes": [
         "Heels",
         "Flats",
         "Sandals",
@@ -196,57 +104,110 @@ async function seedCategoriesAndSubcategories() {
         "Boots",
         "Loafers",
       ],
-      "Womens Watches": [
+      "mens-shirts": [
+        "T-Shirts",
+        "Dress Shirts",
+        "Casual Shirts",
+        "Polos",
+        "Tank Tops",
+        "Sweatshirts",
+      ],
+      "mens-watches": [
         "Luxury Watches",
-        "Fashion Watches",
         "Smartwatches",
+        "Sports Watches",
         "Casual Watches",
         "Dress Watches",
-        "Bracelet Watches",
+        "Pocket Watches",
+      ],
+      "womens-bags": [
+        "Handbags",
+        "Totes",
+        "Shoulder Bags",
+        "Clutches",
+        "Backpacks",
+        "Wallets",
+      ],
+      "womens-jewellery": [
+        "Necklaces",
+        "Earrings",
+        "Bracelets",
+        "Rings",
+        "Anklets",
+        "Body Jewellery",
+      ],
+      sunglasses: [
+        "Aviator",
+        "Wayfarer",
+        "Cat Eye",
+        "Sports Sunglasses",
+        "Polarized",
+        "Designer",
+      ],
+      automotive: ["Cars", "Trucks", "SUVs", "Motorcycles", "Vans", "Boats"],
+      motorcycle: [
+        "Motorcycles",
+        "Helmets",
+        "Gear & Accessories",
+        "Parts",
+        "Tires",
+        "Maintenance",
+      ],
+      lighting: [
+        "Wall Decor",
+        "Lighting",
+        "Textiles",
+        "Decorative Accents",
+        "Mirrors",
+        "Rugs",
+        "Vases",
       ],
     };
 
     for (const category of categories) {
-      // Changed to "category"
-      const categoryName = category.name as keyof typeof subcategoryMap; // Get name from the object
       const existingCategory = await db
         .select()
         .from(productCategories)
-        .where(eq(productCategories.name, categoryName));
+        .where(eq(productCategories.name, category.name));
 
       if (existingCategory.length === 0) {
-        // Fetch the first product in the category to get its thumbnail
-        const categoryUrl = `https://dummyjson.com/products/category/${category.slug}`; // Use the slug
+        const categoryUrl = `https://dummyjson.com/products/category/${category.slug}`;
         const categoryResponse = await fetch(categoryUrl);
         if (!categoryResponse.ok) {
           throw new Error(`HTTP error! status: ${categoryResponse.status}`);
         }
         const categoryData = await categoryResponse.json();
-        const firstProductThumbnail = categoryData.products[0]?.thumbnail; // Get the thumbnail
+        const firstProductThumbnail = categoryData.products[0]?.thumbnail;
 
         const insertedCategory = await db
           .insert(productCategories)
           .values({
-            name: categoryName,
-            slug: category.slug, // Use the slug
-            imageUrl: firstProductThumbnail, // Use the fetched thumbnail
+            name: category.name,
+            slug: category.slug,
+            imageUrl: firstProductThumbnail,
           })
           .returning();
 
         const categoryId = insertedCategory[0].id;
 
-        const subcategoriesForCategory = subcategoryMap[categoryName];
+        const subcategoriesForCategory = subcategoryMap[category.slug];
 
-        const subcategories = subcategoriesForCategory.map(
-          (subcategoryName) => ({
-            name: subcategoryName,
-            slug: subcategoryName.toLowerCase().replace(/ /g, "-"),
-            imageUrl: `https://source.unsplash.com/random/200x200/?${subcategoryName}`,
-            categoryId: categoryId,
-          })
-        );
+        if (subcategoriesForCategory) {
+          const subcategories = subcategoriesForCategory.map(
+            (subcategoryName) => ({
+              name: subcategoryName,
+              slug: subcategoryName.toLowerCase().replace(/ /g, "-"),
+              imageUrl: `https://source.unsplash.com/random/200x200/?${subcategoryName}`,
+              categoryId: categoryId,
+            })
+          );
 
-        await db.insert(productSubcategories).values(subcategories);
+          await db.insert(productSubcategories).values(subcategories);
+        } else {
+          console.warn(
+            `⚠️ No subcategories found for category: ${category.slug}`
+          );
+        }
       }
     }
 

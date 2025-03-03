@@ -22,7 +22,7 @@ export default async function CategorySection() {
           <div className="flex overflow-x-auto space-x-4 p-4 no-scrollbar">
             {categories.map((category) => (
               <Link
-                href={`/shop?category=${category.name.toLocaleLowerCase()}`}
+                href={`/shop?category=${category.slug}`}
                 key={category.id}
                 className="flex-none w-40"
               >

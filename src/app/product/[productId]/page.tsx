@@ -116,7 +116,7 @@ export default function ProductPage({
             </Badge>
             <h1 className="text-4xl font-medium">{product.name}</h1>
             <p className="text-2xl font-medium">
-              ${formatPrice(currentPrice || 0)}
+              {formatPrice(currentPrice || 0)}
             </p>
             <p className="text-muted-foreground line-clamp-4">
               {product.description}

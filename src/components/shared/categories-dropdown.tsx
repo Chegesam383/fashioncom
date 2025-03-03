@@ -1,117 +1,201 @@
 "use client";
+
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { ChevronDown, ChevronUp, Search } from "lucide-react"; // Import Search icon
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { getCategories } from "@/actions/categoryActions";
 import { ProductCategory, ProductSubcategory } from "@/lib/types";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { getSubcategoryById } from "@/actions/subCategoryActions";
 
-export const CategoriesDropDown = () => {
-  const [categories, setCategories] = useState<ProductCategory[] | undefined>(
-    undefined
-  );
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input"; // Import Input component
+import { getSubcategoriesByCategoryId } from "@/actions/subCategoryActions";
+
+export default function CategoryDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [subcategories, setSubcategories] = useState<
+  const [dropdownTop, setDropdownTop] = useState(0);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [categories, setCategories] = useState<ProductCategory[] | null>(null);
+  const [subCategories, setSubCategories] = useState<
     ProductSubcategory[] | undefined
   >(undefined);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [subCategoriesLoading, setSubCategoriesLoading] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState(""); // Add search query state
 
   useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const allCategories = await getCategories();
-        setCategories(allCategories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      } finally {
-        setIsLoading(false);
+      setCategoriesLoading(true);
+      const categories = await getCategories();
+      setCategories(categories);
+      setCategoriesLoading(false);
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (!activeCategory) {
+      setSubCategories(undefined);
+      return;
+    }
+
+    const fetchsubCategories = async () => {
+      setSubCategoriesLoading(true);
+      const subCategory = await getSubcategoriesByCategoryId(activeCategory);
+      setSubCategories(subCategory || undefined);
+      setSubCategoriesLoading(false);
+    };
+    fetchsubCategories();
+  }, [activeCategory]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
       }
     };
 
-    fetchCategories();
-  });
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-  const handleCategoryHover = async (categoryId: string) => {
-    setActiveCategory(categoryId);
-
-    // Fetch subcategories using the server action
-    try {
-      const fetchedSubcategories = await getSubcategoryById(categoryId);
-      if (fetchedSubcategories) {
-        setSubcategories([fetchedSubcategories]);
-      } else {
-        setSubcategories([]);
-      }
-    } catch (error) {
-      console.error("Error fetching subcategories:", error);
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownTop(rect.bottom);
     }
-  };
+  }, [isOpen]);
 
-  const handleCategoryLeave = () => {
-    setActiveCategory(null);
-    setSubcategories(undefined); // Clear subcategories when leaving
-  };
-
-  if (isLoading) {
-    return (
-      <Button variant="outline" className="text-white bg-slate-900">
-        Loading...
-      </Button>
-    );
-  }
+  const filteredCategories =
+    categories?.filter((category) =>
+      category.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || []; // Filter categories based on search query
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="text-white bg-slate-900">
-          Categories
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 max-h-[70vh] overflow-y-auto flex">
-        <div>
-          {categories &&
-            categories.map((category: ProductCategory) => (
-              <div
-                key={category.id}
-                onMouseEnter={() => handleCategoryHover(category.id)}
-                onMouseLeave={handleCategoryLeave}
-              >
-                <DropdownMenuItem>
-                  <Link
-                    href={`shop?subcategory=${category.slug}`}
-                    className="w-full"
-                  >
-                    {category.name}
-                  </Link>
-                </DropdownMenuItem>
-              </div>
-            ))}
-        </div>
+    <div className="relative">
+      <Button
+        ref={buttonRef}
+        variant="outline"
+        className="w-full justify-between bg-slate-900 text-white"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>All Categories</span>
+        {isOpen ? (
+          <ChevronUp className="ml-2 h-4 w-4" />
+        ) : (
+          <ChevronDown className="ml-2 h-4 w-4" />
+        )}
+      </Button>
 
-        <div>
-          {subcategories &&
-            subcategories.map((subcategory: ProductSubcategory) => (
-              <DropdownMenuItem key={subcategory.id}>
-                <Link
-                  href={`shop?subcategory=${
-                    categories?.find(
-                      (category) => category.id === activeCategory
-                    )?.slug
-                  }/${subcategory.slug}`}
-                  className="w-full"
-                >
-                  {subcategory.name}
-                </Link>
-              </DropdownMenuItem>
-            ))}
+      {isOpen && (
+        <div
+          ref={dropdownRef}
+          className="fixed left-0 right-0 z-50 bg-background shadow-lg transition-all lg:container mx-auto p-2 lg:p-6 rounded-2xl duration-200 ease-in-out text-white"
+          style={{ top: `${dropdownTop}px` }}
+        >
+          <div className="mx-auto max-w-7xl">
+            <div className="flex">
+              <div className="w-64 border-r bg-background">
+                <div className="p-2">
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Search categories..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pr-10"
+                    />
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  </div>
+                </div>
+                <ScrollArea className="h-[45vh]">
+                  {categoriesLoading ? (
+                    <div className="flex items-center justify-center p-4">
+                      <Loader2 className="animate-spin h-6 w-6" />
+                    </div>
+                  ) : filteredCategories.length > 0 ? ( // Use filteredCategories
+                    <ul className="py-1">
+                      {filteredCategories.map(
+                        (
+                          category // Use filteredCategories
+                        ) => (
+                          <li
+                            key={category.id}
+                            className={cn(
+                              "group relative",
+                              activeCategory === category.id && "bg-muted"
+                            )}
+                            onMouseEnter={() => setActiveCategory(category.id)}
+                          >
+                            <Link
+                              href={"shop?category=" + category.slug}
+                              className="flex items-center justify-between px-4 py-2 text-sm font-medium transition-colors hover:bg-muted/50"
+                            >
+                              <span>{category.name}</span>
+                            </Link>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  ) : (
+                    <div className="flex items-center justify-center p-4">
+                      No categories found.
+                    </div>
+                  )}
+                </ScrollArea>
+              </div>
+
+              <div className="min-h-[250px] w-full bg-background p-4">
+                <ScrollArea className="h-[45vh]">
+                  {subCategoriesLoading ? (
+                    <div className="flex items-center justify-center p-4">
+                      <Loader2 className="animate-spin h-6 w-6" />
+                    </div>
+                  ) : activeCategory !== null &&
+                    subCategories &&
+                    subCategories.length > 0 ? (
+                    <div>
+                      <h3 className="mb-2 text-lg font-semibold">
+                        {categories &&
+                          categories.find((c) => c.id === activeCategory)?.name}
+                      </h3>
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-3 overflow-x-auto">
+                        {subCategories &&
+                          subCategories?.map((subcategory) => (
+                            <Link
+                              key={subcategory.id}
+                              href={"shop?subcategory=" + subcategory.slug}
+                              className="rounded-md p-2 text-sm transition-colors hover:bg-muted"
+                            >
+                              {subcategory.name}
+                            </Link>
+                          ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center p-4">
+                      {activeCategory && "No subcategories found."}
+                    </div>
+                  )}
+                </ScrollArea>
+              </div>
+            </div>
+          </div>
         </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      )}
+    </div>
   );
-};
+}

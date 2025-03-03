@@ -2,30 +2,48 @@
 import { db } from "@/db";
 import { products, productCategories } from "@/db/schema";
 import { Product } from "@/lib/types";
-import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function getProducts() {
+import { eq, lt, gte, sql, SQL, and, ilike, or } from "drizzle-orm";
+
+interface ProductFilters {
+  categoryId: string;
+  priceLt?: number;
+  priceGte?: number;
+}
+
+export async function getProducts(
+  filters: ProductFilters = { categoryId: "" }
+) {
   try {
-    return db
-      .select({
-        id: products.id,
-        name: products.name,
-        price: products.price,
-        description: products.description,
-        imageUrls: products.imageUrls,
-        category: productCategories.name,
-        rating: products.rating,
-        attributes: products.attributes,
-      })
-      .from(products)
-      .leftJoin(
-        productCategories,
-        eq(products.categoryId, productCategories.id)
+    const whereClauses: SQL<unknown>[] = [];
+
+    if (filters.categoryId) {
+      whereClauses.push(eq(products.categoryId, filters.categoryId));
+    }
+
+    if (filters.priceLt) {
+      whereClauses.push(
+        lt(sql<number>`CAST(${products.price} AS REAL)`, filters.priceLt)
       );
+    }
+
+    if (filters.priceGte) {
+      whereClauses.push(
+        gte(sql<number>`CAST(${products.price} AS REAL)`, filters.priceGte)
+      );
+    }
+
+    let query = db.select().from(products);
+
+    if (whereClauses.length > 0) {
+      query = query.where(and(...whereClauses)) as typeof query;
+    }
+
+    return await query;
   } catch (error) {
-    console.log("Error fetching products:", error);
-    return undefined;
+    console.error("Error fetching products:", error);
+    return [];
   }
 }
 
@@ -66,6 +84,44 @@ export async function getProductById(id: string): Promise<Product | undefined> {
   } catch (error) {
     console.error("Error fetching product by ID:", error);
     return undefined; // Return undefined on error
+  }
+}
+
+export async function getProductsBySearchTerm(
+  searchTerm: string
+): Promise<Product[]> {
+  try {
+    const results = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        description: products.description,
+        price: products.price,
+        imageUrls: products.imageUrls,
+        categoryId: products.categoryId,
+        subcategories: products.subcategories,
+        categorySlug: productCategories.slug,
+        categoryImage: productCategories.imageUrl,
+        categoryName: productCategories.name,
+        attributes: products.attributes,
+      })
+      .from(products)
+      .leftJoin(
+        productCategories,
+        eq(products.categoryId, productCategories.id)
+      )
+      .where(
+        or(
+          ilike(products.name, `%${searchTerm}%`),
+          ilike(products.description, `%${searchTerm}%`)
+        )
+      )
+      .limit(10);
+
+    return results;
+  } catch (error) {
+    console.error("Error fetching products by search term:", error);
+    return [];
   }
 }
 
