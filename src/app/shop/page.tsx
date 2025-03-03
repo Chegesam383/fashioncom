@@ -6,9 +6,7 @@ import { Product } from "@/lib/types";
 import { getCategoryBySlug } from "@/actions/categoryActions";
 
 interface ShopPageProps {
-  searchParams: {
-    category?: string;
-  };
+  searchParams: Promise<{ category?: string }>;
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
@@ -16,9 +14,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   let errorMessage: string | null = null;
   let loading: boolean = true;
 
+  const resolvedSearchParams = await searchParams;
+
   try {
-    if (searchParams.category) {
-      const category = await getCategoryBySlug(searchParams.category);
+    if (resolvedSearchParams.category) {
+      const category = await getCategoryBySlug(resolvedSearchParams.category);
 
       if (!category) {
         errorMessage = "Category not found.";
