@@ -11,13 +11,6 @@ import type { ProductCategory } from "@/lib/types";
 import Image from "next/image";
 import { debounce } from "lodash";
 import { Input } from "@/components/ui/input";
-
-import {
-  Command,
-  CommandEmpty,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { useRouter } from "next/navigation";
 
 export interface ProductWithCategory {
@@ -42,7 +35,6 @@ export default function SearchWithDropdown() {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const router = useRouter();
-  // const minProductsForCategory = 2;
 
   const debouncedSearch = useCallback(
     debounce(async (term: string) => {
@@ -115,12 +107,12 @@ export default function SearchWithDropdown() {
 
     if (categories.length > 0) {
       return categories.map((category) => (
-        <CommandItem
+        <div
           key={category.slug}
-          onSelect={() =>
+          onClick={() =>
             handleSelect(`shop?category=${category.slug}&q=${searchTerm}`)
           }
-          className="flex items-center space-x-2 p-2 m-1 rounded-md hover:bg-muted-foreground/10"
+          className="flex items-center space-x-2 p-2 m-1 rounded-md hover:bg-muted-foreground/10 cursor-pointer"
         >
           {category.imageUrl && (
             <Image
@@ -137,15 +129,15 @@ export default function SearchWithDropdown() {
               &nbsp; in &nbsp;{category.name}
             </span>
           </span>
-        </CommandItem>
+        </div>
       ));
     }
 
     if (products.length > 0) {
       return products.map((product) => (
-        <CommandItem
+        <div
           key={product.id}
-          onSelect={() => handleSelect(`product/${product.id}`)}
+          onClick={() => handleSelect(`product/${product.id}`)}
           className="flex items-center space-x-4 p-3 cursor-pointer hover:bg-muted-foreground/10 rounded-md"
         >
           <Image
@@ -169,7 +161,7 @@ export default function SearchWithDropdown() {
               ${product.price}
             </span>
           </div>
-        </CommandItem>
+        </div>
       ));
     }
 
@@ -228,14 +220,15 @@ export default function SearchWithDropdown() {
           className="absolute left-0 right-0 z-10 mt-1 bg-muted border rounded-md shadow-md max-h-[60vh] overflow-hidden"
           id="search-results"
         >
-          <Command>
-            <CommandList>
-              <ScrollArea className="max-h-[55vh]">
-                {renderResults()}
-              </ScrollArea>
-              <CommandEmpty>No results found.</CommandEmpty>
-            </CommandList>
-          </Command>
+          <ScrollArea className="max-h-[55vh]">{renderResults()}</ScrollArea>
+          {searchTerm &&
+            !isSearching &&
+            categories.length === 0 &&
+            products.length === 0 && (
+              <div className="p-4 text-center text-muted-foreground">
+                No results found.
+              </div>
+            )}
         </div>
       )}
     </div>
