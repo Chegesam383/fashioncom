@@ -29,7 +29,7 @@ export default function CarouselPlugin() {
       try {
         const fetchedCategories = await getCategories();
         setCategories(fetchedCategories.slice(4, 7));
-        const fetchedProducts = await getProducts();
+        const fetchedProducts = await getProducts({});
         setProducts(fetchedProducts.slice(0, 2));
       } finally {
         setLoading(false);
