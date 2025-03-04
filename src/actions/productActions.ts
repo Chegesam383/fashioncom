@@ -18,28 +18,28 @@ export async function getProducts(filters: ProductFilters) {
   try {
     const whereClauses: SQL<unknown>[] = [];
 
-    if (filters.categoryId) {
+    if (filters?.categoryId) {
       whereClauses.push(eq(products.categoryId, filters.categoryId));
     }
 
-    if (filters.minprice) {
+    if (filters?.minprice) {
       whereClauses.push(
         lt(sql<number>`CAST(${products.price} AS REAL)`, filters.minprice)
       );
     }
 
-    if (filters.maxprice) {
+    if (filters?.maxprice) {
       whereClauses.push(
         gte(sql<number>`CAST(${products.price} AS REAL)`, filters.maxprice)
       );
     }
-    if (filters.rating) {
+    if (filters?.rating) {
       whereClauses.push(
         gte(sql<number>`CAST(${products.rating} AS REAL)`, filters.rating)
       );
     }
 
-    if (filters.subcategories && filters.subcategories.length > 0) {
+    if (filters?.subcategories && filters?.subcategories?.length > 0) {
       const subcategoryIds = await db
         .select({ id: productSubcategories.id })
         .from(productSubcategories)
