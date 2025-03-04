@@ -8,7 +8,7 @@ import Empty from "@/components/shared/empty";
 //const endDate = new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000);
 const endDate = new Date(145456586646 + 3 * 24 * 60 * 60 * 1000);
 export default async function FlashSaleDeals() {
-  const products = await getProducts();
+  const products = await getProducts({});
 
   if (!products || products.length === 0) {
     return (
