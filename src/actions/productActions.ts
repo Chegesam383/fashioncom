@@ -1,20 +1,20 @@
 "use server";
 import { db } from "@/db";
-import { products, productCategories } from "@/db/schema";
+import { products, productCategories, productSubcategories } from "@/db/schema";
 import { Product } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
-import { eq, lt, gte, sql, SQL, and, ilike, or } from "drizzle-orm";
+import { eq, lt, gte, sql, SQL, and, ilike, or, inArray } from "drizzle-orm";
 
 interface ProductFilters {
-  categoryId: string;
-  priceLt?: number;
-  priceGte?: number;
+  categoryId?: string;
+  minprice?: number;
+  maxprice?: number;
+  rating?: string;
+  subcategories?: string[];
 }
 
-export async function getProducts(
-  filters: ProductFilters = { categoryId: "" }
-) {
+export async function getProducts(filters: ProductFilters) {
   try {
     const whereClauses: SQL<unknown>[] = [];
 
@@ -22,16 +22,31 @@ export async function getProducts(
       whereClauses.push(eq(products.categoryId, filters.categoryId));
     }
 
-    if (filters.priceLt) {
+    if (filters.minprice) {
       whereClauses.push(
-        lt(sql<number>`CAST(${products.price} AS REAL)`, filters.priceLt)
+        lt(sql<number>`CAST(${products.price} AS REAL)`, filters.minprice)
       );
     }
 
-    if (filters.priceGte) {
+    if (filters.maxprice) {
       whereClauses.push(
-        gte(sql<number>`CAST(${products.price} AS REAL)`, filters.priceGte)
+        gte(sql<number>`CAST(${products.price} AS REAL)`, filters.maxprice)
       );
+    }
+    if (filters.rating) {
+      whereClauses.push(
+        gte(sql<number>`CAST(${products.rating} AS REAL)`, filters.rating)
+      );
+    }
+
+    if (filters.subcategories && filters.subcategories.length > 0) {
+      const subcategoryIds = await db
+        .select({ id: productSubcategories.id })
+        .from(productSubcategories)
+        .where(inArray(productSubcategories.slug, filters.subcategories));
+      const ids = subcategoryIds.map((sub) => sub.id);
+
+      whereClauses.push(sql`${products.subcategories} && ARRAY[${ids}]`);
     }
 
     let query = db.select().from(products);

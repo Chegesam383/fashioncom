@@ -116,9 +116,12 @@ const AddToCartNoModal: React.FC<AddToCartNoModalProps> = ({
         Object.keys(product.attributes.availableAttributes).length > 0 &&
         Object.entries(product.attributes.availableAttributes).map(
           ([attribute, values]) => (
-            <div key={attribute} className="space-y-4">
-              <h3 className="text-lg font-medium">
-                {attribute} - {selectedAttributes[attribute] || "Select"}
+            <div key={attribute}>
+              <h3 className="text-lg font-medium mt-6 mb-2">
+                {attribute.toUpperCase()} -{" "}
+                <span className="text-muted-foreground">
+                  {selectedAttributes[attribute] || "Select"}
+                </span>
               </h3>
               <div className="flex flex-wrap gap-2">
                 {(values as string[]).map((value) => (

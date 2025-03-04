@@ -26,6 +26,7 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { formatPrice } from "@/lib/utils";
 import CategoriesDropDown from "./categories-dropdown";
+import { useRouter } from "next/navigation";
 const Header = ({
   categoryNavHidden = false,
 }: {
@@ -201,6 +202,7 @@ const AccountDropdown = ({
 };
 
 const AnauthenticatedUserDropDown = () => {
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -225,18 +227,14 @@ const AnauthenticatedUserDropDown = () => {
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.replace("sign-in")}>
               <LogIn className="opacity-75" />
-              <Link href={"sign-in"} className="w-full h-full">
-                Sign In
-              </Link>
+              Sign In
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.replace("sign-up")}>
               <UserRoundPen className="opacity-75" />
-              <Link href={"sign-up"} className="w-full  h-full">
-                Sign Up
-              </Link>
+              Sign Up
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>

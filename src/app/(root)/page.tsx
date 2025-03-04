@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <InfoSection />
+
       <FreshSaleSection />
       <Category
         title={`Today's picks`}
@@ -22,6 +22,7 @@ export default function Home() {
         description="Here are the most trending deals"
       />
       <ShopByCategory />
+      <InfoSection />
     </>
   );
 }

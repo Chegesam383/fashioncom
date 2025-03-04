@@ -29,3 +29,7 @@ export interface ProductSubcategory {
   description: string | null;
   categoryId: string | null;
 }
+
+export interface CategoryWithSubcategories extends ProductCategory {
+  subcategories?: ProductSubcategory[];
+}
