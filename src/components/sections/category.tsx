@@ -20,7 +20,7 @@ const Category = async ({
   bg: string;
   description: string;
 }) => {
-  const products = await getProducts();
+  const products = await getProducts({});
 
   if (!products || products.length === 0)
     return (
