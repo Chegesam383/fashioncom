@@ -1,21 +1,27 @@
+"use client";
+
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useQueryState, parseAsArrayOf, parseAsString } from "nuqs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useProductFiltersData } from "../useProductFilterData";
 
 function AttributeFilter({
-  attributes,
   attributeKey,
-  buttons = false,
+  asButtons = true,
+  availableAttributes,
 }: {
-  attributes: string[];
   attributeKey: string;
-  buttons?: boolean;
+  asButtons?: boolean;
+  availableAttributes: { [key: string]: string[] };
 }) {
   const [selectedAttributes, setSelectedAttributes] = useQueryState(
     attributeKey,
     parseAsArrayOf(parseAsString, ",").withOptions({ shallow: false })
   );
+
+  const attributes = availableAttributes[attributeKey] || [];
 
   const handleAttributeChange = (attribute: string) => {
     const attributeValue = attribute;
@@ -33,10 +39,8 @@ function AttributeFilter({
 
   return (
     <div>
-      <h3 className="text-sm font-medium mb-2">
-        {attributeKey === "sizes" ? "Size" : "Color"}
-      </h3>
-      <div className={buttons ? "grid grid-cols-3 gap-2" : "space-y-2"}>
+      <h3 className="text-sm font-medium mb-2">{attributeKey.toUpperCase()}</h3>
+      <div className={asButtons ? "flex flex-wrap gap-2" : "space-y-2"}>
         {attributes.map((attr) => {
           const key = attr;
           const label = attr;
@@ -46,7 +50,7 @@ function AttributeFilter({
 
           return (
             <div key={key} className="flex items-center">
-              {buttons ? (
+              {asButtons ? (
                 <Button
                   variant={isSelected ? "default" : "outline"}
                   size="sm"
@@ -74,15 +78,44 @@ function AttributeFilter({
   );
 }
 
-// Data
-const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-const colors = ["red", "green", "indigo", "black"];
+export const AttributeSelector = ({}) => {
+  const { availableAttributes, isLoading } = useProductFiltersData();
 
-export const AttributeSelector = () => {
+  const AttributeSkeleton = () => {
+    return (
+      <>
+        <Skeleton className="w-32 h-8 mb-4" />
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} className="w-16 h-8 rounded-md" />
+          ))}
+        </div>
+      </>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="mb-6">
+            <AttributeSkeleton />
+          </div>
+        ))}
+      </>
+    );
+  }
+
   return (
     <>
-      <AttributeFilter attributes={sizes} attributeKey="sizes" buttons={true} />
-      <AttributeFilter attributes={colors} attributeKey="colors" />
+      {Object.keys(availableAttributes).map((key) => (
+        <AttributeFilter
+          key={key}
+          attributeKey={key}
+          asButtons
+          availableAttributes={availableAttributes}
+        />
+      ))}
     </>
   );
 };

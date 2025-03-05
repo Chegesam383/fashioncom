@@ -1,13 +1,23 @@
+"use client";
+
 import React from "react";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { useQueryStates, parseAsFloat } from "nuqs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useProductFiltersData } from "../useProductFilterData";
 
 function PriceRangeFilter() {
+  const { minMaxPrices, isLoading } = useProductFiltersData();
+
   const [pricerange, setpricerange] = useQueryStates(
     {
-      minprice: parseAsFloat.withDefault(0),
-      maxprice: parseAsFloat.withDefault(100),
+      minprice: parseAsFloat.withDefault(
+        Math.floor(minMaxPrices.minPrice) || 0
+      ),
+      maxprice: parseAsFloat.withDefault(
+        Math.round(minMaxPrices.maxPrice) || 500
+      ),
     },
     {
       shallow: false,
@@ -24,26 +34,47 @@ function PriceRangeFilter() {
   };
 
   const handleMinInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    setpricerange({ minprice: value });
+    let value = parseFloat(e.target.value);
+    if (isNaN(value)) {
+      value = minMaxPrices.minPrice; // Revert to min if empty
+    }
+    setpricerange({ minprice: value, maxprice: maxprice });
   };
 
   const handleMaxInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value);
-    setpricerange({ maxprice: value });
+    let value = parseFloat(e.target.value);
+    if (isNaN(value)) {
+      value = minMaxPrices.maxPrice; // Revert to max if empty
+    }
+    setpricerange({ minprice: minprice, maxprice: value });
   };
+
+  if (isLoading) {
+    return (
+      <div>
+        <h3 className="text-sm font-medium mb-2">PRICE RANGE</h3>
+        <div className="space-y-4">
+          <Skeleton className="w-full h-8 rounded-md" />
+          <div className="flex gap-4">
+            <Skeleton className="w-1/2 h-8 rounded-md" />
+            <Skeleton className="w-1/2 h-8 rounded-md" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h3 className="text-sm font-medium mb-2">Price Range</h3>
+      <h3 className="text-sm font-medium mb-2">PRICE RANGE</h3>
       <div className="space-y-4">
         <Slider
           value={[minprice, maxprice]}
-          defaultValue={[0, 100]}
-          min={0}
-          max={100}
+          defaultValue={[minMaxPrices.minPrice, minMaxPrices.maxPrice]}
+          min={minMaxPrices.minPrice}
+          max={minMaxPrices.maxPrice}
           step={1}
-          minStepsBetweenThumbs={10}
+          minStepsBetweenThumbs={1}
           className="w-full"
           onValueChange={handleSliderChange}
         />
@@ -53,12 +84,16 @@ function PriceRangeFilter() {
             placeholder="Min"
             onChange={handleMinInputChange}
             value={minprice}
+            min={minMaxPrices.minPrice}
+            max={minMaxPrices.maxPrice}
           />
           <Input
             type="number"
             placeholder="Max"
             onChange={handleMaxInputChange}
             value={maxprice}
+            min={minMaxPrices.minPrice}
+            max={minMaxPrices.maxPrice}
           />
         </div>
       </div>

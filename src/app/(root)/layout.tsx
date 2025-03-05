@@ -6,6 +6,7 @@ import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
 
 import { ClerkProvider } from "@clerk/nextjs";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +41,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Header />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              <NuqsAdapter>{children}</NuqsAdapter>
+            </main>
             <Footer />
           </ThemeProvider>
         </body>
