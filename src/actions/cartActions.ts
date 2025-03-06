@@ -1,11 +1,11 @@
-// actions/cart-actions.ts
 "use server";
 
 import { db } from "@/db";
-import { cart, products } from "@/db/schema";
+import { cart, products, users } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
+import { CartProduct } from "@/lib/types";
 
 export async function addToCartAction(
   productId: string,
@@ -17,13 +17,22 @@ export async function addToCartAction(
     return { success: false, error: "Unauthorized" };
   }
 
-  //user_2tcPVO1OWHLtqUuDFSxHDe8m532
+  const user = await db.query.users.findFirst({
+    where: eq(users.clerkId, userId),
+    columns: {
+      id: true,
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "User not found" };
+  }
 
   try {
     await db
       .insert(cart)
       .values({
-        userId: "3c7f70a0-3d18-451b-aa1c-e15f805dfdd7",
+        userId: user.id,
         productId: productId,
         attributes: attributes,
         quantity: quantity,
@@ -50,13 +59,24 @@ export async function updateCartItemAction(
     return { success: false, error: "Unauthorized" };
   }
 
+  const user = await db.query.users.findFirst({
+    where: eq(users.clerkId, userId),
+    columns: {
+      id: true,
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "User not found" };
+  }
+
   try {
     await db
       .update(cart)
       .set({ quantity: quantity })
       .where(
         and(
-          eq(cart.userId, "3c7f70a0-3d18-451b-aa1c-e15f805dfdd7"),
+          eq(cart.userId, user.id),
           eq(cart.productId, productId),
           eq(cart.attributes, attributes)
         )
@@ -78,12 +98,23 @@ export async function removeFromCartAction(
     return { success: false, error: "Unauthorized" };
   }
 
+  const user = await db.query.users.findFirst({
+    where: eq(users.clerkId, userId),
+    columns: {
+      id: true,
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "User not found" };
+  }
+
   try {
     await db
       .delete(cart)
       .where(
         and(
-          eq(cart.userId, "3c7f70a0-3d18-451b-aa1c-e15f805dfdd7"),
+          eq(cart.userId, user.id),
           eq(cart.productId, productId),
           eq(cart.attributes, attributes)
         )
@@ -102,20 +133,30 @@ export async function getCartItemsAction() {
     return null;
   }
 
+  const user = await db.query.users.findFirst({
+    where: eq(users.clerkId, userId),
+    columns: {
+      id: true,
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "User not found" };
+  }
+
   try {
     const cartWithProducts = await db
       .select({
         productId: cart.productId,
         attributes: cart.attributes,
         quantity: cart.quantity,
-
         name: products.name,
         price: products.price,
         imageUrls: products.imageUrls,
       })
       .from(cart)
       .leftJoin(products, eq(cart.productId, products.id))
-      .where(eq(cart.userId, userId));
+      .where(eq(cart.userId, user.id));
 
     const cartItemsWithProducts = cartWithProducts.map((item) => ({
       productId: item.productId,
@@ -139,14 +180,63 @@ export async function clearCartAction() {
     return { success: false, error: "Unauthorized" };
   }
 
+  const user = await db.query.users.findFirst({
+    where: eq(users.clerkId, userId),
+    columns: {
+      id: true,
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "User not found" };
+  }
+
   try {
-    await db
-      .delete(cart)
-      .where(eq(cart.userId, "3c7f70a0-3d18-451b-aa1c-e15f805dfdd7"));
+    await db.delete(cart).where(eq(cart.userId, user.id)); // Use userId here
     revalidatePath("/cart");
     return { success: true };
   } catch (error) {
     console.error("Error clearing cart:", error);
     return { success: false, error: "Failed to clear cart" };
+  }
+}
+
+export async function syncCartToDatabase(cartItems: CartProduct[]) {
+  const { userId } = await auth();
+  if (!userId) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.clerkId, userId),
+    columns: {
+      id: true,
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "User not found" };
+  }
+
+  console.log(user);
+
+  try {
+    // Clear existing cart for the user
+    await db.delete(cart).where(eq(cart.userId, user.id));
+
+    // Insert new cart items
+    for (const item of cartItems) {
+      await db.insert(cart).values({
+        userId: user.id,
+        productId: item.id,
+        attributes: item.attributes || {},
+        quantity: item.quantity,
+      });
+    }
+    revalidatePath("/cart");
+    return { success: true };
+  } catch (error) {
+    console.error("Error syncing cart to database:", error);
+    return { success: false, error: "Failed to sync cart to database" };
   }
 }

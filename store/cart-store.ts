@@ -7,6 +7,7 @@ import {
   updateCartItemAction,
   clearCartAction,
   getCartItemsAction,
+  syncCartToDatabase,
 } from "@/actions/cartActions";
 
 export interface CartProduct
@@ -37,7 +38,7 @@ export type Actions = {
   setPromoCode: (promoCode: PromoCode | null) => void;
   setShippingCost: (shippingCost: number) => void;
   setGrandTotal: () => void;
-  hydrateFromDatabase: (userId: string | null | undefined) => Promise<void>;
+  mergeCarts: (userId: string | null) => Promise<void>;
 };
 
 export type State = {
@@ -60,7 +61,7 @@ export const useCartStore = create<State & Actions>()(
       tax: 0,
       discount: 0,
       promoCode: null,
-      shippingCost: 0, // Initialize shipping cost
+      shippingCost: 0,
       grandTotal: 0,
 
       addToCart: async (product, userId: string | null) => {
@@ -364,50 +365,87 @@ export const useCartStore = create<State & Actions>()(
             state.subtotal + state.tax + state.shippingCost - state.discount,
         })),
 
-      hydrateFromDatabase: async (userId) => {
-        if (!userId) return; // Do nothing if no userId
+      mergeCarts: async (userId) => {
+        if (!userId) return;
 
         try {
-          const cartItems = await getCartItemsAction();
-          if (cartItems && cartItems.length > 0) {
-            const hydratedProducts = cartItems.map((item) => ({
-              id: item.productId,
-              quantity: item.quantity,
-              attributes: item.attributes,
-              name: item.name ?? "",
-              price: item.price ?? "0",
-              imageUrls: Array.isArray(item.imageUrls) ? item.imageUrls : [],
-            }));
+          const dbCartItems = await getCartItemsAction(); // Fetch cart from DB
+          const localCartItems = get().products; // Fetch local cart
 
-            set({ products: hydratedProducts });
-            // Recalculate count, subtotal, discount, grandTotal
-            const newCount = hydratedProducts.reduce(
-              (acc, item) => acc + item.quantity,
-              0
-            );
+          const mergedCart = new Map<string, CartProduct>();
 
-            const newSubtotal = hydratedProducts.reduce(
-              (acc, item) => acc + Number(item.price) * item.quantity,
-              0
-            );
-
-            let newDiscount = get().discount;
-            if (get().promoCode) {
-              newDiscount =
-                (newSubtotal * (get().promoCode?.discount ?? 0)) / 100;
-            }
-
-            set({
-              products: hydratedProducts,
-              count: newCount,
-              subtotal: newSubtotal,
-              discount: newDiscount,
-              grandTotal:
-                newSubtotal + get().tax + get().shippingCost - newDiscount,
+          // Add database items to the map
+          if (Array.isArray(dbCartItems) && dbCartItems.length > 0) {
+            dbCartItems.forEach((item) => {
+              const key = `${item.productId}-${JSON.stringify(
+                item.attributes
+              )}`;
+              mergedCart.set(key, {
+                id: item.productId,
+                quantity: item.quantity,
+                attributes: item.attributes,
+                name: item.name ?? "",
+                price: item.price ?? "0",
+                imageUrls: Array.isArray(item.imageUrls) ? item.imageUrls : [],
+              });
             });
           }
+
+          // Add or merge local items
+          localCartItems.forEach((localItem) => {
+            const key = `${localItem.id}-${JSON.stringify(
+              localItem.attributes
+            )}`;
+            if (mergedCart.has(key)) {
+              const existingItem = mergedCart.get(key)!;
+              mergedCart.set(key, {
+                ...existingItem,
+                quantity: existingItem.quantity + localItem.quantity,
+              });
+            } else {
+              mergedCart.set(key, localItem);
+            }
+          });
+
+          // Convert map back to array
+          const mergedProducts = Array.from(mergedCart.values());
+
+          set({ products: mergedProducts });
+
+          // Recalculate count, subtotal, discount, grandTotal
+          const newCount = mergedProducts.reduce(
+            (acc, item) => acc + item.quantity,
+            0
+          );
+          const newSubtotal = mergedProducts.reduce(
+            (acc, item) => acc + Number(item.price) * item.quantity,
+            0
+          );
+          let newDiscount = get().discount;
+          if (get().promoCode) {
+            newDiscount =
+              (newSubtotal * (get().promoCode?.discount ?? 0)) / 100;
+          }
+
+          set({
+            products: mergedProducts,
+            count: newCount,
+            subtotal: newSubtotal,
+            discount: newDiscount,
+            grandTotal:
+              newSubtotal + get().tax + get().shippingCost - newDiscount,
+          });
+
+          // Synchronize the merged cart with the database
+          try {
+            await syncCartToDatabase(mergedProducts); // Synchronize with the database
+            console.log("Cart synchronized with database.");
+          } catch (syncError) {
+            console.error("Error synchronizing cart with database:", syncError);
+            // Handle synchronization error (e.g., display error message)
+          }
         } catch (error) {
-          console.error("Error hydrating cart from database:", error);
+          console.error("Error merging carts:", error);
         }
       },
     }),

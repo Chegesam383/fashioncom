@@ -39,16 +39,12 @@ export default function CarouselPlugin() {
   }, []);
 
   if (loading) {
-    return (
-      <React.Suspense fallback={<CarouselSkeleton />}>
-        <CarouselSkeleton />
-      </React.Suspense>
-    );
+    return <CarouselSkeleton />;
   }
 
   return (
     <div className="lg:container p-4 mx-auto lg:grid grid-cols-3 gap-6 rounded-xl ">
-      <div className="col-span-2 bg-muted/40 rounded-xl p-8 relative">
+      <div className="col-span-2 bg-muted/40 rounded-xl relative">
         <Carousel
           opts={{
             align: "start",
@@ -61,7 +57,7 @@ export default function CarouselPlugin() {
           <CarouselContent>
             {categories.map((category) => (
               <CarouselItem key={category.id}>
-                <div className="flex gap-3  items-center justify-center h-[50vh]">
+                <div className="sm:flex gap-3 items-center justify-center lg:h-[50vh] py-2">
                   <Image
                     src={category.imageUrl || "/placeholder.png"}
                     alt={category.name}
@@ -69,7 +65,7 @@ export default function CarouselPlugin() {
                     width={600}
                     className="rounded-xl pointer-events-none w-96 object-cover h-96"
                   />
-                  <div className=" mt-4">
+                  <div className=" mt-4 px-8 ">
                     <h2 className="text-4xl font-bold mb-4">
                       Shop {category.name}
                     </h2>
@@ -83,10 +79,10 @@ export default function CarouselPlugin() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="absolute top-[50%] right-4 transform -translate-y-1/2">
+          <div className="absolute top-[50%] right-12 transform -translate-y-1/2">
             <CarouselNext />
           </div>
-          <div className="absolute top-[50%] left-4 transform -translate-y-1/2">
+          <div className="absolute top-[50%] left-12 transform -translate-y-1/2">
             <CarouselPrevious />
           </div>
         </Carousel>
@@ -126,30 +122,36 @@ export default function CarouselPlugin() {
 function CarouselSkeleton() {
   return (
     <div className="lg:container p-4 mx-auto lg:grid grid-cols-3 gap-6 rounded-xl ">
-      <div className="col-span-2 bg-muted/40 rounded-xl p-8 relative">
-        <div className="flex gap-3 items-center justify-center h-[50vh]">
-          <Skeleton className="w-full h-52 rounded-xl" />
-          <div className="mt-4">
-            <Skeleton className="w-64 h-8 mx-auto" />
-            <Skeleton className="w-32 h-6 mt-4 mx-auto" />
+      <div className="col-span-2 bg-muted/40 rounded-xl relative">
+        <div className="flex flex-col md:flex-row gap-3 items-center justify-center lg:h-[50vh] py-2">
+          {/* Image Skeleton */}
+          <Skeleton className="rounded-xl w-96 h-96" />
+
+          {/* Text and Button Skeleton */}
+          <div className="mt-4 px-8 flex flex-col items-start">
+            <Skeleton className="w-80 h-12 mb-4" /> {/* Heading Skeleton */}
+            <Skeleton className="w-32 h-10" /> {/* Button Skeleton */}
           </div>
         </div>
       </div>
 
       <div className="mt-4 lg:mt-0 flex flex-col md:flex-row lg:flex-col gap-6 w-full mx-auto">
+        {/* Product Item 1 Skeleton */}
         <div className="flex items-center gap-4 bg-muted/40 rounded-xl p-4 flex-1">
-          <div className="space-y-2">
-            <Skeleton className="w-48 h-6" />
-            <Skeleton className="w-32 h-4" />
-            <Skeleton className="w-24 h-8 mt-4" />
+          <div className="flex flex-col items-start">
+            <Skeleton className="w-48 h-8 mb-2" /> {/* Product Name */}
+            <Skeleton className="w-32 h-6 mb-4" /> {/* Product Price */}
+            <Skeleton className="w-24 h-10" /> {/* Button */}
           </div>
-          <Skeleton className="w-40 h-40 rounded-xl" />
+          <Skeleton className="w-40 h-40 rounded-xl" /> {/* Product Image */}
         </div>
+
+        {/* Product Item 2 Skeleton */}
         <div className="flex items-center gap-4 bg-muted/40 rounded-xl p-4 flex-1">
-          <div className="space-y-2">
-            <Skeleton className="w-48 h-6" />
-            <Skeleton className="w-32 h-4" />
-            <Skeleton className="w-24 h-8 mt-4" />
+          <div className="flex flex-col items-start">
+            <Skeleton className="w-48 h-8 mb-2" />
+            <Skeleton className="w-32 h-6 mb-4" />
+            <Skeleton className="w-24 h-10" />
           </div>
           <Skeleton className="w-40 h-40 rounded-xl" />
         </div>

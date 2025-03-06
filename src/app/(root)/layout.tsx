@@ -6,7 +6,7 @@ import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { CartSyncWrapper } from "@/components/shared/cartsyncWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,7 +42,7 @@ export default function RootLayout({
           >
             <Header />
             <main className="flex-1">
-              <NuqsAdapter>{children}</NuqsAdapter>
+              <CartSyncWrapper>{children}</CartSyncWrapper>
             </main>
             <Footer />
           </ThemeProvider>

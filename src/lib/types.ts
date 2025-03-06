@@ -33,3 +33,12 @@ export interface ProductSubcategory {
 export interface CategoryWithSubcategories extends ProductCategory {
   subcategories?: ProductSubcategory[];
 }
+
+export interface CartProduct {
+  id: string;
+  quantity: number;
+  attributes?: Record<string, string>;
+  name: string;
+  price: string;
+  imageUrls?: string[] | null | undefined;
+}

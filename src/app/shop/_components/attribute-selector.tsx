@@ -81,19 +81,6 @@ function AttributeFilter({
 export const AttributeSelector = ({}) => {
   const { availableAttributes, isLoading } = useProductFiltersData();
 
-  const AttributeSkeleton = () => {
-    return (
-      <>
-        <Skeleton className="w-32 h-8 mb-4" />
-        <div className="flex flex-wrap gap-2">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} className="w-16 h-8 rounded-md" />
-          ))}
-        </div>
-      </>
-    );
-  };
-
   if (isLoading) {
     return (
       <>
@@ -116,6 +103,19 @@ export const AttributeSelector = ({}) => {
           availableAttributes={availableAttributes}
         />
       ))}
+    </>
+  );
+};
+
+const AttributeSkeleton = () => {
+  return (
+    <>
+      <Skeleton className="w-32 h-8 mb-4" />
+      <div className="flex flex-wrap gap-2">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Skeleton key={index} className="w-16 h-8 rounded-md" />
+        ))}
+      </div>
     </>
   );
 };

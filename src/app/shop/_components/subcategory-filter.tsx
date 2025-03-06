@@ -54,10 +54,8 @@ function SubcategoryFilter() {
       // Handle category change
       if (category === slug) {
         // setCategory(undefined);
-        // setSubcategories(undefined);
       } else {
         setCategory(slug);
-        // setSubcategories(undefined);
       }
     }
   };

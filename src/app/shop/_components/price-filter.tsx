@@ -3,7 +3,7 @@
 import React from "react";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { useQueryStates, parseAsFloat } from "nuqs";
+import { useQueryStates, parseAsInteger } from "nuqs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProductFiltersData } from "../useProductFilterData";
 
@@ -12,10 +12,10 @@ function PriceRangeFilter() {
 
   const [pricerange, setpricerange] = useQueryStates(
     {
-      minprice: parseAsFloat.withDefault(
+      minprice: parseAsInteger.withDefault(
         Math.floor(minMaxPrices.minPrice) || 0
       ),
-      maxprice: parseAsFloat.withDefault(
+      maxprice: parseAsInteger.withDefault(
         Math.round(minMaxPrices.maxPrice) || 500
       ),
     },

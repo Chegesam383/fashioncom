@@ -3,19 +3,7 @@
 import { db } from "@/db";
 import { products, productSubcategories, productCategories } from "@/db/schema";
 import { Product } from "@/lib/types";
-import {
-  and,
-  inArray,
-  sql,
-  gte,
-  ilike,
-  or,
-  SQL,
-  eq,
-  lt,
-  min,
-  max,
-} from "drizzle-orm";
+import { and, inArray, sql, gte, ilike, or, SQL, eq, lt } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 interface ProductFilters {
@@ -45,12 +33,10 @@ export async function getProducts(filters: ProductFilters) {
           ? and(whereConditions, eq(products.categoryId, categoryId))
           : eq(products.categoryId, categoryId);
       } else {
-        // Category slug not found, return empty array
         return [];
       }
     }
 
-    // Handle categoryId (if directly provided)
     if (filters?.categoryId) {
       whereConditions = whereConditions
         ? and(whereConditions, eq(products.categoryId, filters.categoryId))
@@ -229,6 +215,29 @@ export async function getProductsAndFilters(filters: ProductFilters) {
   try {
     const whereClauses: SQL[] = [];
 
+    // Handle category slug
+    if (filters?.category) {
+      const categoryData = await db
+        .select({ id: productCategories.id })
+        .from(productCategories)
+        .where(eq(productCategories.slug, filters.category));
+
+      if (categoryData && categoryData.length > 0) {
+        const categoryId = categoryData[0].id;
+        whereClauses.push(eq(products.categoryId, categoryId));
+      } else {
+        // Category slug not found, return default results
+        return {
+          products: [],
+          filters: {
+            availableAttributes: {},
+            minMaxPrices: { minPrice: 0, maxPrice: 100 },
+          },
+        };
+      }
+    }
+
+    // Handle categoryId (if directly provided)
     if (filters?.categoryId) {
       whereClauses.push(eq(products.categoryId, filters.categoryId));
     }
@@ -267,7 +276,11 @@ export async function getProductsAndFilters(filters: ProductFilters) {
     }
 
     Object.entries(filters).forEach(([key, value]) => {
-      if (Array.isArray(value) && key !== "subcategories") {
+      if (
+        Array.isArray(value) &&
+        key !== "subcategories" &&
+        key !== "category"
+      ) {
         if (value.length > 0) {
           whereClauses.push(
             sql`${
@@ -281,12 +294,8 @@ export async function getProductsAndFilters(filters: ProductFilters) {
     });
 
     let productQuery = db.select().from(products);
-
     let attributesQuery = db
       .select({ attributes: products.attributes })
-      .from(products);
-    let priceQuery = db
-      .select({ minPrice: min(products.price), maxPrice: max(products.price) })
       .from(products);
 
     if (whereClauses.length > 0) {
@@ -296,13 +305,10 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       attributesQuery = attributesQuery.where(
         and(...whereClauses)
       ) as typeof attributesQuery;
-      priceQuery = priceQuery.where(and(...whereClauses)) as typeof priceQuery;
     }
 
     const productsResult = await productQuery;
     const attributesResults = await attributesQuery;
-    const priceResults = await priceQuery;
-
     const allAvailableAttributes: { [key: string]: string[] } = {};
 
     attributesResults.forEach((product) => {
@@ -322,16 +328,10 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       }
     });
 
-    const priceData = priceResults[0] || { minPrice: null, maxPrice: null };
-
     return {
       products: productsResult,
       filters: {
         availableAttributes: allAvailableAttributes,
-        minMaxPrices: {
-          minPrice: priceData.minPrice ? Number(priceData.minPrice) : 0,
-          maxPrice: priceData.maxPrice ? Number(priceData.maxPrice) : 100,
-        },
       },
     };
   } catch (error) {
@@ -340,7 +340,6 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       products: [],
       filters: {
         availableAttributes: {},
-        minMaxPrices: { minPrice: 0, maxPrice: 100 },
       },
     };
   }

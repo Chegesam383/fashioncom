@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import useScroll from "@/lib/usescroll";
+import useScroll from "@/lib/hooks/usescroll";
 import CategoriesDropDown from "./categories-dropdown";
 
 export default function CategoryNav() {

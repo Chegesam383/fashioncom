@@ -4,7 +4,7 @@ export async function loadSearchParams(searchParams: Promise<SearchParams>) {
   const params = await searchParams;
 
   const rating = params.rating ? String(params.rating) : undefined;
-  const category = params.category ? params.category : undefined;
+  const category = params.category ? String(params.category) : undefined;
   const subcategories = params.subcategories
     ? typeof params.subcategories === "string"
       ? params.subcategories.split(",")

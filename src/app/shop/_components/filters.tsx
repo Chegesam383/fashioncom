@@ -28,7 +28,7 @@ export const Filters = () => {
 };
 
 export const MobileFilters = () => (
-  <div className="md:hidden">
+  <div className="lg:hidden">
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" className="w-full">

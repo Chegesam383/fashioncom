@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
+// app/layout.tsx
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
-
 import { ClerkProvider } from "@clerk/nextjs";
+import { CartSyncWrapper } from "../../components/shared/cartsyncWrapper";
+import { Metadata } from "next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,8 +20,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fashionist",
-  description: "Online fashion store",
+  title: "Cart | Fashionist",
+  description: "your cart for Online fashion store",
 };
 
 export default function RootLayout({
@@ -40,7 +42,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Header categoryNavHidden />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              <CartSyncWrapper>{children}</CartSyncWrapper>
+            </main>
             <Footer />
           </ThemeProvider>
         </body>

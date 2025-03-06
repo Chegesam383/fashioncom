@@ -58,6 +58,9 @@ export const productSubcategories = pgTable("productSubcategories", {
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
+  firstName: varchar("firstName", { length: 256 }),
+  lastName: varchar("lastName", { length: 256 }),
+  email: varchar("email", { length: 256 }),
   clerkId: varchar("clerkId", { length: 255 }).notNull(),
   role: varchar({ length: 255 }).notNull().default("user"),
   createdAt: timestamp("createdAt").defaultNow(),

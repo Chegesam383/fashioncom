@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getProductsAndFilters } from "@/actions/productActions"; // Updated import
+import { getProductsAndFilters } from "@/actions/productActions";
 import { useSearchParams } from "next/navigation";
 import { Product } from "@/lib/types";
 
@@ -24,7 +24,7 @@ export const useProductFiltersData = () => {
     products: [],
     availableAttributes: {},
     minMaxPrices: { minPrice: 0, maxPrice: 100 },
-  }); // Initialize products
+  });
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
 
@@ -48,12 +48,26 @@ export const useProductFiltersData = () => {
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      const result = await getProductsAndFilters(filters); // Use combined action
+      const result = await getProductsAndFilters(filters);
+      let minPrice = 0;
+      let maxPrice = 100;
+
+      if (result.products && result.products.length > 0) {
+        const prices = result.products
+          .map((product) => Number(product.price))
+          .filter((price) => !isNaN(price));
+
+        if (prices.length > 0) {
+          minPrice = Math.min(...prices);
+          maxPrice = Math.max(...prices);
+        }
+      }
+
       setData({
         products: result.products,
         availableAttributes: result.filters.availableAttributes,
-        minMaxPrices: result.filters.minMaxPrices,
-      }); // Update data state
+        minMaxPrices: { minPrice, maxPrice },
+      });
       setIsLoading(false);
     }
     fetchData();
@@ -64,7 +78,7 @@ export const useProductFiltersData = () => {
 
   return {
     filters,
-    products: data.products, // Return products
+    products: data.products,
     availableAttributes: data.availableAttributes,
     minMaxPrices: data.minMaxPrices,
     isLoading,
