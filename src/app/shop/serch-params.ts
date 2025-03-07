@@ -10,24 +10,15 @@ export async function loadSearchParams(searchParams: Promise<SearchParams>) {
       ? params.subcategories.split(",")
       : params.subcategories
     : undefined;
-  const sizes = params.sizes
-    ? typeof params.sizes === "string"
-      ? params.sizes.split(",")
-      : params.sizes
-    : undefined;
+
   const minprice =
     params.minprice && typeof params.minprice === "string"
       ? parseFloat(params.minprice)
       : undefined;
   const maxprice =
-    params.maxPrice && typeof params.maxprice === "string"
+    params.maxprice && typeof params.maxprice === "string"
       ? parseFloat(params.maxprice)
       : undefined;
-  const colors = params.colors
-    ? typeof params.colors === "string"
-      ? params.colors.split(",")
-      : params.colors
-    : undefined;
 
-  return { category, subcategories, sizes, minprice, maxprice, colors, rating };
+  return { category, subcategories, minprice, maxprice, rating };
 }

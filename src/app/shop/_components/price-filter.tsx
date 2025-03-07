@@ -3,23 +3,26 @@
 import React from "react";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { useQueryState, parseAsInteger } from "nuqs";
-//import { Skeleton } from "@/components/ui/skeleton";
-import { useProductFiltersData } from "../useProductFilterData";
+import { useQueryState, parseAsInteger, parseAsFloat } from "nuqs";
 
-function PriceRangeFilter() {
-  const { minMaxPrices } = useProductFiltersData();
+interface PriceRangeFilterProps {
+  minMaxPrices: {
+    minPrice: number;
+    maxPrice: number;
+  };
+}
 
+function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
   const [minprice, setMinprice] = useQueryState(
     "minprice",
-    parseAsInteger
+    parseAsFloat
       .withDefault(Math.floor(minMaxPrices.minPrice) || 0)
       .withOptions({ shallow: false, throttleMs: 100, history: "push" })
   );
 
   const [maxprice, setMaxprice] = useQueryState(
     "maxprice",
-    parseAsInteger
+    parseAsFloat
       .withDefault(Math.round(minMaxPrices.maxPrice) || 500)
       .withOptions({ shallow: false, throttleMs: 100, history: "push" })
   );
@@ -46,21 +49,6 @@ function PriceRangeFilter() {
     }
     setMaxprice(value);
   };
-
-  // if (isLoading) {
-  //   return (
-  //     <div>
-  //       <h3 className="text-sm font-medium mb-2">PRICE RANGE</h3>
-  //       <div className="space-y-4">
-  //         <Skeleton className="w-full h-8 rounded-md" />
-  //         <div className="flex gap-4">
-  //           <Skeleton className="w-1/2 h-8 rounded-md" />
-  //           <Skeleton className="w-1/2 h-8 rounded-md" />
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div>

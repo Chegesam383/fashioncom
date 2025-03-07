@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+
+import React, { useMemo } from "react";
 import PriceRangeFilter from "./price-filter";
 
-import { AttributeSelector } from "./attribute-selector";
 import SubcategoryFilter from "./subcategory-filter";
 import { SlidersHorizontal } from "lucide-react";
 import {
@@ -15,19 +15,90 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import RatingFilter from "./rating-filter";
+import { Product } from "@/lib/types";
+import { AttributeSelector } from "./attribute-selector";
+import { useSearchParams } from "next/navigation";
 
-export const Filters = () => {
+interface FiltersProps {
+  initialProducts: Product;
+}
+
+export const Filters = ({ initialProducts }: FiltersProps) => {
+  const searchParams = useSearchParams();
+  // Calculate minMaxPrices using useMemo
+  const minMaxPrices = useMemo(() => {
+    if (!Array.isArray(initialProducts) || initialProducts.length === 0) {
+      return { minPrice: 0, maxPrice: 500 }; // Default values
+    }
+
+    let minPrice = Infinity;
+    let maxPrice = -Infinity;
+
+    for (const product of initialProducts) {
+      if (product && product.price !== undefined) {
+        const price = Number(product.price);
+        if (!isNaN(price)) {
+          minPrice = Math.min(minPrice, price);
+          maxPrice = Math.max(maxPrice, price);
+        }
+      }
+    }
+
+    return {
+      minPrice: minPrice === Infinity ? 0 : minPrice,
+      maxPrice: maxPrice === -Infinity ? 500 : maxPrice, // Or a reasonable default
+    };
+  }, [searchParams.get("category"), searchParams.get("subcategory")]);
+
+  // Calculate availableAttributes using useMemo
+  const availableAttributes = useMemo(() => {
+    if (!Array.isArray(initialProducts) || initialProducts.length === 0) {
+      return {}; // Default empty object
+    }
+
+    const allAvailableAttributes: { [key: string]: string[] } = {};
+
+    for (const product of initialProducts) {
+      if (
+        product &&
+        product.attributes &&
+        product.attributes.availableAttributes
+      ) {
+        Object.entries(product.attributes.availableAttributes).forEach(
+          ([key, values]) => {
+            if (!allAvailableAttributes[key]) {
+              allAvailableAttributes[key] = [];
+            }
+            if (Array.isArray(values)) {
+              values.forEach((value) => {
+                if (!allAvailableAttributes[key].includes(value)) {
+                  allAvailableAttributes[key].push(value);
+                }
+              });
+            }
+          }
+        );
+      }
+    }
+
+    return allAvailableAttributes;
+  }, [searchParams.get("category"), searchParams.get("subcategory")]);
+
   return (
-    <div className=" w-56 space-y-6 pt-2 ">
+    <div className="w-56 space-y-6 pt-2 ">
       <SubcategoryFilter />
-      <PriceRangeFilter />
-      <AttributeSelector />
+      <PriceRangeFilter minMaxPrices={minMaxPrices} />
+      <AttributeSelector availableAttributes={availableAttributes} />
       <RatingFilter />
     </div>
   );
 };
 
-export const MobileFilters = () => (
+export const MobileFilters = ({
+  initialProducts,
+}: {
+  initialProducts: Product;
+}) => (
   <div className="lg:hidden">
     <Sheet>
       <SheetTrigger asChild>
@@ -41,8 +112,8 @@ export const MobileFilters = () => (
           <SheetTitle>Filters</SheetTitle>
           <SheetDescription>Adjust your product filters</SheetDescription>
         </SheetHeader>
-
-        <Filters />
+        {/* Pass initialProducts here */}
+        <Filters initialProducts={initialProducts} />
       </SheetContent>
     </Sheet>
   </div>

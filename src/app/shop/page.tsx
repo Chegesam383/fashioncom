@@ -39,7 +39,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               <Skeleton className="w-full h-24 rounded-md" />
             </div>
           </div>
-          <MobileFilters />
+          <MobileFilters
+            initialProducts={JSON.parse(JSON.stringify(products))}
+          />
           <div className="flex-1">
             <div className="grid grid-cols-1 xxs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {Array.from({ length: 8 }).map((_, index) => (
@@ -67,9 +69,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="hidden lg:block">
-            <Filters />
+            <Filters initialProducts={JSON.parse(JSON.stringify(products))} />
           </div>
-          <MobileFilters />
+          <MobileFilters
+            initialProducts={JSON.parse(JSON.stringify(products))}
+          />
           <div className="flex-1">No Products</div>
         </div>
       </div>
@@ -80,9 +84,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     <div className="lg:container mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="hidden lg:block">
-          <Filters />
+          <Filters initialProducts={JSON.parse(JSON.stringify(products))} />
         </div>
-        <MobileFilters />
+        <MobileFilters initialProducts={JSON.parse(JSON.stringify(products))} />
         <div className="flex-1">
           <div className="grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
             {Array.isArray(products) &&

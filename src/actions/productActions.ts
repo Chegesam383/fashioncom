@@ -3,7 +3,18 @@
 import { db } from "@/db";
 import { products, productSubcategories, productCategories } from "@/db/schema";
 import { Product } from "@/lib/types";
-import { and, inArray, sql, gte, ilike, or, SQL, eq, lt } from "drizzle-orm";
+import {
+  and,
+  inArray,
+  sql,
+  gte,
+  ilike,
+  or,
+  SQL,
+  eq,
+  lt,
+  lte,
+} from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 interface ProductFilters {
@@ -242,22 +253,22 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       whereClauses.push(eq(products.categoryId, filters.categoryId));
     }
 
-    if (filters?.minprice) {
+    if (filters.minprice) {
       whereClauses.push(
-        lt(sql<number>`CAST(${products.price} AS REAL)`, filters.minprice)
+        gte(products.price, Number(filters.minprice).toFixed(2))
       );
     }
 
-    if (filters?.maxprice) {
+    if (filters.maxprice) {
+      console.log(filters.maxprice);
+
       whereClauses.push(
-        gte(sql<number>`CAST(${products.price} AS REAL)`, filters.maxprice)
+        lte(products.price, Number(filters.maxprice).toFixed(2))
       );
     }
 
-    if (filters?.rating) {
-      whereClauses.push(
-        gte(sql<number>`CAST(${products.rating} AS REAL)`, filters.rating)
-      );
+    if (filters.rating) {
+      whereClauses.push(gte(products.rating, filters.rating));
     }
 
     if (filters?.subcategories && filters?.subcategories.length > 0) {

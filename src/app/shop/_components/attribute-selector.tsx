@@ -4,8 +4,6 @@ import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useQueryState, parseAsArrayOf, parseAsString } from "nuqs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useProductFiltersData } from "../useProductFilterData";
 
 function AttributeFilter({
   attributeKey,
@@ -78,21 +76,11 @@ function AttributeFilter({
   );
 }
 
-export const AttributeSelector = ({}) => {
-  const { availableAttributes, isLoading } = useProductFiltersData();
-
-  if (isLoading) {
-    return (
-      <>
-        {Array.from({ length: 2 }).map((_, index) => (
-          <div key={index} className="mb-6">
-            <AttributeSkeleton />
-          </div>
-        ))}
-      </>
-    );
-  }
-
+export const AttributeSelector = ({
+  availableAttributes,
+}: {
+  availableAttributes: Record<string, string[]>;
+}) => {
   return (
     <>
       {Object.keys(availableAttributes).map((key) => (
@@ -103,19 +91,6 @@ export const AttributeSelector = ({}) => {
           availableAttributes={availableAttributes}
         />
       ))}
-    </>
-  );
-};
-
-const AttributeSkeleton = () => {
-  return (
-    <>
-      <Skeleton className="w-32 h-8 mb-4" />
-      <div className="flex flex-wrap gap-2">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <Skeleton key={index} className="w-16 h-8 rounded-md" />
-        ))}
-      </div>
     </>
   );
 };
