@@ -3,7 +3,7 @@
 import React from "react";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { useQueryState, parseAsInteger, parseAsFloat } from "nuqs";
+import { useQueryState, parseAsFloat } from "nuqs";
 
 interface PriceRangeFilterProps {
   minMaxPrices: {
