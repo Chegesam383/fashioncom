@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button } from "../ui/button";
+import { Minus, Plus } from "lucide-react";
 
 interface QuantityAdjusterProps {
   quantity: number;
@@ -27,13 +28,13 @@ const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
   return (
     <div className="flex items-center gap-2">
       <Button
-        variant="default"
+        variant="secondary"
         size={"icon"}
         onClick={handleDecrement}
         className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
         disabled={quantity <= 1}
       >
-        -
+        <Minus />
       </Button>
       <span className={isLarge ? "text-lg flex-1" : "flex-1"}>{quantity}</span>
       <Button
@@ -42,7 +43,7 @@ const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
         onClick={handleIncrement}
         className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
       >
-        +
+        <Plus />
       </Button>
     </div>
   );

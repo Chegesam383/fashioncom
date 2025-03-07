@@ -4,12 +4,7 @@
 import { useCartSync } from "@/lib/hooks/useCartSync";
 
 export function CartSyncWrapper({ children }: { children: React.ReactNode }) {
-  const loading = useCartSync();
+  useCartSync();
 
-  return (
-    <>
-      {loading && <div>Updating Cart...</div>}
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

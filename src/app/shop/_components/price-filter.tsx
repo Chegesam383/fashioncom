@@ -3,66 +3,64 @@
 import React from "react";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { useQueryStates, parseAsInteger } from "nuqs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useQueryState, parseAsInteger } from "nuqs";
+//import { Skeleton } from "@/components/ui/skeleton";
 import { useProductFiltersData } from "../useProductFilterData";
 
 function PriceRangeFilter() {
-  const { minMaxPrices, isLoading } = useProductFiltersData();
+  const { minMaxPrices } = useProductFiltersData();
 
-  const [pricerange, setpricerange] = useQueryStates(
-    {
-      minprice: parseAsInteger.withDefault(
-        Math.floor(minMaxPrices.minPrice) || 0
-      ),
-      maxprice: parseAsInteger.withDefault(
-        Math.round(minMaxPrices.maxPrice) || 500
-      ),
-    },
-    {
-      shallow: false,
-      history: "push",
-    }
+  const [minprice, setMinprice] = useQueryState(
+    "minprice",
+    parseAsInteger
+      .withDefault(Math.floor(minMaxPrices.minPrice) || 0)
+      .withOptions({ shallow: false, throttleMs: 100, history: "push" })
   );
 
-  const { minprice, maxprice } = pricerange;
+  const [maxprice, setMaxprice] = useQueryState(
+    "maxprice",
+    parseAsInteger
+      .withDefault(Math.round(minMaxPrices.maxPrice) || 500)
+      .withOptions({ shallow: false, throttleMs: 100, history: "push" })
+  );
 
   const handleSliderChange = (values: number[]) => {
     if (values && values.length === 2) {
-      setpricerange({ minprice: values[0], maxprice: values[1] });
+      setMinprice(values[0]);
+      setMaxprice(values[1]);
     }
   };
 
   const handleMinInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = parseFloat(e.target.value);
     if (isNaN(value)) {
-      value = minMaxPrices.minPrice; // Revert to min if empty
+      value = minMaxPrices.minPrice;
     }
-    setpricerange({ minprice: value, maxprice: maxprice });
+    setMinprice(value);
   };
 
   const handleMaxInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = parseFloat(e.target.value);
     if (isNaN(value)) {
-      value = minMaxPrices.maxPrice; // Revert to max if empty
+      value = minMaxPrices.maxPrice;
     }
-    setpricerange({ minprice: minprice, maxprice: value });
+    setMaxprice(value);
   };
 
-  if (isLoading) {
-    return (
-      <div>
-        <h3 className="text-sm font-medium mb-2">PRICE RANGE</h3>
-        <div className="space-y-4">
-          <Skeleton className="w-full h-8 rounded-md" />
-          <div className="flex gap-4">
-            <Skeleton className="w-1/2 h-8 rounded-md" />
-            <Skeleton className="w-1/2 h-8 rounded-md" />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div>
+  //       <h3 className="text-sm font-medium mb-2">PRICE RANGE</h3>
+  //       <div className="space-y-4">
+  //         <Skeleton className="w-full h-8 rounded-md" />
+  //         <div className="flex gap-4">
+  //           <Skeleton className="w-1/2 h-8 rounded-md" />
+  //           <Skeleton className="w-1/2 h-8 rounded-md" />
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>

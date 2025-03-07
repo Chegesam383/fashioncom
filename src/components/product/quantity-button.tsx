@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "../ui/button";
 import { CartProduct, useCartStore } from "../../../store/cart-store";
 import { useAuth } from "@clerk/nextjs";
+import { Minus, Plus } from "lucide-react";
 
 interface QauntityButtonProps {
   productInCart: CartProduct;
@@ -49,7 +50,7 @@ const QauntityButton: React.FC<QauntityButtonProps> = ({
         onClick={handleDecrement}
         className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
       >
-        -
+        <Minus />
       </Button>
       <span className={isLarge ? "text-lg   flex-1" : "  flex-1"}>
         {productInCart.quantity}
@@ -60,7 +61,7 @@ const QauntityButton: React.FC<QauntityButtonProps> = ({
         onClick={handleIncrement}
         className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
       >
-        +
+        <Plus />
       </Button>
     </div>
   );

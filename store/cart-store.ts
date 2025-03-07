@@ -64,10 +64,12 @@ export const useCartStore = create<State & Actions>()(
       shippingCost: 0,
       grandTotal: 0,
 
-      addToCart: async (product, userId: string | null) => {
+      addToCart: async (product, userId) => {
         const previousState = get();
 
         set((state) => {
+          let products = [...state.products];
+
           const existingProduct = state.products.find((item) => {
             return (
               item.id === product.id &&
@@ -75,37 +77,31 @@ export const useCartStore = create<State & Actions>()(
                 JSON.stringify(product.attributes)
             );
           });
-          let updatedProducts;
 
           if (existingProduct) {
-            updatedProducts = state.products.map((item) =>
-              item.id === product.id &&
-              JSON.stringify(item.attributes) ===
-                JSON.stringify(product.attributes)
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            );
-          } else {
-            updatedProducts = [...state.products, product];
+            return state;
           }
 
-          const newCount = updatedProducts.reduce(
+          products = [...state.products, product];
+
+          const newCount = products.reduce(
             (acc, item) => acc + item.quantity,
             0
           );
 
-          const newSubtotal = updatedProducts.reduce(
+          const newSubtotal = products.reduce(
             (acc, item) => acc + Number(item.price) * item.quantity,
             0
           );
 
           let newDiscount = state.discount;
+
           if (state.promoCode) {
             newDiscount = (newSubtotal * state.promoCode.discount) / 100;
           }
 
           return {
-            products: updatedProducts,
+            products,
             subtotal: newSubtotal,
             count: newCount,
             discount: newDiscount,
@@ -118,16 +114,7 @@ export const useCartStore = create<State & Actions>()(
           try {
             const response = await addToCartAction(
               product.id,
-              product.attributes?.selectedAttributes?.reduce(
-                (
-                  acc: Record<string, string>,
-                  curr: Record<string, string>
-                ) => ({
-                  ...acc,
-                  ...curr,
-                }),
-                {}
-              ) || {},
+              product.attributes || {},
               product.quantity
             );
 
@@ -144,10 +131,13 @@ export const useCartStore = create<State & Actions>()(
         }
       },
 
-      removeFromCart: async (product, userId: string | null) => {
+      removeFromCart: async (product, userId) => {
         const previousState = get();
+
         set((state) => {
-          const updatedProducts = state.products.filter((item) => {
+          let products = [...state.products];
+
+          products = state.products.filter((item) => {
             return !(
               item.id === product.id &&
               JSON.stringify(item.attributes) ===
@@ -155,12 +145,12 @@ export const useCartStore = create<State & Actions>()(
             );
           });
 
-          const newCount = updatedProducts.reduce(
+          const newCount = products.reduce(
             (acc, item) => acc + item.quantity,
             0
           );
 
-          const newSubtotal = updatedProducts.reduce(
+          const newSubtotal = products.reduce(
             (acc, item) => acc + Number(item.price) * item.quantity,
             0
           );
@@ -171,22 +161,20 @@ export const useCartStore = create<State & Actions>()(
             newDiscount = (newSubtotal * state.promoCode.discount) / 100;
           }
 
-          // If the cart is empty, reset the discount and promo code
+          // If the cart is empty, reset everything
           if (newCount === 0) {
-            newDiscount = 0;
             return {
-              products: updatedProducts,
-              subtotal: newSubtotal,
-              count: newCount,
-              discount: newDiscount,
+              products: [],
+              subtotal: 0,
+              count: 0,
+              discount: 0,
               promoCode: null, // Reset promo code if cart is empty
-              grandTotal:
-                newSubtotal + state.tax + state.shippingCost - newDiscount, // recalculate grandTotal
+              grandTotal: 0,
             };
           }
 
           return {
-            products: updatedProducts,
+            products,
             subtotal: newSubtotal,
             count: newCount,
             discount: newDiscount,
@@ -199,16 +187,7 @@ export const useCartStore = create<State & Actions>()(
           try {
             const response = await removeFromCartAction(
               product.id,
-              product.attributes?.selectedAttributes?.reduce(
-                (
-                  acc: Record<string, string>,
-                  curr: Record<string, string>
-                ) => ({
-                  ...acc,
-                  ...curr,
-                }),
-                {}
-              ) || {}
+              product.attributes || {}
             );
 
             if (!response.success) {
@@ -227,7 +206,7 @@ export const useCartStore = create<State & Actions>()(
         set((state) => {
           if (quantity < 1) return state;
 
-          const updatedProducts = state.products.map((item) => {
+          const products = state.products.map((item) => {
             return item.id === product.id &&
               JSON.stringify(item.attributes) ===
                 JSON.stringify(product.attributes)
@@ -235,12 +214,12 @@ export const useCartStore = create<State & Actions>()(
               : item;
           });
 
-          const newCount = updatedProducts.reduce(
+          const newCount = products.reduce(
             (acc, item) => acc + item.quantity,
             0
           );
 
-          const newSubtotal = updatedProducts.reduce(
+          const newSubtotal = products.reduce(
             (acc, item) => acc + Number(item.price) * item.quantity,
             0
           );
@@ -252,7 +231,7 @@ export const useCartStore = create<State & Actions>()(
           }
 
           return {
-            products: updatedProducts,
+            products,
             subtotal: newSubtotal,
             count: newCount,
             discount: newDiscount,
@@ -265,16 +244,7 @@ export const useCartStore = create<State & Actions>()(
           try {
             const response = await updateCartItemAction(
               product.id,
-              product.attributes?.selectedAttributes?.reduce(
-                (
-                  acc: Record<string, string>,
-                  curr: Record<string, string>
-                ) => ({
-                  ...acc,
-                  ...curr,
-                }),
-                {}
-              ) || {},
+              product.attributes || {},
               quantity
             );
 
@@ -369,12 +339,16 @@ export const useCartStore = create<State & Actions>()(
         if (!userId) return;
 
         try {
-          const dbCartItems = await getCartItemsAction(); // Fetch cart from DB
-          const localCartItems = get().products; // Fetch local cart
+          const dbCartItems = await getCartItemsAction();
+          const localCartItems = get().products;
+
+          //user might have checked out from onother device or cleared cart
+          if (Array.isArray(dbCartItems) && dbCartItems.length === 0) {
+            return;
+          }
 
           const mergedCart = new Map<string, CartProduct>();
 
-          // Add database items to the map
           if (Array.isArray(dbCartItems) && dbCartItems.length > 0) {
             dbCartItems.forEach((item) => {
               const key = `${item.productId}-${JSON.stringify(
@@ -391,28 +365,26 @@ export const useCartStore = create<State & Actions>()(
             });
           }
 
-          // Add or merge local items
           localCartItems.forEach((localItem) => {
             const key = `${localItem.id}-${JSON.stringify(
               localItem.attributes
             )}`;
             if (mergedCart.has(key)) {
               const existingItem = mergedCart.get(key)!;
+              // Replace, not add
               mergedCart.set(key, {
                 ...existingItem,
-                quantity: existingItem.quantity + localItem.quantity,
+                quantity: localItem.quantity, //Use local quantity.
               });
             } else {
               mergedCart.set(key, localItem);
             }
           });
 
-          // Convert map back to array
           const mergedProducts = Array.from(mergedCart.values());
 
           set({ products: mergedProducts });
 
-          // Recalculate count, subtotal, discount, grandTotal
           const newCount = mergedProducts.reduce(
             (acc, item) => acc + item.quantity,
             0
@@ -436,13 +408,11 @@ export const useCartStore = create<State & Actions>()(
               newSubtotal + get().tax + get().shippingCost - newDiscount,
           });
 
-          // Synchronize the merged cart with the database
           try {
-            await syncCartToDatabase(mergedProducts); // Synchronize with the database
+            await syncCartToDatabase(mergedProducts);
             console.log("Cart synchronized with database.");
           } catch (syncError) {
             console.error("Error synchronizing cart with database:", syncError);
-            // Handle synchronization error (e.g., display error message)
           }
         } catch (error) {
           console.error("Error merging carts:", error);

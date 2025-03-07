@@ -84,7 +84,7 @@ export const AttributeSelector = ({}) => {
   if (isLoading) {
     return (
       <>
-        {Array.from({ length: 4 }).map((_, index) => (
+        {Array.from({ length: 2 }).map((_, index) => (
           <div key={index} className="mb-6">
             <AttributeSkeleton />
           </div>

@@ -74,8 +74,8 @@ export default function ProductPage({
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Product Images */}
-        <div className="flex gap-2 flex-row-reverse">
-          <div className="flex-1 aspect-square min-h-[500px] w-full rounded-2xl overflow-hidden bg-secondary/20 ">
+        <div className="md:flex gap-2 flex-row-reverse">
+          <div className="flex-1 aspect-square min-h-[400px] w-full rounded-2xl overflow-hidden bg-secondary/20 ">
             <Image
               key={
                 selectedImage || product?.imageUrls?.[0] || "/placeholder.png"
@@ -84,7 +84,7 @@ export default function ProductPage({
                 selectedImage || product?.imageUrls?.[0] || "/placeholder.png"
               }
               alt={product?.name}
-              height={500}
+              height={400}
               width={500}
               className="w-full h-full object-cover"
             />
@@ -100,9 +100,9 @@ export default function ProductPage({
                 alt={image}
                 className={`${
                   selectedImage == image
-                    ? "border-4 border-primary opacity-100 p-1"
+                    ? "border-2 border-primary/50 opacity-100 p-1"
                     : "opacity-70"
-                } rounded-2xl h-14 w-14 object-cover cursor-pointer`}
+                } rounded-2xl h-16 w-16 object-cover cursor-pointer`}
               />
             ))}
           </div>

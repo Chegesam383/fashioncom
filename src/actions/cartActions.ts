@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { db } from "@/db";
 import { cart, products, users } from "@/db/schema";
 import { revalidatePath } from "next/cache";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { CartProduct } from "@/lib/types";
 
 export async function addToCartAction(
   productId: string,
-  attributes: Record<string, string>,
+  attributes: Record<string, string>, // Allow any type for flexibility
   quantity: number
 ) {
   const { userId } = await auth();
@@ -33,13 +34,13 @@ export async function addToCartAction(
       .insert(cart)
       .values({
         userId: user.id,
-        productId: productId,
-        attributes: attributes,
-        quantity: quantity,
+        productId,
+        attributes,
+        quantity,
       })
       .onConflictDoUpdate({
         target: [cart.userId, cart.productId, cart.attributes],
-        set: { quantity: quantity },
+        set: { quantity: sql`${cart.quantity} + ${quantity}` },
       });
     revalidatePath("/cart");
     return { success: true };
@@ -202,25 +203,24 @@ export async function clearCartAction() {
 }
 
 export async function syncCartToDatabase(cartItems: CartProduct[]) {
-  const { userId } = await auth();
-  if (!userId) {
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) {
     return { success: false, error: "Unauthorized" };
   }
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.clerkId, userId),
-    columns: {
-      id: true,
-    },
-  });
-
-  if (!user) {
-    return { success: false, error: "User not found" };
-  }
-
-  console.log(user);
-
   try {
+    // Check if user exists
+    const user = await db.query.users.findFirst({
+      where: eq(users.clerkId, clerkId),
+    });
+
+    // Return error if user does not exist
+    if (!user) {
+      console.error("User not found for clerkId:", clerkId);
+      return { success: false, error: "User not found" };
+    }
+
     // Clear existing cart for the user
     await db.delete(cart).where(eq(cart.userId, user.id));
 
@@ -233,6 +233,7 @@ export async function syncCartToDatabase(cartItems: CartProduct[]) {
         quantity: item.quantity,
       });
     }
+
     revalidatePath("/cart");
     return { success: true };
   } catch (error) {

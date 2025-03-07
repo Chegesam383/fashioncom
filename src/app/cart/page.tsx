@@ -54,12 +54,22 @@ const expectedDelivaryDate: {
 const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
   const { userId } = useAuth();
 
-  const attributeString = item.attributes?.selectedAttributes
-    ?.map((attr) => {
-      const [key, value] = Object.entries(attr)[0];
-      return `${key} - ${value}`;
-    })
-    .join(", ");
+  console.log(item);
+
+  let attributeString;
+
+  if (
+    item &&
+    item.attributes &&
+    Array.isArray(item.attributes.selectedAttributes)
+  ) {
+    attributeString = item.attributes.selectedAttributes
+      ?.map((attr) => {
+        const [key, value] = Object.entries(attr)[0];
+        return `${key} - ${value}`;
+      })
+      .join(", ");
+  }
 
   return (
     <div className="flex flex-col xxs:flex-row items-center gap-4">
