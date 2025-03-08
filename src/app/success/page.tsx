@@ -9,14 +9,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { use } from "react";
 
-export default async function SuccessPage({
+export default function SuccessPage({
   searchParams,
 }: {
-  searchParams: { payment_intent?: string; session_id?: string };
+  searchParams: Promise<{ payment_intent?: string; session_id?: string }>;
 }) {
+  const resolvedParams = use(searchParams);
   const paymentId =
-    (await searchParams.payment_intent) || searchParams.session_id || "Unknown";
+    resolvedParams.payment_intent || resolvedParams.session_id || "Unknown";
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24 bg-gray-50">
