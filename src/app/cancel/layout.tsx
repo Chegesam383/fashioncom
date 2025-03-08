@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
-
+import Header from "@/components/shared/header";
 import Footer from "@/components/shared/footer";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import Header from "@/components/shared/header";
+import { CartSyncWrapper } from "@/components/shared/cartsyncWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,17 +31,17 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col md:mt:24 mt-16 `}
-        >
-          <Header categoryNavHidden />
+        <body className={`${geistSans.variable} ${geistMono.variable} `}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
-            <main className="flex-1">{children}</main>
+            <Header categoryNavHidden />
+            <main className="flex-1">
+              <CartSyncWrapper>{children}</CartSyncWrapper>
+            </main>
             <Footer />
           </ThemeProvider>
         </body>

@@ -15,3 +15,7 @@ export function formatPrice(price: number | string): string {
 export const formatDate = (date: Date) => {
   return date.toISOString().split("T")[0];
 };
+
+export const convertToSubcurrency = (amount: number, factor = 100) => {
+  return Math.round(amount * factor);
+};

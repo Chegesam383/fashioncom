@@ -1,7 +1,9 @@
-import React from "react";
+import CheckoutPage from "./_components/checkout-page";
 
-const Page = () => {
-  return <div>Page</div>;
-};
-
-export default Page;
+export default function Page() {
+  return (
+    <main className="min-h-screen ">
+      <CheckoutPage />
+    </main>
+  );
+}

@@ -341,9 +341,14 @@ export const useCartStore = create<State & Actions>()(
         try {
           const dbCartItems = await getCartItemsAction();
           const localCartItems = get().products;
+          const dissalowUdatefromDb = true; // if false db state will update local cart
 
           //user might have checked out from onother device or cleared cart
-          if (Array.isArray(dbCartItems) && dbCartItems.length === 0) {
+
+          if (
+            (Array.isArray(dbCartItems) && dbCartItems.length === 0) ||
+            dissalowUdatefromDb
+          ) {
             return;
           }
 
@@ -409,6 +414,7 @@ export const useCartStore = create<State & Actions>()(
           });
 
           try {
+            //updates db with local state
             await syncCartToDatabase(mergedProducts);
             console.log("Cart synchronized with database.");
           } catch (syncError) {

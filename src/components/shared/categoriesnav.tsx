@@ -1,17 +1,9 @@
 "use client";
 
-import { category } from "@/lib/fakedata";
 import Link from "next/link";
-import {
-  DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
-} from "@/components/ui/dropdown-menu";
 
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import useScroll from "@/lib/usescroll";
+import useScroll from "@/lib/hooks/usescroll";
 import CategoriesDropDown from "./categories-dropdown";
 
 export default function CategoryNav() {
@@ -46,23 +38,22 @@ export default function CategoryNav() {
   );
 }
 
-const RenderMenuItems = ({ items }: { items: category[] }) => {
-  return items.map((item: category, index: number) =>
-    item.subcategories ? (
-      <DropdownMenuSub key={index}>
-        <DropdownMenuSubTrigger className="hover:bg-muted">
-          {item.name}
-        </DropdownMenuSubTrigger>
-        <DropdownMenuPortal>
-          <DropdownMenuSubContent>
-            <RenderMenuItems items={item.subcategories} />
-          </DropdownMenuSubContent>
-        </DropdownMenuPortal>
-      </DropdownMenuSub>
-    ) : (
-      <DropdownMenuItem key={index} className="hover:bg-muted">
-        {item.name}
-      </DropdownMenuItem>
-    )
-  );
-};
+//   return items.map((item: category, index: number) =>
+//     item.subcategories ? (
+//       <DropdownMenuSub key={index}>
+//         <DropdownMenuSubTrigger className="hover:bg-muted">
+//           {item.name}
+//         </DropdownMenuSubTrigger>
+//         <DropdownMenuPortal>
+//           <DropdownMenuSubContent>
+//             <RenderMenuItems items={item.subcategories} />
+//           </DropdownMenuSubContent>
+//         </DropdownMenuPortal>
+//       </DropdownMenuSub>
+//     ) : (
+//       <DropdownMenuItem key={index} className="hover:bg-muted">
+//         {item.name}
+//       </DropdownMenuItem>
+//     )
+//   );
+// };
