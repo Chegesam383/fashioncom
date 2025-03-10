@@ -34,7 +34,7 @@ const Category = async ({
     );
   return (
     <section className={`bg-${bg} py-16`}>
-      <Card className="p-4 py-6 lg:container mx-auto ">
+      <div className="p-4 py-6 lg:container mx-auto ">
         <div className="mb-8">
           <h2 className="text-3xl font-bold">{title}</h2>
           <p className="mt-2 text-gray-600">{description}</p>
@@ -47,7 +47,7 @@ const Category = async ({
               align: "start",
             }}
           >
-            <div className="flex gap-2 absolute -top-[20px] right-10">
+            <div className="flex gap-2 absolute -top-[40px] right-10">
               <CarouselNext className="-" />
               <CarouselPrevious className="" />
             </div>
@@ -64,7 +64,7 @@ const Category = async ({
             </CarouselContent>
           </Carousel>
         </div>
-      </Card>
+      </div>
     </section>
   );
 };

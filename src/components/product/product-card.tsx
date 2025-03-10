@@ -9,8 +9,12 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import AddToCart from "./add-to-cart";
 import { Product } from "@/lib/types";
+import AddToCartNoAttributes from "./add-to-cart-no-attributes";
 
 export default function ProductCard({ product }: { product: Product }) {
+  const attributes = product.attributes?.availableAttributes;
+  const hasAttributes = !(attributes && JSON.stringify(attributes) === "{}");
+
   const discount =
     Number(product.price) > 30
       ? Math.round(((300 - Number(product.price)) / 300) * 100)
@@ -19,9 +23,9 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <div
       key={product.id}
-      className="p-3 bg-background/60 backdrop-blur relative transition-shadow rounded-xl hover:shadow-lg"
+      className="p-3 bg-background/60 backdrop-blur relative transition-shadow rounded-xl border hover:shadow-lg"
     >
-      <div className="flex flex-col gap-4 h-[420px]">
+      <div className="flex flex-col gap-4 h-[400px]">
         {discount > 0 && (
           <div className="absolute left-4 top-4 z-10 rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
             {discount}% OFF
@@ -33,7 +37,7 @@ export default function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             width={200}
             height={150}
-            className="w-full h-56 object-cover rounded-lg hover:scale-[1.02] transition-transform"
+            className="w-full h-52 object-cover rounded-lg hover:scale-[1.02] transition-transform "
           />
         </Link>
         <Link
@@ -65,7 +69,15 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
       </div>
       <div className="flex gap-2">
-        <AddToCart product={product} selectedImage={product?.imageUrls?.[0]} />
+        {hasAttributes ? (
+          <AddToCart
+            product={product}
+            selectedImage={product?.imageUrls?.[0]}
+          />
+        ) : (
+          <AddToCartNoAttributes product={product} />
+        )}
+
         <Button size={"icon"} variant={"outline"}>
           <Heart className="size-4" />
         </Button>

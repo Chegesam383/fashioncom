@@ -43,8 +43,8 @@ export default function CarouselPlugin() {
   }
 
   return (
-    <div className="lg:container p-4 mx-auto lg:grid grid-cols-3 gap-6 rounded-xl ">
-      <div className="col-span-2 bg-muted/40 rounded-xl relative">
+    <div className="lg:container  mx-auto lg:grid grid-cols-3 gap-4 rounded-xl ">
+      <div className="col-span-2 bg-white dark:bg-stone-950 border rounded-xl relative">
         <Carousel
           opts={{
             align: "start",
@@ -79,10 +79,10 @@ export default function CarouselPlugin() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="absolute top-[50%] right-12 transform -translate-y-1/2">
+          <div className="absolute top-[50%] right-14 transform -translate-y-1/2">
             <CarouselNext />
           </div>
-          <div className="absolute top-[50%] left-12 transform -translate-y-1/2">
+          <div className="absolute top-[50%] left-14 transform -translate-y-1/2">
             <CarouselPrevious />
           </div>
         </Carousel>
@@ -92,7 +92,7 @@ export default function CarouselPlugin() {
         {products.map((product) => (
           <div
             key={product.id}
-            className="flex items-center gap-4 bg-muted/40 rounded-xl p-4 flex-1"
+            className="flex items-center gap-4 bg-white dark:bg-stone-950 border rounded-xl p-4 flex-1"
           >
             <div>
               <h3 className="text-xl font-semibold">{product.name}</h3>

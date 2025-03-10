@@ -5,7 +5,7 @@ import { Product } from "@/lib/types";
 import { Filters, MobileFilters } from "./_components/filters";
 import { SearchParams } from "nuqs/server";
 import { loadSearchParams } from "./serch-params";
-import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ShopPageProps {
   searchParams: Promise<SearchParams>;
@@ -15,11 +15,20 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   let products: Product[] = [];
   let errorMessage: string | null = null;
   let loading: boolean = true;
+  let filtersData: {
+    availableAttributes: { [key: string]: string[] };
+    minMaxPrices: { minPrice: number; maxPrice: number };
+  } = {
+    availableAttributes: {},
+    minMaxPrices: { minPrice: 0, maxPrice: 100 },
+  };
 
   try {
     const params = await loadSearchParams(searchParams);
 
-    products = (await getProductsAndFilters(params)).products;
+    const result = await getProductsAndFilters(params);
+    products = result.products;
+    filtersData = result.filters; // Extract filters data
   } catch (error) {
     console.error("Error fetching products:", error);
     errorMessage = "An error occurred while fetching products.";
@@ -41,6 +50,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           </div>
           <MobileFilters
             initialProducts={JSON.parse(JSON.stringify(products))}
+            filtersData={filtersData} // Pass filters data
           />
           <div className="flex-1">
             <div className="grid grid-cols-1 xxs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -69,10 +79,14 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="hidden lg:block">
-            <Filters initialProducts={JSON.parse(JSON.stringify(products))} />
+            <Filters
+              initialProducts={JSON.parse(JSON.stringify(products))}
+              filtersData={filtersData} // Pass filters data
+            />
           </div>
           <MobileFilters
             initialProducts={JSON.parse(JSON.stringify(products))}
+            filtersData={filtersData} // Pass filters data
           />
           <div className="flex-1">No Products</div>
         </div>
@@ -84,9 +98,15 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     <div className="lg:container mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="hidden lg:block">
-          <Filters initialProducts={JSON.parse(JSON.stringify(products))} />
+          <Filters
+            initialProducts={JSON.parse(JSON.stringify(products))}
+            filtersData={filtersData} // Pass filters data
+          />
         </div>
-        <MobileFilters initialProducts={JSON.parse(JSON.stringify(products))} />
+        <MobileFilters
+          initialProducts={JSON.parse(JSON.stringify(products))}
+          filtersData={filtersData} // Pass filters data
+        />
         <div className="flex-1">
           <div className="grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
             {Array.isArray(products) &&

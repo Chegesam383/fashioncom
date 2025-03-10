@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sucess payment Fashionist",
+  title: "Fashionist",
   description: "Online fashion store",
 };
 
@@ -31,14 +31,16 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} `}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} bg-stone-50 dark:bg-stone-900 mt-48 md:mt-36`}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
-            <Header categoryNavHidden />
+            <Header />
             <main className="flex-1">
               <CartSyncWrapper>{children}</CartSyncWrapper>
             </main>

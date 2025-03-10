@@ -6,7 +6,7 @@ import { ShoppingCart as ShoppingIcon, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { CartProduct, useCartStore } from "../../../store/cart-store";
+import { CartProduct, useCartStore } from "../../../../store/cart-store";
 import QauntityButton from "@/components/product/quantity-button";
 import { Separator } from "@/components/ui/separator";
 

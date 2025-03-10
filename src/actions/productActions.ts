@@ -253,24 +253,6 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       whereClauses.push(eq(products.categoryId, filters.categoryId));
     }
 
-    if (filters.minprice) {
-      whereClauses.push(
-        gte(products.price, Number(filters.minprice).toFixed(2))
-      );
-    }
-
-    if (filters.maxprice) {
-      console.log(filters.maxprice);
-
-      whereClauses.push(
-        lte(products.price, Number(filters.maxprice).toFixed(2))
-      );
-    }
-
-    if (filters.rating) {
-      whereClauses.push(gte(products.rating, filters.rating));
-    }
-
     if (filters?.subcategories && filters?.subcategories.length > 0) {
       const subcategoryIds = await db
         .select({ id: productSubcategories.id })
@@ -284,6 +266,45 @@ export async function getProductsAndFilters(filters: ProductFilters) {
           sql`${products.subcategories} @> ${JSON.stringify(ids)}::jsonb`
         );
       }
+    }
+
+    // MinMax Calculation Query
+    let minMaxQuery = db
+      .select({
+        minPrice: sql<number>`min(${products.price})`.as("minPrice"),
+        maxPrice: sql<number>`max(${products.price})`.as("maxPrice"),
+      })
+      .from(products);
+
+    if (whereClauses.length > 0) {
+      minMaxQuery = minMaxQuery.where(
+        and(...whereClauses)
+      ) as typeof minMaxQuery;
+    }
+
+    const minMaxResult = await minMaxQuery;
+    const minMaxPrices = minMaxResult[0] || { minPrice: 0, maxPrice: 100 };
+
+    // Product and Attributes Queries
+    let productQuery = db.select().from(products);
+    let attributesQuery = db
+      .select({ attributes: products.attributes })
+      .from(products);
+
+    if (filters.minprice) {
+      whereClauses.push(
+        gte(products.price, Number(filters.minprice).toFixed(2))
+      );
+    }
+
+    if (filters.maxprice) {
+      whereClauses.push(
+        lte(products.price, Number(filters.maxprice).toFixed(2))
+      );
+    }
+
+    if (filters.rating) {
+      whereClauses.push(gte(products.rating, filters.rating));
     }
 
     Object.entries(filters).forEach(([key, value]) => {
@@ -303,11 +324,6 @@ export async function getProductsAndFilters(filters: ProductFilters) {
         }
       }
     });
-
-    let productQuery = db.select().from(products);
-    let attributesQuery = db
-      .select({ attributes: products.attributes })
-      .from(products);
 
     if (whereClauses.length > 0) {
       productQuery = productQuery.where(
@@ -343,6 +359,7 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       products: productsResult,
       filters: {
         availableAttributes: allAvailableAttributes,
+        minMaxPrices: minMaxPrices,
       },
     };
   } catch (error) {
@@ -351,6 +368,7 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       products: [],
       filters: {
         availableAttributes: {},
+        minMaxPrices: { minPrice: 0, maxPrice: 100 },
       },
     };
   }

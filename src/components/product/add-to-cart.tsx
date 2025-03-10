@@ -1,151 +1,56 @@
 "use client";
 
 import { ShoppingCartIcon } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { CartProduct, useCartStore } from "../../../store/cart-store";
-import QuantityAdjuster from "./general-quantity-button"; // Import the new component
+import QuantityAdjuster from "./general-quantity-button";
 import { Product } from "@/lib/types";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import Image from "next/image";
-import { useAuth } from "@clerk/nextjs";
+import { useAddToCartLogic } from "@/lib/hooks/useAddToCartLogic";
 
 interface AddToCartProps {
   product: Product;
   selectedImage?: string;
 }
 
-const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
-  const { userId, isLoaded } = useAuth();
-  const { products, addToCart } = useCartStore();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAttributes, setSelectedAttributes] = useState<
-    Record<string, string>
-  >({});
-  const [currentPrice, setCurrentPrice] = useState<string | number | undefined>(
-    product.price
+const AddToCart = ({ product }: AddToCartProps) => {
+  const [localSelectedImage, setlocalSelectedImage] = useState(
+    product.imageUrls?.[0] || ""
   );
-  const [localProductInCart, setLocalProductInCart] = useState<
-    CartProduct | undefined
-  >(undefined);
-  const [localQuantity, setLocalQuantity] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState<string | number | undefined>(
+    product?.price
+  );
 
-  const productInCart = products.find((item) => {
-    return (
-      item.id === product.id &&
-      JSON.stringify(item.attributes) ===
-        JSON.stringify({
-          selectedAttributes: Object.entries(selectedAttributes).map(
-            ([key, value]) => ({ [key]: value })
-          ),
-        })
-    );
-  });
+  const {
+    selectedAttributes,
+    localProductInCart,
+    localQuantity,
+    isAddButtonEnabled,
+    handleAddToCart,
+    handleAttributeChange,
+    handleQuantityChange,
+    updateCartQuantity,
+    isQuantityDisabled,
+  } = useAddToCartLogic({ product, setCurrentPrice, currentPrice });
 
-  useEffect(() => {
-    if (
-      product &&
-      product.attributes &&
-      product.attributes.attributeCombinations
-    ) {
-      const allAttributesSelected = Object.keys(
-        product.attributes.availableAttributes
-      ).every((key) => selectedAttributes[key]);
-
-      if (allAttributesSelected) {
-        const selectedCombination =
-          product.attributes.attributeCombinations.find(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (combination: { [x: string]: any }) => {
-              return Object.entries(selectedAttributes).every(
-                ([key, value]) => String(combination[key]) === String(value)
-              );
-            }
-          );
-        if (selectedCombination && selectedCombination.price) {
-          setCurrentPrice(selectedCombination.price);
-        } else {
-          setCurrentPrice(product?.price);
-        }
-      } else {
-        setCurrentPrice(product?.price);
-      }
-    }
-    setLocalProductInCart(productInCart);
-  }, [selectedAttributes, product, products, productInCart]);
-
-  const handleAttributeChange = (attribute: string, value: string) => {
-    setSelectedAttributes((prevAttributes) => {
-      if (prevAttributes[attribute] === value) {
-        const newAttributes = { ...prevAttributes };
-        delete newAttributes[attribute];
-        return newAttributes;
-      } else {
-        return { ...prevAttributes, [attribute]: value };
-      }
-    });
-  };
-
-  const handleAddToCartClick = async () => {
+  const handleAddToCartClick = () => {
     if (
       product &&
       product.attributes &&
       Object.keys(product.attributes.availableAttributes).length > 0
     ) {
       setIsModalOpen(true);
-    } else if (product) {
-      if (isLoaded && userId) {
-        await addToCart({ ...product, quantity: 1 }, userId);
-      } else {
-        await addToCart({ ...product, quantity: 1 }, null);
-      }
-    }
-  };
-
-  const handleAddToCartFromModal = async () => {
-    if (product) {
-      const modifiedProduct = {
-        ...product,
-        price: String(currentPrice),
-        attributes: {
-          selectedAttributes: Object.entries(selectedAttributes).map(
-            ([key, value]) => ({ [key]: value })
-          ),
-        },
-        quantity: localQuantity,
-      };
-
-      setIsModalOpen(false);
-
-      if (isLoaded && userId) {
-        await addToCart(modifiedProduct, userId);
-      } else {
-        await addToCart(modifiedProduct, null);
-      }
-    }
-  };
-
-  const isAddButtonEnabled =
-    product &&
-    product.attributes &&
-    Object.keys(product.attributes.availableAttributes).length > 0 &&
-    Object.keys(product.attributes.availableAttributes).every(
-      (key) => selectedAttributes[key]
-    );
-
-  const handleQuantityChange = async (quantity: number) => {
-    setLocalQuantity(quantity);
-    if (localProductInCart && isLoaded && userId) {
-      await addToCart({ ...localProductInCart, quantity: quantity }, userId);
-    } else if (localProductInCart && isLoaded && !userId) {
-      await addToCart({ ...localProductInCart, quantity: quantity }, null);
+    } else {
+      handleAddToCart();
     }
   };
 
@@ -164,85 +69,110 @@ const AddToCart = ({ product, selectedImage }: AddToCartProps) => {
             Select the options for your product
           </DialogDescription>
         </DialogHeader>
-        <DialogContent className="sm:max-w-[425px]">
-          <div className="space-y-4">
-            <Image
-              src={
-                selectedImage || product?.imageUrls?.[0] || "/placeholder.png"
-              }
-              alt={product?.name}
-              height={200}
-              width={200}
-              className="mx-auto object-cover h-48 w-full rounded-lg mt-4"
-            />
-            <p className="text-2xl ">{product.name}</p>
+        <DialogContent className=" lg: max-w-2xl">
+          <div className=" lg:flex gap-6 space-y-4">
+            <div className="flex-1">
+              <Image
+                src={
+                  localSelectedImage ||
+                  product?.imageUrls?.[0] ||
+                  "/placeholder.png"
+                }
+                alt={product?.name}
+                height={200}
+                width={200}
+                className="mx-auto object-cover h-64 w-64 rounded-lg mt-4"
+              />
 
-            <p className="text-lg font-semibold">
-              ${currentPrice}
-              {product.oldPrice && (
-                <span className="line-through text-muted-foreground ml-2">
-                  ${product.oldPrice}
-                </span>
-              )}
-            </p>
-            {product.attributes &&
-              Object.keys(product.attributes.availableAttributes).length > 0 &&
-              Object.entries(product.attributes.availableAttributes).map(
-                ([attribute, values]) => (
-                  <div key={attribute} className="space-y-2">
-                    <h3 className="text-lg font-medium">
-                      {attribute} - {selectedAttributes[attribute] || "Select"}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {(values as string[]).map((value) => (
-                        <Button
-                          key={value}
-                          variant={
-                            selectedAttributes[attribute] === value
-                              ? "default"
-                              : "outline"
-                          }
-                          onClick={() =>
-                            handleAttributeChange(attribute, value)
-                          }
-                        >
-                          {value}
-                        </Button>
-                      ))}
+              <div className="flex flex-row gap-2 mt-4">
+                {Array.isArray(product?.imageUrls) &&
+                  product.imageUrls.length > 0 &&
+                  product.imageUrls.map((item) => (
+                    <div
+                      key={item || "/placeholder.png"}
+                      className={`${
+                        localSelectedImage === item ? "border" : ""
+                      }  w-20 h-20 p-2 rounded`}
+                    >
+                      <Image
+                        onClick={() => setlocalSelectedImage(item)}
+                        src={item || "/placeholder.png"}
+                        alt={product?.name}
+                        height={400}
+                        width={500}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  </div>
-                )
-              )}
+                  ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-2xl ">{product.name}</p>
+
+              <p className="text-lg font-semibold mb-4">
+                ${currentPrice}
+                {product.oldPrice && (
+                  <small className="line-through text-muted-foreground ml-2">
+                    ${product.oldPrice}
+                  </small>
+                )}
+              </p>
+              {product.attributes &&
+                Object.keys(product.attributes.availableAttributes).length >
+                  0 &&
+                Object.entries(product.attributes.availableAttributes).map(
+                  ([attribute, values]) => (
+                    <div key={attribute} className="mb-4">
+                      <h3 className="text-lg font-medium mb-2">
+                        {attribute.toLocaleUpperCase()} -{" "}
+                        <span className="text-muted-foreground">
+                          {" "}
+                          {selectedAttributes[attribute] || "Select"}
+                        </span>
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {(values as string[]).map((value) => (
+                          <Button
+                            key={value}
+                            variant={
+                              selectedAttributes[attribute] === value
+                                ? "default"
+                                : "outline"
+                            }
+                            onClick={() =>
+                              handleAttributeChange(attribute, value)
+                            }
+                          >
+                            {value}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                )}
+            </div>
           </div>
           <DialogFooter className="flex gap-2">
             <div className="w-fit">
-              {localProductInCart ? (
-                <QuantityAdjuster
-                  quantity={localProductInCart.quantity}
-                  onQuantityChange={(newQuantity) => {
-                    if (newQuantity > 0) {
-                      addToCart(
-                        {
-                          ...localProductInCart,
-                          quantity: newQuantity,
-                        },
-                        userId || null
-                      );
-                    }
-                  }}
-                  isLarge
-                />
-              ) : (
-                <QuantityAdjuster
-                  quantity={localQuantity}
-                  onQuantityChange={handleQuantityChange}
-                  isLarge
-                />
-              )}
+              <QuantityAdjuster
+                quantity={
+                  localProductInCart
+                    ? localProductInCart.quantity
+                    : localQuantity
+                }
+                onQuantityChange={
+                  localProductInCart ? updateCartQuantity : handleQuantityChange
+                }
+                isLarge
+                isDissabled={isQuantityDisabled}
+              />
             </div>
             <Button
               disabled={!!localProductInCart || !isAddButtonEnabled}
-              onClick={handleAddToCartFromModal}
+              onClick={() => {
+                handleAddToCart();
+                setIsModalOpen(false);
+              }}
               className="flex-1"
             >
               {localProductInCart ? "In Cart" : "Add to Cart"}

@@ -20,8 +20,7 @@ const QauntityButton: React.FC<QauntityButtonProps> = ({
 
   const handleIncrement = () => {
     if (isLoaded && userId) {
-      updateCartProduct(productInCart, productInCart.quantity + 1, userId); // Pass userId
-    } else {
+      updateCartProduct(productInCart, productInCart.quantity + 1, userId);
       updateCartProduct(productInCart, productInCart.quantity + 1, null);
     }
   };
@@ -29,13 +28,13 @@ const QauntityButton: React.FC<QauntityButtonProps> = ({
   const handleDecrement = () => {
     if (productInCart.quantity > 1) {
       if (isLoaded && userId) {
-        updateCartProduct(productInCart, productInCart.quantity - 1, userId); // Pass userId
+        updateCartProduct(productInCart, productInCart.quantity - 1, userId);
       } else {
         updateCartProduct(productInCart, productInCart.quantity - 1, null);
       }
     } else {
       if (isLoaded && userId) {
-        removeFromCart(productInCart, userId); // Pass userId
+        removeFromCart(productInCart, userId);
       } else {
         removeFromCart(productInCart, null);
       }

@@ -8,19 +8,21 @@ interface QuantityAdjusterProps {
   quantity: number;
   onQuantityChange: (quantity: number) => void;
   isLarge?: boolean;
+  isDissabled?: boolean;
 }
 
 const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
   quantity,
   onQuantityChange,
   isLarge = false,
+  isDissabled,
 }) => {
   const handleIncrement = () => {
     onQuantityChange(quantity + 1);
   };
 
   const handleDecrement = () => {
-    if (quantity > 1) {
+    if (quantity > 0) {
       onQuantityChange(quantity - 1);
     }
   };
@@ -32,7 +34,7 @@ const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
         size={"icon"}
         onClick={handleDecrement}
         className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
-        disabled={quantity <= 1}
+        disabled={isDissabled}
       >
         <Minus />
       </Button>
@@ -42,6 +44,7 @@ const QuantityAdjuster: React.FC<QuantityAdjusterProps> = ({
         size={"icon"}
         onClick={handleIncrement}
         className={isLarge ? "h-10 w-10 rounded-full" : "h-8 w-8 rounded-full"}
+        disabled={isDissabled}
       >
         <Plus />
       </Button>

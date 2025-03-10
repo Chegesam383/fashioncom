@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
-import { getCategoriesWithSubcategories } from "@/actions/categoryActions"; // Assuming you have these
+import { getCategoriesWithSubcategories } from "@/actions/categoryActions";
 import { CategoryWithSubcategories, ProductSubcategory } from "@/lib/types";
+import { Skeleton } from "@/components/ui/skeleton"; // Assuming you have a Skeleton component
 
 function SubcategoryFilter() {
   const [category, setCategory] = useQueryState(
@@ -23,17 +24,19 @@ function SubcategoryFilter() {
     ProductSubcategory[]
   >([]);
 
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+
   useEffect(() => {
-    //fetch categories
     const fetchCategories = async () => {
+      setIsLoading(true); // Set loading to true
       const fetchedCategories = await getCategoriesWithSubcategories();
       setCategoriesWithSubcategories(fetchedCategories);
+      setIsLoading(false); // Set loading to false after fetching
     };
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    //fetch subcategories of selected category
     if (category && categoriesWithSubcategories) {
       const selectedcat = categoriesWithSubcategories.find(
         (item) => item.slug === category
@@ -44,16 +47,13 @@ function SubcategoryFilter() {
 
   const handleItemChange = (slug: string) => {
     if (category) {
-      // Handle subcategory change
       if (subcategories?.includes(slug)) {
         setSubcategories(subcategories.filter((sub) => sub !== slug));
       } else {
         setSubcategories([...(subcategories || []), slug]);
       }
     } else {
-      // Handle category change
       if (category === slug) {
-        // setCategory(undefined);
       } else {
         setCategory(slug);
       }
@@ -85,9 +85,26 @@ function SubcategoryFilter() {
     });
   };
 
+  const renderSkeleton = () => {
+    return (
+      <div className="space-y-4 w-full">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div key={index} className="flex items-center">
+            <Skeleton className="h-4 w-5 rounded-full" />
+            <Skeleton className="ml-2 h-4 w-full" />
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div>
-      <div className="space-y-2">{renderItems()}</div>
+      {isLoading ? (
+        renderSkeleton()
+      ) : (
+        <div className="space-y-2">{renderItems()}</div>
+      )}
     </div>
   );
 }

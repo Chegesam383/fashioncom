@@ -5,7 +5,6 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = req.headers.get("stripe-signature") as string;
 
-  // Get the secret key from environment or session
   const secretKey = process.env.STRIPE_SECRET_KEY;
 
   if (!secretKey) {
@@ -14,7 +13,6 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-
   const stripe = new Stripe(secretKey, {
     apiVersion: "2025-02-24.acacia",
   });
