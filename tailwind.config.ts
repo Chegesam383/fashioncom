@@ -27,7 +27,7 @@ export default {
         shake: "shake 0.5s ease-in-out",
       },
       screens: {
-        xxs: "430px",
+        xxs: "400px",
       },
       colors: {
         background: "hsl(var(--background))",

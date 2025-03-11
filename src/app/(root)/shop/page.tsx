@@ -88,19 +88,21 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <div className="hidden lg:block">
             <Filters
               initialProducts={JSON.parse(JSON.stringify(products))}
-              filtersData={filtersData} // Pass filters data
+              filtersData={filtersData}
             />
           </div>
-          <MobileFilters
-            initialProducts={JSON.parse(JSON.stringify(products))}
-            filtersData={filtersData} // Pass filters data
-          />
+          <div>
+            <MobileFilters
+              initialProducts={JSON.parse(JSON.stringify(products))}
+              filtersData={filtersData}
+            />
+          </div>
         </div>
 
         {/* products */}
         <div className="flex-1">
           <FilterControls />
-          <div className="grid grid-cols-2  md:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
             {Array.isArray(products) && products.length > 0 ? (
               products.map((product) => (
                 <ProductCard product={product} key={product.id} />

@@ -25,7 +25,7 @@ export default function ProductCard({ product }: { product: Product }) {
       key={product.id}
       className="p-2 bg-background/60 backdrop-blur relative transition-shadow rounded-xl border hover:shadow-lg"
     >
-      <div className="flex flex-col gap-4 h-[315px]">
+      <div className="flex flex-col gap-4 h-[320px]">
         {discount && discount > 15 && (
           <Badge
             variant={"destructive"}
@@ -40,7 +40,7 @@ export default function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             width={200}
             height={150}
-            className="w-44 h-44 object-cover rounded-lg hover:scale-[1.02] transition-transform "
+            className="w-full h-44 object-cover rounded-lg hover:scale-[1.02] transition-transform "
           />
         </Link>
         <Link

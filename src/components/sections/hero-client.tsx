@@ -49,10 +49,10 @@ export default function CarouselPlugin({
                       alt={category.name}
                       height={600}
                       width={600}
-                      className="rounded-xl pointer-events-none w-96 object-cover h-96"
+                      className="rounded-xl pointer-events-none w-full  md:w-96 object-cover h-96"
                     />
-                    <div className="mt-4 px-8">
-                      <h2 className="text-4xl font-bold mb-4">
+                    <div className="mt-4 px-8 text-center">
+                      <h2 className="text-4xl font-semibold mb-4">
                         Shop {category.name}
                       </h2>
                       <Button>
@@ -81,7 +81,7 @@ export default function CarouselPlugin({
         </Carousel>
       </div>
 
-      <div className="mt-4 lg:mt-0 flex flex-col md:flex-row lg:flex-col gap-6 w-full mx-auto">
+      <div className="mt-4 lg:mt-0 flex flex-col md:flex-row  gap-4 w-full mx-auto">
         {products.length > 0 ? (
           products.map((product) => (
             <div

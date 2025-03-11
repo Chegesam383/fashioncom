@@ -29,7 +29,7 @@ export const Filters = ({ filtersData }: FiltersProps) => {
   const { availableAttributes, minMaxPrices } = filtersData;
 
   return (
-    <div className="w-56 space-y-6 pt-2 ">
+    <div className=" w-52 lg:w-56 space-y-6 pt-2 ">
       <SubcategoryFilter />
       <PriceRangeFilter minMaxPrices={minMaxPrices} />
       <AttributeSelector availableAttributes={availableAttributes} />
@@ -50,7 +50,7 @@ export const MobileFilters = ({
   initialProducts,
   filtersData,
 }: MobileFiltersProps) => (
-  <div className="lg:hidden">
+  <div className="">
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" className="w-full">

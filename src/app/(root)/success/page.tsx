@@ -21,7 +21,7 @@ export default function SuccessPage({
     resolvedParams.payment_intent || resolvedParams.session_id || "Unknown";
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24 bg-slate-50">
+    <div className="flex flex-col items-center justify-center mt-24">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
           <div className="flex justify-center mb-4">
@@ -34,8 +34,7 @@ export default function SuccessPage({
         </CardHeader>
         <CardContent>
           <p className="text-center text-muted-foreground">
-            Your payment has been processed successfully. You will receive a
-            confirmation email shortly.
+            Your payment has been processed successfully.
           </p>
           <div className="mt-6 border rounded-md p-4 bg-slate-50">
             <div className="flex justify-between text-sm mb-2">
