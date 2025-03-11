@@ -81,7 +81,7 @@ export default function CarouselPlugin({
         </Carousel>
       </div>
 
-      <div className="mt-4 lg:mt-0 flex flex-col md:flex-row  gap-4 w-full mx-auto">
+      <div className="mt-4 lg:mt-0 flex flex-col  sm:flex-row lg:flex-col  gap-4 w-full mx-auto">
         {products.length > 0 ? (
           products.map((product) => (
             <div
