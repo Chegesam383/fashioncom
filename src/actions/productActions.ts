@@ -12,19 +12,24 @@ import {
   or,
   SQL,
   eq,
-  lt,
   lte,
+  asc,
+  desc,
 } from "drizzle-orm";
+
 import { revalidatePath } from "next/cache";
 
 interface ProductFilters {
+  category?: string;
   categoryId?: string;
+  subcategories?: string[];
   minprice?: number;
   maxprice?: number;
-  category?: string;
   rating?: string;
-  subcategories?: string[];
-  [key: string]: unknown; // Allow arbitrary attribute filters
+  attributes?: { [key: string]: string[] };
+  limit?: number;
+  page?: number;
+  sort?: string;
 }
 
 export async function getProducts(filters: ProductFilters) {
@@ -58,18 +63,18 @@ export async function getProducts(filters: ProductFilters) {
       whereConditions = whereConditions
         ? and(
             whereConditions,
-            lt(sql<number>`CAST(${products.price} AS REAL)`, filters.minprice)
+            gte(sql<number>`CAST(${products.price} AS REAL)`, filters.minprice)
           )
-        : lt(sql<number>`CAST(${products.price} AS REAL)`, filters.minprice);
+        : gte(sql<number>`CAST(${products.price} AS REAL)`, filters.minprice);
     }
 
     if (filters?.maxprice) {
       whereConditions = whereConditions
         ? and(
             whereConditions,
-            gte(sql<number>`CAST(${products.price} AS REAL)`, filters.maxprice)
+            lte(sql<number>`CAST(${products.price} AS REAL)`, filters.maxprice)
           )
-        : gte(sql<number>`CAST(${products.price} AS REAL)`, filters.maxprice);
+        : lte(sql<number>`CAST(${products.price} AS REAL)`, filters.maxprice);
     }
 
     if (filters?.rating) {
@@ -100,13 +105,9 @@ export async function getProducts(filters: ProductFilters) {
     }
 
     // Handle attribute filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (
-        Array.isArray(value) &&
-        key !== "subcategories" &&
-        key !== "category"
-      ) {
-        if (value.length > 0) {
+    if (filters?.attributes) {
+      Object.entries(filters.attributes).forEach(([key, value]) => {
+        if (Array.isArray(value) && value.length > 0) {
           const attributeFilter = sql`${
             products.attributes
           } -> 'availableAttributes' ->> ${key} IN (${value
@@ -116,8 +117,8 @@ export async function getProducts(filters: ProductFilters) {
             ? and(whereConditions, attributeFilter)
             : attributeFilter;
         }
-      }
-    });
+      });
+    }
 
     const filteredProducts = await db.query.products.findMany({
       where: whereConditions,
@@ -158,8 +159,7 @@ export async function getProductById(id: string): Promise<Product | undefined> {
     if (product.length > 0) {
       return {
         ...product[0],
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        attributes: product[0].attributes as Record<string, any>,
+        attributes: product[0].attributes as Record<string, unknown>,
       };
     } else {
       return undefined; // Product not found
@@ -224,7 +224,9 @@ export async function addProduct(formData: FormData) {
 
 export async function getProductsAndFilters(filters: ProductFilters) {
   try {
-    const whereClauses: SQL[] = [];
+    const whereClauses: SQL[] = []; //tracks everything
+    const categorySubcategoryClauses: SQL[] = []; //tracks items that should only change if category or subcategory change eg pricerange
+    let productQuery = db.select().from(products);
 
     // Handle category slug
     if (filters?.category) {
@@ -236,21 +238,15 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       if (categoryData && categoryData.length > 0) {
         const categoryId = categoryData[0].id;
         whereClauses.push(eq(products.categoryId, categoryId));
-      } else {
-        // Category slug not found, return default results
-        return {
-          products: [],
-          filters: {
-            availableAttributes: {},
-            minMaxPrices: { minPrice: 0, maxPrice: 100 },
-          },
-        };
+        categorySubcategoryClauses.push(eq(products.categoryId, categoryId));
       }
     }
 
-    // Handle categoryId (if directly provided)
     if (filters?.categoryId) {
       whereClauses.push(eq(products.categoryId, filters.categoryId));
+      categorySubcategoryClauses.push(
+        eq(products.categoryId, filters.categoryId)
+      );
     }
 
     if (filters?.subcategories && filters?.subcategories.length > 0) {
@@ -265,10 +261,48 @@ export async function getProductsAndFilters(filters: ProductFilters) {
         whereClauses.push(
           sql`${products.subcategories} @> ${JSON.stringify(ids)}::jsonb`
         );
+        categorySubcategoryClauses.push(
+          sql`${products.subcategories} @> ${JSON.stringify(ids)}::jsonb`
+        );
       }
     }
 
+    // Calculate availableAttributes based on category and subcategory
+    //attributes should only be caculated based on category & subcategory. what sets clothes diffrent is diffrent from what sets electronics diffrent
+    let attributesBaseQuery = db
+      .select({ attributes: products.attributes })
+      .from(products);
+
+    if (categorySubcategoryClauses.length > 0) {
+      attributesBaseQuery = attributesBaseQuery.where(
+        and(...categorySubcategoryClauses)
+      ) as typeof attributesBaseQuery;
+    }
+
+    const attributesBaseResults = await attributesBaseQuery;
+    const allAvailableAttributes: Record<string, string[]> = {};
+
+    //convert it to an array of available attributes from material:['cotton','silk'...] color:[ 'red', 'blue'...]... t0  availablAttributes=[cotton','silk','red', 'blue'...]
+    attributesBaseResults.forEach((product) => {
+      if (product.attributes && product.attributes.availableAttributes) {
+        Object.entries(product.attributes.availableAttributes).forEach(
+          ([key, values]) => {
+            if (!allAvailableAttributes[key]) {
+              allAvailableAttributes[key] = [];
+            }
+            values.forEach((value) => {
+              if (!allAvailableAttributes[key].includes(value)) {
+                allAvailableAttributes[key].push(value);
+              }
+            });
+          }
+        );
+      }
+    });
+
     // MinMax Calculation Query
+    //base query
+    //next time we treat prices an number as postgress is ok with it & we dont need to cast as below
     let minMaxQuery = db
       .select({
         minPrice: sql<number>`min(${products.price})`.as("minPrice"),
@@ -276,20 +310,17 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       })
       .from(products);
 
-    if (whereClauses.length > 0) {
+    //we want to change the min & max price based on category or subcategory pricerange for electonics and groceries are way too diffrent
+    if (categorySubcategoryClauses.length > 0) {
       minMaxQuery = minMaxQuery.where(
-        and(...whereClauses)
+        and(...categorySubcategoryClauses)
       ) as typeof minMaxQuery;
     }
 
     const minMaxResult = await minMaxQuery;
-    const minMaxPrices = minMaxResult[0] || { minPrice: 0, maxPrice: 100 };
+    const minMaxPrices = minMaxResult[0] || { minPrice: 0, maxPrice: 500 };
 
     // Product and Attributes Queries
-    let productQuery = db.select().from(products);
-    let attributesQuery = db
-      .select({ attributes: products.attributes })
-      .from(products);
 
     if (filters.minprice) {
       whereClauses.push(
@@ -307,53 +338,56 @@ export async function getProductsAndFilters(filters: ProductFilters) {
       whereClauses.push(gte(products.rating, filters.rating));
     }
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (
-        Array.isArray(value) &&
-        key !== "subcategories" &&
-        key !== "category"
-      ) {
-        if (value.length > 0) {
+    if (filters?.attributes) {
+      Object.entries(filters.attributes).forEach(([key, value]) => {
+        if (Array.isArray(value) && value.length > 0) {
           whereClauses.push(
             sql`${
               products.attributes
-            } -> 'availableAttributes' ->> ${key} IN (${value
-              .map((val) => `'${val}'`)
-              .join(", ")})`
+            } -> 'availableAttributes' -> ${key} @> ${JSON.stringify(
+              value
+            )}::jsonb`
           );
         }
-      }
-    });
+      });
+    }
 
     if (whereClauses.length > 0) {
       productQuery = productQuery.where(
         and(...whereClauses)
       ) as typeof productQuery;
-      attributesQuery = attributesQuery.where(
-        and(...whereClauses)
-      ) as typeof attributesQuery;
     }
 
-    const productsResult = await productQuery;
-    const attributesResults = await attributesQuery;
-    const allAvailableAttributes: { [key: string]: string[] } = {};
+    // Sorting //works on the product query(all products)
+    if (filters.sort === "asc") {
+      //@ts-expect-error works well for now
+      productQuery = productQuery.orderBy(asc(products.price));
+    } else if (filters.sort === "desc") {
+      //@ts-expect-error works well for now
+      productQuery = productQuery.orderBy(desc(products.price));
+    }
 
-    attributesResults.forEach((product) => {
-      if (product.attributes && product.attributes.availableAttributes) {
-        Object.entries(product.attributes.availableAttributes).forEach(
-          ([key, values]) => {
-            if (!allAvailableAttributes[key]) {
-              allAvailableAttributes[key] = [];
-            }
-            values.forEach((value) => {
-              if (!allAvailableAttributes[key].includes(value)) {
-                allAvailableAttributes[key].push(value);
-              }
-            });
-          }
-        );
-      }
-    });
+    // Total Count Calculation (BEFORE pagination)
+    let totalCountQuery = db
+      .select({ count: sql<number>`count(*)`.mapWith(Number) })
+      .from(products);
+
+    if (whereClauses.length > 0) {
+      totalCountQuery = totalCountQuery.where(
+        and(...whereClauses)
+      ) as typeof totalCountQuery;
+    }
+
+    const totalCountResult = await totalCountQuery;
+    const totalCount = totalCountResult[0]?.count || 0;
+
+    // Pagination (AFTER total count)
+    //@ts-expect-error works well for now
+    productQuery = productQuery
+      .limit(Number(filters.limit || 10))
+      .offset(Number(filters.page ? filters.page - 1 : 1));
+
+    const productsResult = await productQuery;
 
     return {
       products: productsResult,
@@ -361,6 +395,7 @@ export async function getProductsAndFilters(filters: ProductFilters) {
         availableAttributes: allAvailableAttributes,
         minMaxPrices: minMaxPrices,
       },
+      totalCount: totalCount,
     };
   } catch (error) {
     console.error("Error fetching products and filters:", error);
@@ -370,6 +405,7 @@ export async function getProductsAndFilters(filters: ProductFilters) {
         availableAttributes: {},
         minMaxPrices: { minPrice: 0, maxPrice: 100 },
       },
+      totalCount: 0,
     };
   }
 }

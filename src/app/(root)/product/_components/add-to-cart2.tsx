@@ -76,6 +76,7 @@ const AddToCartNoModal: React.FC<AddToCartNoModalProps> = ({ product }) => {
             <QuantityAdjuster
               quantity={localQuantity}
               onQuantityChange={handleQuantityChange}
+              isDissabled={isQuantityDisabled}
               isLarge
             />
           )}

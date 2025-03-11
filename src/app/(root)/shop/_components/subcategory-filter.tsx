@@ -103,7 +103,7 @@ function SubcategoryFilter() {
       {isLoading ? (
         renderSkeleton()
       ) : (
-        <div className="space-y-2">{renderItems()}</div>
+        <div className="space-y-3">{renderItems()}</div>
       )}
     </div>
   );

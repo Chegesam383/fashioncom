@@ -13,7 +13,6 @@ interface PriceRangeFilterProps {
 }
 
 function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
-  // Binding minprice to URL query parameter "minprice"
   const [minprice, setMinprice] = useQueryState(
     "minprice",
     parseAsFloat
@@ -21,7 +20,6 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
       .withOptions({ shallow: false, throttleMs: 100, history: "push" })
   );
 
-  // Binding maxprice to URL query parameter "maxprice"
   const [maxprice, setMaxprice] = useQueryState(
     "maxprice",
     parseAsFloat
@@ -31,7 +29,6 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
 
   const handleSliderChange = (values: number[]) => {
     if (values && values.length === 2) {
-      // Updating minprice and maxprice states, which in turn update URL query parameters
       setMinprice(values[0]);
       setMaxprice(values[1]);
     }
@@ -57,24 +54,10 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
     }
   };
 
-  const calculateSliderStep = () => {
-    const range = minMaxPrices.maxPrice - minMaxPrices.minPrice;
-    if (range <= 10) {
-      return 1;
-    } else if (range <= 100) {
-      return 5;
-    } else if (range <= 500) {
-      return 10;
-    } else {
-      return 50;
-    }
-  };
-
   return (
     <div>
       <h3 className="text-sm font-medium mb-2">PRICE RANGE</h3>
       <div className="space-y-4">
-        {/* Slider value is bound to minprice and maxprice states */}
         <Slider
           value={[minprice, maxprice]}
           defaultValue={[
@@ -83,13 +66,12 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
           ]}
           min={Number(minMaxPrices.minPrice)}
           max={Number(minMaxPrices.maxPrice)}
-          step={calculateSliderStep()}
+          step={1}
           minStepsBetweenThumbs={1}
           className="w-full"
           onValueChange={handleSliderChange}
         />
         <div className="flex gap-4">
-          {/* Input value is bound to minprice state */}
           <Input
             type="number"
             placeholder="Min"
@@ -98,7 +80,7 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
             // min={minMaxPrices.minPrice}
             // max={minMaxPrices.maxPrice}
           />
-          {/* Input value is bound to maxprice state */}
+
           <Input
             type="number"
             placeholder="Max"

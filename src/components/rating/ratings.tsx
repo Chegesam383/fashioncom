@@ -28,7 +28,7 @@ export default function Rating({ rating, long = true }: RatingProps) {
 
 const NotFilled = () => (
   <svg
-    className="w-4 h-4 text-gray-400 ms-1"
+    className="w-4 h-4 text-slate-400 ms-1"
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     fill="currentColor"

@@ -1,14 +1,18 @@
+import { CarouselSkeleton } from "@/components/sections/carousel-skeleton";
 import Category from "@/components/sections/category";
 import FreshSaleSection from "@/components/sections/frashsale";
 
-import Hero from "@/components/sections/hero";
+import CarouselServer from "@/components/sections/hero-server-content";
 import InfoSection from "@/components/sections/info-section";
 import ShopByCategory from "@/components/sections/shop-by-category";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
     <>
-      <Hero />
+      <Suspense fallback={<CarouselSkeleton />}>
+        <CarouselServer />
+      </Suspense>
 
       <FreshSaleSection />
       <Category

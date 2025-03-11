@@ -166,7 +166,7 @@ const AccountDropdown = ({
           </span>
           <div className="hidden md:flex flex-col ">
             <small className="text-xs text-muted-foreground">
-              hello, {userName}
+              Hello, {userName}
             </small>
             <span className="text-sm font-semibold text-white">{`Account & orders`}</span>
           </div>

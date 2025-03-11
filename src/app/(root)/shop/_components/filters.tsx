@@ -58,12 +58,21 @@ export const MobileFilters = ({
           Filters
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[300px]">
+      <SheetContent
+        side="left"
+        className="w-[400px] max-h-screen overflow-y-auto"
+      >
         <SheetHeader>
           <SheetTitle>Filters</SheetTitle>
           <SheetDescription>Adjust your product filters</SheetDescription>
         </SheetHeader>
-        <Filters initialProducts={initialProducts} filtersData={filtersData} />
+        <div>
+          <Filters
+            initialProducts={initialProducts}
+            filtersData={filtersData}
+          />
+          {/* <ScrollBar orientation="vertical" /> */}
+        </div>
       </SheetContent>
     </Sheet>
   </div>

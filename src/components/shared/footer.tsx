@@ -8,7 +8,7 @@ export default function Footer() {
           <Link className="flex items-center gap-2" href="#">
             <h1 className="font-bold">Fashionist</h1>
           </Link>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-slate-500 dark:text-slate-400">
             Discover the latest fashion trends and styles.
           </p>
         </div>
@@ -37,7 +37,7 @@ export default function Footer() {
           </Link>
         </div>
       </div>
-      <div className="container mx-auto flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      <div className="container mx-auto flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
         <p>© 2024 Fashionist. All rights reserved.</p>
         <div className="flex gap-4">
           <Link className="hover:underline" href="#">

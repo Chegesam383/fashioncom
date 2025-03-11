@@ -3,7 +3,11 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { useQueryState, parseAsArrayOf, parseAsString } from "nuqs";
+import { useQueryState, parseAsString } from "nuqs";
+
+interface Attributes {
+  [key: string]: string[];
+}
 
 function AttributeFilter({
   attributeKey,
@@ -12,27 +16,64 @@ function AttributeFilter({
 }: {
   attributeKey: string;
   asButtons?: boolean;
-  availableAttributes: { [key: string]: string[] };
+  availableAttributes: Attributes;
 }) {
-  const [selectedAttributes, setSelectedAttributes] = useQueryState(
-    attributeKey,
-    parseAsArrayOf(parseAsString, ",").withOptions({ shallow: false })
+  const [allAttributes, setAllAttributes] = useQueryState(
+    "attributes",
+    parseAsString.withOptions({ shallow: false, throttleMs: 10 })
   );
 
   const attributes = availableAttributes[attributeKey] || [];
 
   const handleAttributeChange = (attribute: string) => {
-    const attributeValue = attribute;
-    setSelectedAttributes((prev) => {
-      if (!Array.isArray(prev)) {
-        return [attributeValue];
+    let currentAttributes: Attributes = {};
+
+    if (allAttributes) {
+      try {
+        currentAttributes = JSON.parse(allAttributes) as Attributes;
+      } catch (e) {
+        console.error("Error parsing attributes:", e);
       }
-      if (prev.includes(attributeValue)) {
-        return prev.filter((item) => item !== attributeValue);
-      } else {
-        return [...prev, attributeValue];
+    }
+
+    const attributeValue = attribute;
+
+    if (!currentAttributes[attributeKey]) {
+      currentAttributes[attributeKey] = [];
+    }
+
+    if (currentAttributes[attributeKey].includes(attributeValue)) {
+      currentAttributes[attributeKey] = currentAttributes[attributeKey].filter(
+        (item: string) => item !== attributeValue
+      );
+    } else {
+      currentAttributes[attributeKey].push(attributeValue);
+    }
+
+    // Remove empty arrays from the attributes object
+    Object.keys(currentAttributes).forEach((key) => {
+      if (currentAttributes[key].length === 0) {
+        delete currentAttributes[key];
       }
     });
+
+    setAllAttributes(JSON.stringify(currentAttributes));
+  };
+
+  const getIsSelected = (attribute: string) => {
+    if (allAttributes) {
+      try {
+        const parsedAttributes = JSON.parse(allAttributes) as Attributes;
+        return (
+          parsedAttributes[attributeKey] &&
+          parsedAttributes[attributeKey].includes(attribute)
+        );
+      } catch (e) {
+        console.error("Error parsing attributes:", e);
+        return false;
+      }
+    }
+    return false;
   };
 
   return (
@@ -42,9 +83,7 @@ function AttributeFilter({
         {attributes.map((attr) => {
           const key = attr;
           const label = attr;
-          const isSelected =
-            Array.isArray(selectedAttributes) &&
-            selectedAttributes.some((item) => item === key);
+          const isSelected = getIsSelected(attr);
 
           return (
             <div key={key} className="flex items-center">
@@ -79,7 +118,7 @@ function AttributeFilter({
 export const AttributeSelector = ({
   availableAttributes,
 }: {
-  availableAttributes: Record<string, string[]>;
+  availableAttributes: Attributes;
 }) => {
   return (
     <>

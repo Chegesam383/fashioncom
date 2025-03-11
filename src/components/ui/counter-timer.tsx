@@ -1,31 +1,78 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { SlidingNumber } from "./sliding-number";
-import { Timer } from "lucide-react";
+import { useState, useEffect } from "react";
 
-export default function Clock() {
-  const [hours, setHours] = useState(new Date().getHours());
-  const [minutes, setMinutes] = useState(new Date().getMinutes());
-  const [seconds, setSeconds] = useState(new Date().getSeconds());
+interface CountdownTimerProps {
+  days?: number;
+  hours?: number;
+  minutes?: number;
+}
+
+export default function CountdownTimer({
+  days = 1,
+  hours = 0,
+  minutes = 0,
+}: CountdownTimerProps) {
+  const calculateTotalSeconds = () => {
+    return days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60;
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTotalSeconds());
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setHours(new Date().getHours());
-      setMinutes(new Date().getMinutes());
-      setSeconds(new Date().getSeconds());
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 0) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prevTime - 1;
+      });
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    setTimeLeft(calculateTotalSeconds());
+  }, [days, hours, minutes]);
+
+  const daysLeft = Math.floor(timeLeft / (24 * 60 * 60));
+  const hoursLeft = Math.floor((timeLeft % (24 * 60 * 60)) / (60 * 60));
+  const minutesLeft = Math.floor((timeLeft % (60 * 60)) / 60);
+  const secondsLeft = timeLeft % 60;
+
   return (
-    <div className="flex items-center gap-0.5 font-mono bg-red-500/90 text-white text-xl px-4 py-2 rounded-lg font-bold">
-      <Timer className="mr-3" />
-      <SlidingNumber value={hours} padStart={true} label="h" />
-      <span className="">:</span>
-      <SlidingNumber value={minutes} padStart={true} label="min" />
-      <span className="">:</span>
-      <SlidingNumber value={seconds} padStart={true} label="sec" />
+    <div className="flex justify-center items-center gap-4 text-center">
+      {daysLeft > 0 && (
+        <div className="flex items-baseline">
+          <span className="text-xl font-mono tabular-nums font-bold mr-1">
+            {daysLeft}
+          </span>
+          <span className="text-sm text-muted-foreground">days</span>
+        </div>
+      )}
+
+      <div className="flex items-baseline">
+        <span className="text-xl font-mono tabular-nums font-bold mr-1">
+          {hoursLeft}
+        </span>
+        <span className="text-sm text-muted-foreground">h</span>
+      </div>
+
+      <div className="flex items-baseline">
+        <span className="text-xl font-mono tabular-nums font-bold mr-1">
+          {minutesLeft}
+        </span>
+        <span className="text-sm text-muted-foreground">min</span>
+      </div>
+
+      <div className="flex items-baseline">
+        <span className="text-xl font-mono tabular-nums font-bold mr-1">
+          {secondsLeft}
+        </span>
+        <span className="text-sm text-muted-foreground">sec</span>
+      </div>
     </div>
   );
 }

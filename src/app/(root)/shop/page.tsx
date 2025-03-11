@@ -6,6 +6,8 @@ import { Filters, MobileFilters } from "./_components/filters";
 import { SearchParams } from "nuqs/server";
 import { loadSearchParams } from "./serch-params";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ShopPagination } from "./_components/pagination";
+import FilterControls from "./_components/topfilter";
 
 interface ShopPageProps {
   searchParams: Promise<SearchParams>;
@@ -15,6 +17,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   let products: Product[] = [];
   let errorMessage: string | null = null;
   let loading: boolean = true;
+  let totalCount: number = 0;
+  const params = await loadSearchParams(searchParams);
+
   let filtersData: {
     availableAttributes: { [key: string]: string[] };
     minMaxPrices: { minPrice: number; maxPrice: number };
@@ -23,12 +28,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     minMaxPrices: { minPrice: 0, maxPrice: 100 },
   };
 
-  try {
-    const params = await loadSearchParams(searchParams);
+  console.log("p", params);
 
+  try {
     const result = await getProductsAndFilters(params);
     products = result.products;
     filtersData = result.filters; // Extract filters data
+    totalCount = result.totalCount;
   } catch (error) {
     console.error("Error fetching products:", error);
     errorMessage = "An error occurred while fetching products.";
@@ -74,28 +80,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     return <div className="container mx-auto px-4 py-8">{errorMessage}</div>;
   }
 
-  if (!products || products.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="hidden lg:block">
-            <Filters
-              initialProducts={JSON.parse(JSON.stringify(products))}
-              filtersData={filtersData} // Pass filters data
-            />
-          </div>
-          <MobileFilters
-            initialProducts={JSON.parse(JSON.stringify(products))}
-            filtersData={filtersData} // Pass filters data
-          />
-          <div className="flex-1">No Products</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="lg:container mx-auto px-4 py-8">
+    <div className="lg:container mx-auto px-4 mt-1">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="hidden lg:block">
           <Filters
@@ -107,13 +93,25 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           initialProducts={JSON.parse(JSON.stringify(products))}
           filtersData={filtersData} // Pass filters data
         />
-        <div className="flex-1">
-          <div className="grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Array.isArray(products) &&
+        <div className=" ">
+          <FilterControls />
+          <div className="grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 ">
+            {Array.isArray(products) && products.length > 0 ? (
               products.map((product) => (
                 <ProductCard product={product} key={product.id} />
-              ))}
+              ))
+            ) : (
+              <div className="">
+                <div>
+                  <p className="font-bold ">No products</p>
+                  <p className="text-muted-foreground ">
+                    Try Adjusting your filters
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
+          <ShopPagination totalPages={totalCount / (params.limit || 10)} />
         </div>
       </div>
     </div>

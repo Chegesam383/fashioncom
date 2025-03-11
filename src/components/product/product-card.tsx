@@ -25,7 +25,7 @@ export default function ProductCard({ product }: { product: Product }) {
       key={product.id}
       className="p-3 bg-background/60 backdrop-blur relative transition-shadow rounded-xl border hover:shadow-lg"
     >
-      <div className="flex flex-col gap-4 h-[400px]">
+      <div className="flex flex-col gap-4 h-[390px]">
         {discount > 0 && (
           <div className="absolute left-4 top-4 z-10 rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
             {discount}% OFF
@@ -42,7 +42,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </Link>
         <Link
           href={"product/" + product.id}
-          className="line-clamp-2 text-lg tracking-tight text-gray-900 dark:text-white text-ellipsis"
+          className="line-clamp-2 text-lg tracking-tight text-slate-900 dark:text-white text-ellipsis"
         >
           {product.name}
         </Link>

@@ -27,6 +27,7 @@ export default function EcommerceCheckout() {
     e.preventDefault();
 
     if (!stripe || !elements) {
+      setPaymentError("Payment system not initialized");
       return;
     }
 
@@ -35,7 +36,6 @@ export default function EcommerceCheckout() {
 
     try {
       const { error: submitError } = await elements.submit();
-
       if (submitError) {
         setPaymentError(
           submitError.message || "Please check your payment details"
@@ -55,28 +55,29 @@ export default function EcommerceCheckout() {
 
       if (error) {
         setPaymentError(error.message || "An error occurred with your payment");
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      } else if (paymentIntent?.status === "succeeded") {
         setPaymentSuccess(true);
         clearCart(userId || null);
-        //todo sucessfull logic
 
         setTimeout(() => {
           router.push(`/success?payment_intent=${paymentIntent.id}`);
         }, 1000);
       } else if (paymentIntent) {
         if (paymentIntent.status === "requires_action") {
-          const { error } = await stripe.confirmPayment({
+          const { error: confirmError } = await stripe.confirmPayment({
             elements,
             confirmParams: {
               return_url: `${window.location.origin}/success`,
               receipt_email: "sam@gmail.com",
             },
           });
-          if (error) {
-            setPaymentError(error.message || "Payment authentication failed");
+          if (confirmError) {
+            setPaymentError(
+              confirmError.message || "Payment authentication failed"
+            );
           }
         } else {
-          setPaymentError("Payment status: " + paymentIntent.status);
+          setPaymentError(`Payment status: ${paymentIntent.status}`);
         }
       } else {
         setPaymentError("An unexpected error occurred");
@@ -94,48 +95,52 @@ export default function EcommerceCheckout() {
       type: "accordion" as const,
       defaultCollapsed: false,
     },
+    style: {
+      base: {
+        border: "none", // Removes borders from inputs
+      },
+      invalid: {
+        border: "none", // Ensures no border on invalid state
+      },
+    },
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <div>
-          <div className="mt-1 rounded-md overflow-hidden">
-            <PaymentElement options={paymentElementOptions} />
-          </div>
-
-          {paymentError && (
-            <p className="text-sm text-red-500 mt-2">{paymentError}</p>
-          )}
-
-          {paymentSuccess && (
-            <p className="text-sm text-green-600 mt-2 flex items-center">
-              <Check className="h-4 w-4 mr-1" />
-              Payment successful! Redirecting...
-            </p>
-          )}
+        <div className="mt-1 rounded-md">
+          <PaymentElement options={paymentElementOptions} />
         </div>
+
+        {paymentError && (
+          <p className="text-sm text-red-500 mt-2">{paymentError}</p>
+        )}
+
+        {paymentSuccess && (
+          <p className="text-sm text-green-600 mt-2 flex items-center">
+            <Check className="h-4 w-4 mr-1" />
+            Payment successful! Redirecting...
+          </p>
+        )}
       </div>
 
-      <div className="mt-8 flex justify-between">
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isLoading || !stripe || !elements || paymentSuccess}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            <>
-              Pay {formatPrice(grandTotal)}
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </>
-          )}
-        </Button>
-      </div>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isLoading || !stripe || !elements || paymentSuccess}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          <>
+            Pay {formatPrice(grandTotal)}
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </>
+        )}
+      </Button>
     </form>
   );
 }
