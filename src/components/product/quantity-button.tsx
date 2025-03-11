@@ -21,6 +21,7 @@ const QauntityButton: React.FC<QauntityButtonProps> = ({
   const handleIncrement = () => {
     if (isLoaded && userId) {
       updateCartProduct(productInCart, productInCart.quantity + 1, userId);
+    } else {
       updateCartProduct(productInCart, productInCart.quantity + 1, null);
     }
   };
