@@ -21,6 +21,13 @@ export interface ProductCategory {
   description?: string | null;
 }
 
+export interface Review {
+  id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
 export interface ProductSubcategory {
   id: string;
   name: string;

@@ -10,15 +10,15 @@ import { formatPrice } from "@/lib/utils";
 import AddToCart from "./add-to-cart";
 import { Product } from "@/lib/types";
 import AddToCartNoAttributes from "./add-to-cart-no-attributes";
+import { Badge } from "../ui/badge";
 
 export default function ProductCard({ product }: { product: Product }) {
   const attributes = product.attributes?.availableAttributes;
   const hasAttributes = !(attributes && JSON.stringify(attributes) === "{}");
 
-  const discount =
-    Number(product.price) > 30
-      ? Math.round(((300 - Number(product.price)) / 300) * 100)
-      : 0;
+  const priceDiff =
+    Number(product?.oldPrice || 0) - Number(product?.price || 0);
+  const discount = (priceDiff / Number(product?.price || 0)) * 100;
 
   return (
     <div
@@ -26,10 +26,13 @@ export default function ProductCard({ product }: { product: Product }) {
       className="p-2 bg-background/60 backdrop-blur relative transition-shadow rounded-xl border hover:shadow-lg"
     >
       <div className="flex flex-col gap-4 h-[315px]">
-        {discount > 0 && (
-          <div className="absolute left-1 top-1 z-10 rounded-full bg-red-500 px-1 py-[1px] text-xs font-semibold text-white">
-            {discount}% OFF
-          </div>
+        {discount && discount > 15 && (
+          <Badge
+            variant={"destructive"}
+            className="absolute left-1 top-1 z-10 "
+          >
+            {parseInt(`${discount}`)}% off
+          </Badge>
         )}
         <Link href={"product/" + product.id}>
           <Image

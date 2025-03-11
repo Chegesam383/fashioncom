@@ -1,7 +1,12 @@
 "use server";
 
 import { db } from "@/db";
-import { products, productSubcategories, productCategories } from "@/db/schema";
+import {
+  products,
+  productSubcategories,
+  productCategories,
+  reviews,
+} from "@/db/schema";
 import { Product } from "@/lib/types";
 import {
   and,
@@ -131,43 +136,24 @@ export async function getProducts(filters: ProductFilters) {
   }
 }
 
-export async function getProductById(id: string): Promise<Product | undefined> {
-  try {
-    const product = await db
-      .select({
-        id: products.id,
-        name: products.name,
-        description: products.description,
-        price: products.price,
-        imageUrls: products.imageUrls,
-        category: productCategories.name,
-        subcategories: products.subcategories,
-        brand: products.brand,
-        stock: products.stock,
-        rating: products.rating,
-        isActive: products.isActive,
-        attributes: products.attributes,
-      })
-      .from(products)
-      .leftJoin(
-        productCategories,
-        eq(products.categoryId, productCategories.id)
-      )
-      .where(eq(products.id, id))
-      .limit(1);
+export async function getProductById(productId: string) {
+  const product = await db
+    .select()
+    .from(products)
+    .where(eq(products.id, productId))
+    .limit(1);
 
-    if (product.length > 0) {
-      return {
-        ...product[0],
-        attributes: product[0].attributes as Record<string, unknown>,
-      };
-    } else {
-      return undefined; // Product not found
-    }
-  } catch (error) {
-    console.error("Error fetching product by ID:", error);
-    return undefined; // Return undefined on error
-  }
+  if (!product.length) return null;
+
+  const productReviews = await db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.productId, productId));
+
+  return {
+    ...product[0],
+    reviews: productReviews,
+  };
 }
 
 export async function getProductsBySearchTerm(

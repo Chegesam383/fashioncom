@@ -87,20 +87,15 @@ export const orders = pgTable("orders", {
 
 export const reviews = pgTable("reviews", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("userId")
-    .references(() => users.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
   productId: uuid("productId")
-    .references(() => products.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  rating: numeric("rating", { precision: 3, scale: 1 }).notNull(),
-  comment: text("comment").default("No comment"),
+    .notNull()
+    .references(() => products.id),
+  rating: integer("rating").notNull(),
+  comment: text("comment").notNull(),
+  reviewerName: varchar("reviewerName", { length: 255 }).notNull(),
+  reviewerEmail: varchar("reviewerEmail", { length: 255 }).notNull(),
+  date: timestamp("date").notNull(),
   createdAt: timestamp("createdAt").defaultNow(),
-  updatedAt: timestamp(),
 });
 
 export const wishList = pgTable("wishList", {

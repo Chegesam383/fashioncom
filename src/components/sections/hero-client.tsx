@@ -29,7 +29,7 @@ export default function CarouselPlugin({
 
   return (
     <div className="lg:container mx-auto lg:grid grid-cols-3 gap-4 rounded-xl">
-      <div className="col-span-2 bg-white dark:bg-stone-950 border rounded-xl relative">
+      <div className="col-span-2 bg-white dark:bg-slate-950 border rounded-xl relative">
         <Carousel
           opts={{
             align: "start",
@@ -86,7 +86,7 @@ export default function CarouselPlugin({
           products.map((product) => (
             <div
               key={product.id}
-              className="flex items-center gap-4 bg-white dark:bg-stone-950 border rounded-xl p-4 flex-1"
+              className="flex items-center gap-4 bg-white dark:bg-slate-950 border rounded-xl p-4 flex-1"
             >
               <div>
                 <h3 className="text-xl font-semibold">{product.name}</h3>

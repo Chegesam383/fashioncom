@@ -52,7 +52,7 @@ const Filled = () => (
 
 const HalfFilled = () => (
   <svg
-    className="w-4 h-4 text-primary ms-1"
+    className="w-3 h-3 text-yellow-500 ms-1"
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     fill="currentColor"
