@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { getCategoriesWithSubcategories } from "@/actions/categoryActions";
 import { CategoryWithSubcategories, ProductSubcategory } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton"; // Assuming you have a Skeleton component
+import { Skeleton } from "@/components/ui/skeleton";
 
 function SubcategoryFilter() {
   const [category, setCategory] = useQueryState(
@@ -24,14 +24,14 @@ function SubcategoryFilter() {
     ProductSubcategory[]
   >([]);
 
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      setIsLoading(true); // Set loading to true
+      setIsLoading(true);
       const fetchedCategories = await getCategoriesWithSubcategories();
       setCategoriesWithSubcategories(fetchedCategories);
-      setIsLoading(false); // Set loading to false after fetching
+      setIsLoading(false);
     };
     fetchCategories();
   }, []);
@@ -47,14 +47,13 @@ function SubcategoryFilter() {
 
   const handleItemChange = (slug: string) => {
     if (category) {
-      if (subcategories?.includes(slug)) {
-        setSubcategories(subcategories.filter((sub) => sub !== slug));
-      } else {
-        setSubcategories([...(subcategories || []), slug]);
-      }
+      setSubcategories((prevSubcategories) =>
+        prevSubcategories?.includes(slug)
+          ? prevSubcategories.filter((sub) => sub !== slug)
+          : [...(prevSubcategories || []), slug]
+      );
     } else {
-      if (category === slug) {
-      } else {
+      if (category !== slug) {
         setCategory(slug);
       }
     }
@@ -66,9 +65,16 @@ function SubcategoryFilter() {
       const key = item.name;
       const label = item.name;
       const slug = item.slug;
-      const isSelected = category
-        ? subcategories?.includes(slug)
-        : category === slug;
+      let isSelected = false;
+
+      if (category) {
+        // Check if subcategories is not empty and includes the slug
+        if (subcategories && subcategories.length > 0) {
+          isSelected = subcategories.includes(slug);
+        }
+      } else {
+        isSelected = category === slug;
+      }
 
       return (
         <div key={key} className="flex items-center">

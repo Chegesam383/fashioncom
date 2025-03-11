@@ -1,0 +1,326 @@
+import { eq } from "drizzle-orm";
+import { db } from "./index";
+import { products, productCategories, productSubcategories } from "./schema";
+
+function getRandomPrice(category) {
+  const priceRanges = {
+    smartphones: [100, 1500],
+    laptops: [300, 2000],
+    fragrances: [20, 150],
+    skincare: [5, 100],
+    groceries: [0.5, 50],
+    "home-decoration": [10, 200],
+    furniture: [50, 1500],
+    tops: [10, 80],
+    "womens-dresses": [20, 200],
+    "womens-shoes": [20, 150],
+    "mens-shirts": [15, 100],
+    "mens-watches": [30, 500],
+    "womens-bags": [20, 300],
+    "womens-jewellery": [10, 1000],
+    sunglasses: [15, 250],
+    automotive: [10000, 50000],
+    motorcycle: [2000, 20000],
+    lighting: [20, 300],
+    beauty: [5, 80],
+    "mens-shoes": [25, 150],
+    default: [10, 100],
+  };
+  const [min, max] = priceRanges[category] || priceRanges.default;
+  return (Math.random() * (max - min) + min).toFixed(2);
+}
+
+function getRandomElement(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function getRandomSubset(arr, min = 1, max = 3) {
+  const count = Math.floor(Math.random() * (max - min + 1)) + min;
+  const shuffled = arr.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+function generateUniquePrices(count, category) {
+  const [min, max] = {
+    smartphones: [100, 1500],
+    laptops: [300, 2000],
+    fragrances: [20, 150],
+    skincare: [5, 100],
+    groceries: [0.5, 50],
+    "home-decoration": [10, 200],
+    furniture: [50, 1500],
+    tops: [10, 80],
+    "womens-dresses": [20, 200],
+    "womens-shoes": [20, 150],
+    "mens-shirts": [15, 100],
+    "mens-watches": [30, 500],
+    "womens-bags": [20, 300],
+    "womens-jewellery": [10, 1000],
+    sunglasses: [15, 250],
+    automotive: [10000, 50000],
+    motorcycle: [2000, 20000],
+    lighting: [20, 300],
+    beauty: [5, 80],
+    "mens-shoes": [25, 150],
+    default: [10, 100],
+  }[category] || [10, 100];
+
+  const prices = new Set();
+  while (prices.size < count) {
+    const price = (Math.random() * (max - min) + min).toFixed(2);
+    prices.add(price);
+  }
+  return Array.from(prices);
+}
+
+function generateAttributeCombinations(availableAttributes, category) {
+  const keys = Object.keys(availableAttributes);
+  const values = Object.values(availableAttributes);
+  const combinations = [];
+
+  function combine(current, index) {
+    if (index === keys.length) {
+      combinations.push({ ...current });
+      return;
+    }
+    for (const value of values[index]) {
+      current[keys[index]] = value;
+      combine({ ...current }, index + 1);
+    }
+  }
+
+  combine({}, 0);
+
+  // Assign unique prices after generating combinations
+  const uniquePrices = generateUniquePrices(combinations.length, category);
+  combinations.forEach((combo, i) => {
+    combo.price = uniquePrices[i];
+  });
+
+  return combinations;
+}
+
+const categoryAttributePools = {
+  smartphones: {
+    ram: ["4GB", "6GB", "8GB", "12GB"],
+    storage: ["64GB", "128GB", "256GB", "512GB"],
+    processor: ["Snapdragon 8 Gen 1", "A16 Bionic", "Dimensity 9000"],
+    screenSize: ['6.1"', '6.5"', '6.7"'],
+    color: ["Black", "White", "Blue", "Green"],
+    battery: ["4000mAh", "4500mAh", "5000mAh"],
+  },
+  laptops: {
+    ram: ["8GB", "16GB", "32GB"],
+    processor: ["Intel i5", "Intel i7", "AMD Ryzen 5"],
+    storage: ["256GB SSD", "512GB SSD", "1TB SSD"],
+    screenSize: ['13.3"', '15.6"', '17.3"'],
+    graphics: ["Integrated", "NVIDIA GTX 1650", "RTX 3060"],
+    os: ["Windows 11", "macOS", "Chrome OS"],
+  },
+  fragrances: {
+    size: ["30ml", "50ml", "100ml"],
+    scentType: ["Floral", "Woody", "Citrus", "Oriental"],
+    gender: ["Men", "Women", "Unisex"],
+    intensity: ["Light", "Moderate", "Strong"],
+  },
+  skincare: {
+    size: ["15ml", "30ml", "50ml"],
+    skinType: ["Dry", "Oily", "Combination", "Sensitive"],
+    ingredient: ["Hyaluronic Acid", "Vitamin C", "Retinol"],
+    form: ["Cream", "Gel", "Liquid"],
+  },
+  groceries: {
+    weight: ["200g", "500g", "1kg"],
+    type: ["Organic", "Conventional", "Gluten-Free"],
+    packaging: ["Bag", "Can", "Box"],
+    flavor: ["Sweet", "Savory", "Plain"],
+  },
+  "home-decoration": {
+    material: ["Wood", "Metal", "Ceramic"],
+    color: ["White", "Gold", "Natural", "Black"],
+    dimensions: ["10x10", "20x30", "15x15"],
+    style: ["Modern", "Rustic", "Minimal"],
+  },
+  furniture: {
+    material: ["Wood", "Metal", "Leather"],
+    color: ["Brown", "Black", "Grey", "White"],
+    dimensions: ["40x20x30", "60x30x35", "50x25x40"],
+    style: ["Modern", "Rustic", "Traditional"],
+  },
+  tops: {
+    size: ["S", "M", "L", "XL"],
+    color: ["Black", "White", "Blue", "Red"],
+    material: ["Cotton", "Polyester", "Wool"],
+    fit: ["Slim", "Regular", "Oversized"],
+  },
+  "womens-dresses": {
+    size: ["XS", "S", "M", "L"],
+    color: ["Red", "Black", "Floral", "Blue"],
+    material: ["Cotton", "Silk", "Chiffon"],
+    length: ["Short", "Midi", "Maxi"],
+  },
+  "womens-shoes": {
+    size: ["6", "7", "8", "9"],
+    color: ["Black", "White", "Tan", "Red"],
+    material: ["Leather", "Synthetic", "Canvas"],
+    heel: ["Flat", "Low", "High"],
+  },
+  "mens-shirts": {
+    size: ["S", "M", "L", "XL"],
+    color: ["White", "Blue", "Grey", "Black"],
+    material: ["Cotton", "Polyester", "Linen"],
+    fit: ["Slim", "Regular", "Loose"],
+  },
+  "mens-watches": {
+    material: ["Stainless Steel", "Leather", "Silicone"],
+    dialColor: ["Black", "White", "Blue"],
+    waterResistance: ["30m", "100m", "200m"],
+    movement: ["Quartz", "Automatic"],
+  },
+  "womens-bags": {
+    size: ["Small", "Medium", "Large"],
+    color: ["Black", "Brown", "Red", "White"],
+    material: ["Leather", "Canvas", "Suede"],
+    type: ["Handbag", "Tote", "Clutch"],
+  },
+  "womens-jewellery": {
+    material: ["Gold", "Silver", "Rose Gold"],
+    type: ["Necklace", "Earrings", "Bracelet"],
+    gemstone: ["None", "Diamond", "Sapphire"],
+    finish: ["Shiny", "Matte"],
+  },
+  sunglasses: {
+    lensType: ["Polarized", "UV", "Mirrored"],
+    color: ["Black", "Brown", "Tortoise"],
+    frameMaterial: ["Plastic", "Metal", "Acetate"],
+    shape: ["Aviator", "Wayfarer"],
+  },
+  automotive: {
+    type: ["Car", "Truck", "SUV"],
+    color: ["Silver", "Black", "White", "Blue"],
+    engineSize: ["2.0L", "3.5L", "5.0L"],
+    fuelType: ["Gasoline", "Diesel", "Hybrid"],
+  },
+  motorcycle: {
+    type: ["Cruiser", "Sport", "Touring"],
+    color: ["Black", "Red", "Silver"],
+    engineSize: ["500cc", "750cc", "1000cc"],
+    seatHeight: ["Low", "Medium", "High"],
+  },
+  lighting: {
+    wattage: ["40W", "60W", "100W"],
+    colorTemp: ["Warm", "Cool", "Daylight"],
+    material: ["Glass", "Metal", "Plastic"],
+    type: ["Pendant", "Table", "Floor"],
+  },
+  beauty: {
+    type: ["Mascara", "Lipstick", "Shampoo"],
+    color: ["Black", "Red", "Clear", "Pink"],
+    finish: ["Matte", "Glossy", "Natural"],
+    size: ["10ml", "50ml", "100ml"],
+  },
+  "mens-shoes": {
+    size: ["8", "9", "10", "11"],
+    color: ["Black", "Brown", "White"],
+    material: ["Leather", "Canvas", "Suede"],
+    style: ["Casual", "Formal", "Athletic"],
+  },
+  default: {
+    size: ["Small", "Medium", "Large"],
+    color: ["Black", "White", "Grey"],
+    material: ["Plastic", "Metal", "Fabric"],
+  },
+};
+
+function getProductAttributes(category) {
+  const pool =
+    categoryAttributePools[category] || categoryAttributePools.default;
+  const allKeys = Object.keys(pool);
+  const selectedKeys = getRandomSubset(allKeys, 2, 3); // Pick 2-3 attributes
+  const availableAttributes = {};
+
+  selectedKeys.forEach((key) => {
+    availableAttributes[key] = getRandomSubset(pool[key], 2, pool[key].length); // Pick 2+ values
+  });
+
+  return {
+    attributeCombinations: generateAttributeCombinations(
+      availableAttributes,
+      category
+    ),
+    availableAttributes,
+  };
+}
+
+async function seedProducts() {
+  try {
+    console.log("🌱 Seeding products...");
+    await db.delete(products);
+    console.log("🗑️ Deleted existing products.");
+
+    const response = await fetch("https://dummyjson.com/products?limit=400");
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const productData = await response.json();
+
+    for (const product of productData.products) {
+      const category = await db
+        .select()
+        .from(productCategories)
+        .where(eq(productCategories.slug, product.category))
+        .limit(1);
+
+      if (category.length === 0) {
+        console.warn(`⚠️ No category found for product: ${product.title}`);
+        continue;
+      }
+
+      const categoryId = category[0].id;
+      const subcategories = await db
+        .select()
+        .from(productSubcategories)
+        .where(eq(productSubcategories.categoryId, categoryId));
+
+      let matchingSubcategory = subcategories.find(
+        (sub) =>
+          product.title.toLowerCase().includes(sub.name.toLowerCase()) ||
+          product.tags.some(
+            (tag) => tag.toLowerCase() === sub.name.toLowerCase()
+          )
+      );
+
+      if (!matchingSubcategory && subcategories.length > 0) {
+        matchingSubcategory = getRandomElement(subcategories);
+      }
+
+      const randomPrice = getRandomPrice(product.category);
+      const attributes = getProductAttributes(product.category);
+
+      await db.insert(products).values({
+        name: product.title,
+        description: product.description,
+        price: randomPrice,
+        oldPrice: product.discountPercentage
+          ? (
+              Number(randomPrice) /
+              (1 - product.discountPercentage / 100)
+            ).toFixed(2)
+          : null,
+        imageUrls: [product.thumbnail, ...product.images],
+        categoryId,
+        subcategories: matchingSubcategory ? [matchingSubcategory.slug] : [],
+        brand: product.brand || "Unknown",
+        stock: product.stock,
+        rating: product.rating.toString(),
+        attributes,
+        createdAt: new Date(product.meta.createdAt),
+        updatedAt: new Date(product.meta.updatedAt),
+      });
+    }
+
+    console.log("🎉 Products seeding complete!");
+  } catch (error) {
+    console.error("❌ Error seeding products:", error);
+  }
+}
+
+seedProducts();

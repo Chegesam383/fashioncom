@@ -81,39 +81,46 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   }
 
   return (
-    <div className="lg:container mx-auto px-4 mt-1">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="hidden lg:block">
-          <Filters
+    <section className="lg:container mx-auto px-4 mt-1">
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* filters */}
+        <div>
+          <div className="hidden lg:block">
+            <Filters
+              initialProducts={JSON.parse(JSON.stringify(products))}
+              filtersData={filtersData} // Pass filters data
+            />
+          </div>
+          <MobileFilters
             initialProducts={JSON.parse(JSON.stringify(products))}
             filtersData={filtersData} // Pass filters data
           />
         </div>
-        <MobileFilters
-          initialProducts={JSON.parse(JSON.stringify(products))}
-          filtersData={filtersData} // Pass filters data
-        />
-        <div className=" ">
+
+        {/* products */}
+        <div className="flex-1">
           <FilterControls />
-          <div className="grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 ">
+          <div className="grid grid-cols-1 xxs:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-4">
             {Array.isArray(products) && products.length > 0 ? (
               products.map((product) => (
                 <ProductCard product={product} key={product.id} />
               ))
             ) : (
-              <div className="">
-                <div>
-                  <p className="font-bold ">No products</p>
-                  <p className="text-muted-foreground ">
-                    Try Adjusting your filters
-                  </p>
-                </div>
+              <div className="col-span-4 flex flex-col text-center">
+                <p className="text-semibold text-xl mt-52">
+                  No products found!
+                </p>
+                <p className="text-muted-foreground ">
+                  Try adjusting your filters
+                </p>
               </div>
             )}
           </div>
-          <ShopPagination totalPages={totalCount / (params.limit || 10)} />
+          <ShopPagination
+            totalPages={Math.round(totalCount / (params.limit || 10))}
+          />
         </div>
       </div>
-    </div>
+    </section>
   );
 }

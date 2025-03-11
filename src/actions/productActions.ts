@@ -382,10 +382,12 @@ export async function getProductsAndFilters(filters: ProductFilters) {
     const totalCount = totalCountResult[0]?.count || 0;
 
     // Pagination (AFTER total count)
+    const page = filters.page ? filters.page : 1;
+    const limit = filters.limit || 10;
     //@ts-expect-error works well for now
     productQuery = productQuery
-      .limit(Number(filters.limit || 10))
-      .offset(Number(filters.page ? filters.page - 1 : 1));
+      .limit(Number(limit))
+      .offset(Number((page - 1) * limit)); // Corrected offset calculation
 
     const productsResult = await productQuery;
 

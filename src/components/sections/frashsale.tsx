@@ -33,8 +33,8 @@ export default async function FlashSaleDeals() {
           </div>
           <CountdownTimer days={3} />
         </div>
-        <div className="grid gap-4 xxs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
-          {products.slice(0, 10).map((product) => (
+        <div className="grid gap-4 grid-cols-2 xxs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 ">
+          {products.slice(0, 12).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react"; // Import useEffect and useState
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useQueryState, parseAsString } from "nuqs";
@@ -24,6 +24,21 @@ function AttributeFilter({
   );
 
   const attributes = availableAttributes[attributeKey] || [];
+  const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (allAttributes) {
+      try {
+        const parsedAttributes = JSON.parse(allAttributes) as Attributes;
+        setSelectedAttributes(parsedAttributes[attributeKey] || []);
+      } catch (e) {
+        console.error("Error parsing attributes:", e);
+        setSelectedAttributes([]);
+      }
+    } else {
+      setSelectedAttributes([]);
+    }
+  }, [allAttributes, attributeKey]);
 
   const handleAttributeChange = (attribute: string) => {
     let currentAttributes: Attributes = {};
@@ -50,7 +65,6 @@ function AttributeFilter({
       currentAttributes[attributeKey].push(attributeValue);
     }
 
-    // Remove empty arrays from the attributes object
     Object.keys(currentAttributes).forEach((key) => {
       if (currentAttributes[key].length === 0) {
         delete currentAttributes[key];
@@ -61,19 +75,7 @@ function AttributeFilter({
   };
 
   const getIsSelected = (attribute: string) => {
-    if (allAttributes) {
-      try {
-        const parsedAttributes = JSON.parse(allAttributes) as Attributes;
-        return (
-          parsedAttributes[attributeKey] &&
-          parsedAttributes[attributeKey].includes(attribute)
-        );
-      } catch (e) {
-        console.error("Error parsing attributes:", e);
-        return false;
-      }
-    }
-    return false;
+    return selectedAttributes.includes(attribute);
   };
 
   return (

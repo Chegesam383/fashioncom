@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react"; // Import useEffect and useState
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { useQueryState, parseAsFloat } from "nuqs";
@@ -27,6 +27,17 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
       .withOptions({ shallow: false, throttleMs: 100, history: "push" })
   );
 
+  const [localMinPrice, setLocalMinPrice] = useState<number | string>(minprice);
+  const [localMaxPrice, setLocalMaxPrice] = useState<number | string>(maxprice);
+
+  useEffect(() => {
+    setLocalMinPrice(minprice);
+  }, [minprice]);
+
+  useEffect(() => {
+    setLocalMaxPrice(maxprice);
+  }, [maxprice]);
+
   const handleSliderChange = (values: number[]) => {
     if (values && values.length === 2) {
       setMinprice(values[0]);
@@ -37,9 +48,10 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
   const handleMinInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value === "" ? "" : parseFloat(e.target.value);
     if (value === "" || isNaN(value)) {
-      // @ts-expect-error: the library forces to use  null which doesnt allow me to achieve functionality i want
-      setMinprice("");
+      setLocalMinPrice("");
+      setMinprice(null);
     } else {
+      setLocalMinPrice(value);
       setMinprice(value);
     }
   };
@@ -47,9 +59,10 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
   const handleMaxInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value === "" ? "" : parseFloat(e.target.value);
     if (value === "" || isNaN(value)) {
-      // @ts-expect-error: the library forces to use null which doesnt allow me to achieve functionality i want
-      setMaxprice("");
+      setLocalMaxPrice("");
+      setMaxprice(null);
     } else {
+      setLocalMaxPrice(value);
       setMaxprice(value);
     }
   };
@@ -59,7 +72,7 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
       <h3 className="text-sm font-medium mb-2">PRICE RANGE</h3>
       <div className="space-y-4">
         <Slider
-          value={[minprice, maxprice]}
+          value={[Number(localMinPrice), Number(localMaxPrice)]}
           defaultValue={[
             Number(minMaxPrices.minPrice),
             Number(minMaxPrices.maxPrice),
@@ -76,7 +89,7 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
             type="number"
             placeholder="Min"
             onChange={handleMinInputChange}
-            value={minprice || ""}
+            value={localMinPrice === 0 ? "" : localMinPrice}
             // min={minMaxPrices.minPrice}
             // max={minMaxPrices.maxPrice}
           />
@@ -85,7 +98,7 @@ function PriceRangeFilter({ minMaxPrices }: PriceRangeFilterProps) {
             type="number"
             placeholder="Max"
             onChange={handleMaxInputChange}
-            value={maxprice || ""}
+            value={localMaxPrice === 0 ? "" : localMaxPrice}
             // min={minMaxPrices.minPrice}
             // max={minMaxPrices.maxPrice}
           />

@@ -162,8 +162,23 @@ async function seedCategoriesAndSubcategories() {
         "Rugs",
         "Vases",
       ],
+      beauty: [
+        "Makeup",
+        "Hair Care",
+        "Nail Care",
+        "Bath & Body",
+        "Beauty Tools",
+        "Beauty Accessories",
+      ],
+      "mens-shoes": [
+        "Sneakers",
+        "Dress Shoes",
+        "Boots",
+        "Sandals",
+        "Loafers",
+        "Athletic Shoes",
+      ],
     };
-
     for (const category of categories as {
       name: string;
       slug: keyof typeof subcategoryMap;

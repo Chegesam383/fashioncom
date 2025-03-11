@@ -23,11 +23,11 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <div
       key={product.id}
-      className="p-3 bg-background/60 backdrop-blur relative transition-shadow rounded-xl border hover:shadow-lg"
+      className="p-2 bg-background/60 backdrop-blur relative transition-shadow rounded-xl border hover:shadow-lg"
     >
-      <div className="flex flex-col gap-4 h-[390px]">
+      <div className="flex flex-col gap-4 h-[315px]">
         {discount > 0 && (
-          <div className="absolute left-4 top-4 z-10 rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
+          <div className="absolute left-1 top-1 z-10 rounded-full bg-red-500 px-1 py-[1px] text-xs font-semibold text-white">
             {discount}% OFF
           </div>
         )}
@@ -37,30 +37,30 @@ export default function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             width={200}
             height={150}
-            className="w-full h-52 object-cover rounded-lg hover:scale-[1.02] transition-transform "
+            className="w-44 h-44 object-cover rounded-lg hover:scale-[1.02] transition-transform "
           />
         </Link>
         <Link
           href={"product/" + product.id}
-          className="line-clamp-2 text-lg tracking-tight text-slate-900 dark:text-white text-ellipsis"
+          className="line-clamp-2 text-md tracking-tight text-slate-900 dark:text-white text-ellipsis "
         >
           {product.name}
         </Link>
-        <div className="flex justify-between flex-wrap">
+        <div className="flex flex-col-reverse">
           <div className="">
-            <span className="text-xl font-bold">
-              {formatPrice(product.price)}
-            </span>
+            <span className="text-lg ">{formatPrice(product.price)}</span>
             <small className="hidden md:inline ml-2 text-xs text-muted-foreground line-through">
               {product.oldPrice && formatPrice(product.oldPrice)}
             </small>
           </div>
           <div className="flex align-center gap-2">
-            <Rating rating={4} long={false} />
-            <span className="mt-1 text-muted-foreground">{product.rating}</span>
+            <Rating rating={4} long={true} />
+            <span className="mt-1 text-muted-foreground text-sm">
+              {product.rating}
+            </span>
           </div>
         </div>
-        <div className="">
+        <div className="hidden">
           <small
             className={`text-sm line-clamp-2 text-muted-foreground text-ellipsis`}
           >

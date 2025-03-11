@@ -59,14 +59,19 @@ const FilterControls = () => {
   );
   const [subcategories, setSubcategories] = useQueryState(
     "subcategories",
-    parseAsString
+    parseAsString.withOptions({ shallow: false })
   );
   const [attributes, setAttributes] = useQueryState(
     "attributes",
-    parseAsJson((value) => attributesSchema.parse(value)).withDefault({})
+    parseAsJson((value) => attributesSchema.parse(value))
+      .withDefault({})
+      .withOptions({ shallow: false })
   );
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [page, setPage] = useQueryState("page", parseAsInteger);
+  const [page, setPage] = useQueryState(
+    "page",
+    parseAsInteger.withOptions({ shallow: false })
+  );
 
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(parseInt(value, 10));
@@ -89,9 +94,11 @@ const FilterControls = () => {
         break;
       case "minprice":
         setMinPrice(null);
+        setMaxPrice(null);
         break;
       case "maxprice":
         setMaxPrice(null);
+        setMinPrice(null);
         break;
       case "category":
         setCategory(null);
@@ -213,25 +220,27 @@ const FilterControls = () => {
   };
 
   return (
-    <div className="flex justify-between mb-2">
-      {countActiveFilters() > 1 && (
-        <p
-          className=" text-sm cursor-pointer underline text-muted-foreground text-nowrap"
-          onClick={clearAllFilters}
-        >
-          Clear all filters
-        </p>
-      )}
-      <div className="inline-block lg:hidden flex-1 mr-4">
-        {renderActiveFilters(1, 1)}
+    <div className="flex justify-between items-center my-2">
+      <div className="flex flex-1">
+        {countActiveFilters() > 1 && (
+          <p
+            className=" text-sm cursor-pointer underline text-muted-foreground text-nowrap"
+            onClick={clearAllFilters}
+          >
+            Clear all filters
+          </p>
+        )}
+        <div className="inline-block lg:hidden flex-1 mr-4">
+          {renderActiveFilters(1, 1)}
+        </div>
+        <div className="hidden lg:inline-block xl:hidden flex-1 mr-4">
+          {renderActiveFilters(2, 2)}
+        </div>
+        <div className="hidden xl:inline-block flex-1 mr-4">
+          {renderActiveFilters(3, 3)}
+        </div>
       </div>
 
-      <div className="hidden lg:inline-block xl:hidden flex-1 mr-4">
-        {renderActiveFilters(2, 2)}
-      </div>
-      <div className="hidden xl:inline-block flex-1 mr-4">
-        {renderActiveFilters(3, 3)}
-      </div>
       <div className="flex gap-2">
         <Select
           value={String(itemsPerPage)}
