@@ -113,7 +113,7 @@ export default function ProductPage({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Product Images */}
         <div className="md:flex gap-2 flex-row-reverse">
-          <div className="flex-1 aspect-square min-h-[400px] w-full rounded-2xl overflow-hidden bg-secondary/20">
+          <div className="flex-1 aspect-square min-h-[400px] w-full rounded-2xl overflow-hidden ">
             <Image
               key={
                 selectedImage || product?.imageUrls?.[0] || "/placeholder.png"
@@ -191,10 +191,7 @@ export default function ProductPage({
           <div className="grid gap-6">
             {product.reviews && product.reviews.length > 0 ? (
               product.reviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="border rounded-lg p-4 bg-secondary/10"
-                >
+                <div key={review.id} className="border rounded-lg p-4 ">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold">{review.reviewerName}</p>
                     <Rating rating={review.rating} />

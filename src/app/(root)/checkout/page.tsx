@@ -49,7 +49,7 @@ export default function Page() {
 
   return (
     <section className="min-h-screen p-4 md:p-6 ">
-      <div className="lg:container mx-auto flex justify-between items-center max-w-6xl">
+      <div className="lg:container mx-auto flex justify-between items-center ">
         <div className="flex w-full lg:w-[60%] justify-between">
           <h2 className="text-3xl font-semibold mb-4">Checkout</h2>
           {products.length > 0 && (
@@ -62,8 +62,8 @@ export default function Page() {
         </div>
         <div className="div"></div>
       </div>
-      <div className="lg:container mx-auto w-full lg:grid gap-4 space-y-2 lg:space-y-0 grid-cols-11">
-        <div className="col-span-7">
+      <div className="lg:container mx-auto w-full lg:grid gap-4 space-y-2 lg:space-y-0 grid-cols-10">
+        <div className="col-span-6">
           <div className="">
             {currentStep === "address" && (
               <AddressSelection onSelect={handleNext} />

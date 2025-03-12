@@ -88,9 +88,10 @@ export default function CategoryDropdown() {
   return (
     <div className="relative">
       <Button
+        size={"sm"}
         ref={buttonRef}
         variant="outline"
-        className="w-full justify-between bg-slate-800 text-white"
+        className="w-full justify-between bg-stone-700 text-stone-300 text-sm"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>All Categories</span>

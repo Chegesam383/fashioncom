@@ -13,7 +13,7 @@ export default async function FlashSaleDeals() {
       <Card className="p-4 lg:container mx-auto mt-6">
         <div className="flex flex-col items-center md:block ">
           <h2 className=" text-3xl font-bold">Flash sale deals</h2>
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-stone-600">
             Don&apos;t miss out on these amazing deals!
           </p>
         </div>
@@ -27,7 +27,7 @@ export default async function FlashSaleDeals() {
         <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex flex-col items-center md:block ">
             <h2 className=" text-3xl font-bold">Flash sale deals</h2>
-            <p className="mt-2 text-slate-600">
+            <p className="mt-2 text-muted-foreground">
               Don&apos;t miss out on these amazing deals!
             </p>
           </div>

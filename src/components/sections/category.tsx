@@ -27,7 +27,7 @@ const Category = async ({
       <Card className="p-4 lg:container mx-auto mt-6">
         <div className="mb-8">
           <h2 className="text-3xl font-bold">{title}</h2>
-          <p className="mt-2 text-slate-600">{description}</p>
+          <p className="mt-2 text-stone-600">{description}</p>
         </div>
         <Empty whatsEmpty="products" />
       </Card>
@@ -66,7 +66,7 @@ const Category = async ({
       <div className="p-4 py-6 lg:container mx-auto">
         <div className="mb-8">
           <h2 className="text-3xl font-bold">{title}</h2>
-          <p className="mt-2 text-slate-600">{description}</p>
+          <p className="mt-2 text-muted-foreground">{description}</p>
         </div>
 
         <div className="block xxs:hidden">{renderCarousel(1)}</div>

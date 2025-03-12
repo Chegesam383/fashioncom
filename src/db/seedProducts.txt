@@ -186,7 +186,7 @@
 //   "womens-jewellery": {
 //     material: ["Gold", "Silver", "Rose Gold"],
 //     type: ["Necklace", "Earrings", "Bracelet"],
-//     gemstone: ["None", "Diamond", "Sapphire"],
+//     gemslate: ["None", "Diamond", "Sapphire"],
 //     finish: ["Shiny", "Matte"],
 //   },
 //   sunglasses: {

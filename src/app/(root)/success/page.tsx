@@ -36,7 +36,7 @@ export default function SuccessPage({
           <p className="text-center text-muted-foreground">
             Your payment has been processed successfully.
           </p>
-          <div className="mt-6 border rounded-md p-4 bg-slate-50 dark:bg-slate-800">
+          <div className="mt-6 border rounded-md p-4 bg-stone-50 dark:bg-stone-800">
             <div className="flex justify-between text-sm mb-2">
               <span className="text-muted-foreground">Order ID:</span>
               <span className="font-medium">{paymentId}</span>

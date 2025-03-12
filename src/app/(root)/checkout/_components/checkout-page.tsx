@@ -136,7 +136,7 @@ export default function CheckoutPage() {
   );
 
   return (
-    <Card className="w-full">
+    <Card className="w-full shadow-none">
       <CardHeader>
         <CardDescription>Select a payment method and pay</CardDescription>
       </CardHeader>

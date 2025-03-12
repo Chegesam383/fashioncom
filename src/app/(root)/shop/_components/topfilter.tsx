@@ -102,6 +102,7 @@ const FilterControls = () => {
         break;
       case "category":
         setCategory(null);
+        setSubcategories(null);
         break;
       case "subcategories":
         setSubcategories(null);
@@ -224,14 +225,14 @@ const FilterControls = () => {
       <div className="flex flex-1">
         {countActiveFilters() > 1 && (
           <p
-            className=" text-sm cursor-pointer underline text-muted-foreground text-nowrap"
+            className=" text-sm cursor-pointer underline text-muted-foreground text-nowrap mr-2"
             onClick={clearAllFilters}
           >
             Clear all filters
           </p>
         )}
         <div className="inline-block lg:hidden flex-1 mr-4">
-          {renderActiveFilters(1, 1)}
+          {renderActiveFilters(1, 0)}
         </div>
         <div className="hidden lg:inline-block xl:hidden flex-1 mr-4">
           {renderActiveFilters(2, 2)}
@@ -280,7 +281,7 @@ const RemoveFilterButton = ({ onClick }: { onClick: () => void }) => {
       className="focus-visible:border-ring focus-visible:ring-ring/50 text-primary-foreground/60 hover:text-primary-foreground -my-px -ms-px -me-1.5 inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-[inherit] p-0 transition-[color,box-shadow] outline-none focus-visible:ring-[3px]"
       onClick={onClick}
     >
-      <X size={12} className="text-slate-700" />
+      <X size={12} className="text-stone-700" />
     </button>
   );
 };

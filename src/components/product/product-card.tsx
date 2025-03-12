@@ -11,6 +11,7 @@ import AddToCart from "./add-to-cart";
 import { Product } from "@/lib/types";
 import AddToCartNoAttributes from "./add-to-cart-no-attributes";
 import { Badge } from "../ui/badge";
+import { Card } from "../ui/card";
 
 export default function ProductCard({ product }: { product: Product }) {
   const attributes = product.attributes?.availableAttributes;
@@ -21,9 +22,9 @@ export default function ProductCard({ product }: { product: Product }) {
   const discount = (priceDiff / Number(product?.price || 0)) * 100;
 
   return (
-    <div
+    <Card
       key={product.id}
-      className="p-2 bg-background/60 backdrop-blur relative transition-shadow rounded-xl border hover:shadow-lg"
+      className="p-2 shadow-none backdrop-blur relative transition-shadow rounded-xl  hover:shadow-lg"
     >
       <div className="flex flex-col gap-4 h-[320px]">
         {discount && discount > 15 && (
@@ -45,7 +46,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </Link>
         <Link
           href={"product/" + product.id}
-          className="line-clamp-2 text-md tracking-tight text-slate-900 dark:text-white text-ellipsis "
+          className="line-clamp-2 text-md tracking-tight  text-ellipsis "
         >
           {product.name}
         </Link>
@@ -85,6 +86,6 @@ export default function ProductCard({ product }: { product: Product }) {
           <Heart className="size-4" />
         </Button>
       </div>
-    </div>
+    </Card>
   );
 }

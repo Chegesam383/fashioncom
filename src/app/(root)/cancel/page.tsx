@@ -12,7 +12,7 @@ import {
 
 export default function CancelPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24 bg-slate-50">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24 bg-stone-50">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
           <div className="flex justify-center mb-4">
