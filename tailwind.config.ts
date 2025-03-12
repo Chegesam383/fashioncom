@@ -27,7 +27,7 @@ export default {
         shake: "shake 0.5s ease-in-out",
       },
       screens: {
-        xxs: "400px",
+        xxs: "390px",
       },
       colors: {
         background: "hsl(var(--background))",
@@ -78,5 +78,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwind-scrollbar")],
+  plugins: [require("tailwindcss-animate")],
 } satisfies Config;
