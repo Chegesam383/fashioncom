@@ -66,16 +66,16 @@ export default function CarouselPlugin({
             {categories.length > 0 ? (
               categories.map((category) => (
                 <CarouselItem key={category.id} className="h-full">
-                  <Card className="sm:flex items-center border-0 shadow-none justify-around h-full">
+                  <Card className="sm:flex items-center border-0 shadow-none justify-around h-full pb-10">
                     <Image
                       src={category.imageUrl || "/placeholder.png"}
                       alt={category.name}
                       height={600}
                       width={600}
-                      className="rounded-xl pointer-events-none w-full md:w-96 object-cover h-96"
+                      className="rounded-xl pointer-events-none w-full md:h-96 object-cover lg:h-96"
                     />
                     <div className="mt-4 px-8 text-center md:text-left">
-                      <h2 className="text-4xl mb-4">
+                      <h2 className="text-2xl lg:text-4xl mb-4">
                         Shop the latest {category.name.toLowerCase()}
                       </h2>
                       <p className="mb-4 text-muted-foreground line-clamp-2 text-ellipsis dark:text-gray-400">
