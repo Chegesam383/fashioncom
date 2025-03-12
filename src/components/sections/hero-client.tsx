@@ -75,7 +75,7 @@ export default function CarouselPlugin({
                       className="rounded-xl pointer-events-none w-full md:h-96 object-cover lg:h-96"
                     />
                     <div className="mt-4 px-8 text-center md:text-left">
-                      <h2 className="text-2xl lg:text-4xl mb-4">
+                      <h2 className="text-2xl lg:text-4xl mb-4 font-semibold">
                         Shop the latest {category.name.toLowerCase()}
                       </h2>
                       <p className="mb-4 text-muted-foreground line-clamp-2 text-ellipsis dark:text-gray-400">
@@ -128,17 +128,17 @@ export default function CarouselPlugin({
         </Carousel>
       </div>
 
-      <div className="mt-4 lg:mt-0 flex flex-col sm:flex-row lg:flex-col gap-2 w-full mx-auto">
+      <div className="mt-4 lg:mt-0 flex flex-col sm:flex-row lg:flex-col gap-2 w-full mx-auto h-full">
         {products.length > 0 ? (
           products.map((product) => (
             <Card
               key={product.id}
               className={
-                "flex items-center gap-4 justify-between shadow-none rounded-xl  p-3 w-full "
+                "flex items-center gap-4 justify-between shadow-none rounded-xl  p-4 w-full flex-1"
               }
             >
               <div className="flex-1">
-                <h3 className="text-xl">{product.name}</h3>
+                <h3 className="text-xl font-semibold">{product.name}</h3>
                 <p className=" text-xs line-clamp-2 text-ellipsis text-gray-500 dark:text-primary-300">
                   {product.description}
                 </p>
