@@ -1,4 +1,5 @@
 "use client";
+
 import * as React from "react";
 import Autoplay from "embla-carousel-autoplay";
 import Fade from "embla-carousel-fade";
@@ -8,11 +9,13 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Product, ProductCategory } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { Skeleton } from "../ui/skeleton";
 
 interface CarouselPluginProps {
@@ -26,6 +29,24 @@ export default function CarouselPlugin({
 }: CarouselPluginProps) {
   const plugin1 = React.useRef(Autoplay({ delay: 5000, playOnInit: true }));
   const plugin2 = React.useRef(Fade());
+  const [api, setApi] = React.useState<CarouselApi | null>(null);
+  const [current, setCurrent] = React.useState(0);
+
+  // Update current slide when carousel changes
+  React.useEffect(() => {
+    if (!api) return;
+
+    const updateCurrent = () => {
+      setCurrent(api.selectedScrollSnap());
+    };
+
+    api.on("select", updateCurrent);
+    updateCurrent(); // Set initial slide
+
+    return () => {
+      api.off("select", updateCurrent);
+    };
+  }, [api]);
 
   return (
     <div className="lg:container mx-auto lg:grid grid-cols-3 gap-4 rounded-xl">
@@ -38,6 +59,7 @@ export default function CarouselPlugin({
           plugins={[plugin1.current, plugin2.current]}
           onMouseEnter={() => plugin1.current.stop()}
           onMouseLeave={() => plugin1.current.reset()}
+          setApi={setApi} // Connect Carousel API
         >
           <CarouselContent>
             {categories.length > 0 ? (
@@ -49,13 +71,16 @@ export default function CarouselPlugin({
                       alt={category.name}
                       height={600}
                       width={600}
-                      className="rounded-xl pointer-events-none w-full  md:w-96 object-cover h-96"
+                      className="rounded-xl pointer-events-none w-full md:w-96 object-cover h-96"
                     />
-                    <div className="mt-4 px-8 text-center">
-                      <h2 className="text-4xl font-semibold mb-4">
-                        Shop {category.name}
+                    <div className="mt-4 px-8 text-center md:text-left">
+                      <h2 className="text-4xl mb-4">
+                        Shop {category.name.toLowerCase()}
                       </h2>
-                      <Button>
+                      <p className="mb-4 text-muted-foreground line-clamp-2 text-ellipsis">
+                        {category.description}
+                      </p>
+                      <Button className="mb-8">
                         <Link href={`/shop?category=${category.slug}`}>
                           Explore
                         </Link>
@@ -78,18 +103,36 @@ export default function CarouselPlugin({
           <div className="absolute top-[50%] left-14 transform -translate-y-1/2">
             <CarouselPrevious />
           </div>
+          {/* Pagination Dots */}
+          {categories.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+              {categories.map((_, index) => (
+                <button
+                  key={index}
+                  className={cn(
+                    "w-2.5 h-2.5 rounded-full transition-all duration-300",
+                    current === index
+                      ? "bg-gray-800 dark:bg-gray-200 scale-125"
+                      : "bg-gray-400 dark:bg-gray-600"
+                  )}
+                  onClick={() => api?.scrollTo(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </Carousel>
       </div>
 
-      <div className="mt-4 lg:mt-0 flex flex-col  sm:flex-row lg:flex-col  gap-4 w-full mx-auto">
+      <div className="mt-4 lg:mt-0 flex flex-col sm:flex-row lg:flex-col gap-4 w-full mx-auto">
         {products.length > 0 ? (
           products.map((product) => (
             <div
               key={product.id}
-              className="flex items-center gap-4 bg-white dark:bg-slate-950 border rounded-xl p-4 flex-1"
+              className="flex items-center gap-4 justify-between border rounded-xl p-4 w-full bg-white dark:bg-slate-950"
             >
-              <div>
-                <h3 className="text-xl font-semibold">{product.name}</h3>
+              <div className="flex-1">
+                <h3 className="text-xl">{product.name}</h3>
                 <p className="mt-2">${product.price}</p>
                 <Button className="mt-4">
                   <Link href={`/product/${product.id}`}>View Product</Link>
@@ -104,7 +147,7 @@ export default function CarouselPlugin({
                 alt={product.name}
                 width={200}
                 height={200}
-                className="rounded-xl object-cover w-full h-40"
+                className="rounded-xl object-cover w-40 h-40"
               />
             </div>
           ))

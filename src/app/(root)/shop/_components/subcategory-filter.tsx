@@ -6,6 +6,7 @@ import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { getCategoriesWithSubcategories } from "@/actions/categoryActions";
 import { CategoryWithSubcategories, ProductSubcategory } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button"; // Shadcn Button
 
 function SubcategoryFilter() {
   const [category, setCategory] = useQueryState(
@@ -19,12 +20,13 @@ function SubcategoryFilter() {
 
   const [categoriesWithSubcategories, setCategoriesWithSubcategories] =
     useState<CategoryWithSubcategories[]>([]);
-
   const [activeSubcategories, setActiveSubcategories] = useState<
     ProductSubcategory[]
   >([]);
-
   const [isLoading, setIsLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(15); // Initial items to show
+
+  const ITEMS_PER_PAGE = 15; // Threshold for pagination
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -38,10 +40,10 @@ function SubcategoryFilter() {
 
   useEffect(() => {
     if (category && categoriesWithSubcategories) {
-      const selectedcat = categoriesWithSubcategories.find(
+      const selectedCat = categoriesWithSubcategories.find(
         (item) => item.slug === category
       );
-      setActiveSubcategories(selectedcat?.subcategories || []);
+      setActiveSubcategories(selectedCat?.subcategories || []);
     }
   }, [category, categoriesWithSubcategories]);
 
@@ -61,14 +63,15 @@ function SubcategoryFilter() {
 
   const renderItems = () => {
     const items = category ? activeSubcategories : categoriesWithSubcategories;
-    return items?.map((item) => {
+    const visibleItems = items.slice(0, visibleCount);
+
+    return visibleItems.map((item) => {
       const key = item.name;
       const label = item.name;
       const slug = item.slug;
       let isSelected = false;
 
       if (category) {
-        // Check if subcategories is not empty and includes the slug
         if (subcategories && subcategories.length > 0) {
           isSelected = subcategories.includes(slug);
         }
@@ -104,12 +107,51 @@ function SubcategoryFilter() {
     );
   };
 
+  const handleShowMore = () => {
+    setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
+  };
+
+  const handleShowLess = () => {
+    setVisibleCount((prev) => Math.max(ITEMS_PER_PAGE, prev - ITEMS_PER_PAGE));
+  };
+
+  const items = category ? activeSubcategories : categoriesWithSubcategories;
+  const totalItems = items.length;
+  const canShowMore = visibleCount < totalItems;
+  const canShowLess = visibleCount > ITEMS_PER_PAGE;
+
   return (
     <div>
       {isLoading ? (
         renderSkeleton()
       ) : (
-        <div className="space-y-3">{renderItems()}</div>
+        <div>
+          <div className="space-y-3">{renderItems()}</div>
+          {totalItems > ITEMS_PER_PAGE && (
+            <div className="mt-4 flex gap-2 justify-start">
+              {canShowMore && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="underline text-gray-700 hover:text-gray-900"
+                  onClick={handleShowMore}
+                >
+                  Show More
+                </Button>
+              )}
+              {canShowLess && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleShowLess}
+                  className="underline text-gray-700 hover:text-gray-900"
+                >
+                  Show Less
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

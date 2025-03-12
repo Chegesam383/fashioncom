@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import RatingFilter from "./rating-filter";
 import { Product } from "@/lib/types";
 import { AttributeSelector } from "./attribute-selector";
+import { parseAsString, useQueryState } from "nuqs";
 
 interface FiltersProps {
   initialProducts: Product[]; // Corrected type to array of Product
@@ -27,13 +28,15 @@ interface FiltersProps {
 
 export const Filters = ({ filtersData }: FiltersProps) => {
   const { availableAttributes, minMaxPrices } = filtersData;
-
+  const [category] = useQueryState("category", parseAsString);
   return (
     <div className=" w-52 lg:w-56 space-y-6 pt-2 ">
       <SubcategoryFilter />
       <PriceRangeFilter minMaxPrices={minMaxPrices} />
-      <AttributeSelector availableAttributes={availableAttributes} />
       <RatingFilter />
+      {category && (
+        <AttributeSelector availableAttributes={availableAttributes} />
+      )}
     </div>
   );
 };
@@ -50,7 +53,7 @@ export const MobileFilters = ({
   initialProducts,
   filtersData,
 }: MobileFiltersProps) => (
-  <div className="">
+  <div className="lg:hidden">
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" className="w-full">

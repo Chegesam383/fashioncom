@@ -17,6 +17,14 @@ body {
   border: 0;
 }
 
+.no-scrollbar-arrows::-webkit-scrollbar-button {
+  display: none; /* Hides arrows in Webkit browsers (Chrome, Safari) */
+}
+.no-scrollbar-arrows {
+  -ms-overflow-style: none; /* Hides arrows in IE/Edge */
+  scrollbar-width: thin; /* Ensures Firefox respects thin scrollbar */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

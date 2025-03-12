@@ -127,7 +127,7 @@ export default function ProductPage({
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="flex flex-col overflow-y-auto gap-3">
+          <div className="flex flex-row md:flex-col overflow-y-auto gap-3">
             {product?.imageUrls?.map((image: string) => (
               <Image
                 key={image}
