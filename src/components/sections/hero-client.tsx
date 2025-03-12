@@ -49,7 +49,7 @@ export default function CarouselPlugin({
   }, [api]);
 
   return (
-    <div className="lg:container mx-auto lg:grid grid-cols-3 gap-4 rounded-xl">
+    <div className="lg:container p-4 mx-auto lg:grid grid-cols-3 gap-4 rounded-xl">
       <div className="col-span-2 bg-white dark:bg-slate-950 border rounded-xl relative">
         <Carousel
           opts={{
@@ -65,7 +65,7 @@ export default function CarouselPlugin({
             {categories.length > 0 ? (
               categories.map((category) => (
                 <CarouselItem key={category.id}>
-                  <div className="sm:flex gap-3 items-center justify-center lg:h-[50vh] py-2">
+                  <div className="sm:flex gap-3 items-center justify-center  py-2">
                     <Image
                       src={category.imageUrl || "/placeholder.png"}
                       alt={category.name}
