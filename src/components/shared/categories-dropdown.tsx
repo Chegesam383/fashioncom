@@ -71,7 +71,7 @@ export default function CategoryDropdown() {
   }, [categories, searchQuery]);
 
   const handleCategoryClick = (slug: string) => {
-    router.push(`shop?category=${slug}`);
+    router.push(`/shop?category=${slug}`);
     setIsOpen(false);
   };
 
@@ -79,7 +79,9 @@ export default function CategoryDropdown() {
     categorySlug: string,
     subcategorySlug: string
   ) => {
-    router.push(`shop?category=${categorySlug}&subcategory=${subcategorySlug}`);
+    router.push(
+      `/shop?category=${categorySlug}&subcategory=${subcategorySlug}`
+    );
     setIsOpen(false);
   };
 

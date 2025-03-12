@@ -227,12 +227,12 @@ const AnauthenticatedUserDropDown = () => {
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => router.replace("sign-in")}>
+            <DropdownMenuItem onClick={() => router.push("/sign-in")}>
               <LogIn className="opacity-75" />
               Sign In
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.replace("sign-up")}>
+            <DropdownMenuItem onClick={() => router.push("/sign-up")}>
               <UserRoundPen className="opacity-75" />
               Sign Up
             </DropdownMenuItem>
