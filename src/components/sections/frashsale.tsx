@@ -26,7 +26,7 @@ export default async function FlashSaleDeals() {
       <div className="p-4 lg:container mx-auto ">
         <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex flex-col items-center md:block ">
-            <h2 className=" text-3xl font-bold">Flash sale deals</h2>
+            <h2 className=" text-3xl font-bold">Limited time offer</h2>
             <p className="mt-2 text-muted-foreground">
               Don&apos;t miss out on these amazing deals!
             </p>

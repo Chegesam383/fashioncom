@@ -2,7 +2,7 @@ import Category from "@/components/sections/category";
 import FreshSaleSection from "@/components/sections/frashsale";
 
 import CarouselServer from "@/components/sections/hero-server-content";
-import InfoSection from "@/components/sections/info-section";
+
 import ShopByCategory from "@/components/sections/shop-by-category";
 
 export default function Home() {
@@ -22,7 +22,6 @@ export default function Home() {
         description="Here are the most trending deals"
       />
       <ShopByCategory />
-      <InfoSection />
     </>
   );
 }
