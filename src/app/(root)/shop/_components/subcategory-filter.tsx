@@ -126,7 +126,7 @@ function SubcategoryFilter() {
         renderSkeleton()
       ) : (
         <div>
-          <div className="space-y-3">{renderItems()}</div>
+          <div className="space-y-3 lg:mt-8">{renderItems()}</div>
           {totalItems > ITEMS_PER_PAGE && (
             <div className="mt-4 flex gap-2 justify-start">
               {canShowMore && (

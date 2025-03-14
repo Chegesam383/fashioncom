@@ -19,6 +19,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const priceDiff =
     Number(product?.oldPrice || 0) - Number(product?.price || 0);
+
   const discount = (priceDiff / Number(product?.price || 0)) * 100;
 
   return (
@@ -27,14 +28,14 @@ export default function ProductCard({ product }: { product: Product }) {
       className="p-2 shadow-none backdrop-blur relative transition-shadow rounded-xl  hover:shadow-lg"
     >
       <div className="flex flex-col gap-4 h-[320px]">
-        {discount && discount > 15 && (
+        {discount && discount > 15 ? (
           <Badge
             variant={"destructive"}
             className="absolute left-1 top-1 z-10 "
           >
             {parseInt(`${discount}`)}% off
           </Badge>
-        )}
+        ) : null}
         <Link href={"product/" + product.id}>
           <Image
             src={product?.imageUrls?.[0] || "/placeholder.png"}

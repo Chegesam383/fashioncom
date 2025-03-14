@@ -66,7 +66,7 @@ export default function CarouselPlugin({
             categories.map((category) => (
               <CarouselItem key={category.id}>
                 <Card className="flex items-center shadow-none bg-gray-100 dark:bg-gray-800 justify-around h-full ">
-                  <div className="h-[200px] md:h-[330px] flex-1">
+                  <div className=" md:h-[330px] flex-1">
                     <Image
                       src={category.imageUrl || "/placeholder.png"}
                       alt={category.name}
@@ -78,7 +78,7 @@ export default function CarouselPlugin({
 
                   <div className="mt-4 px-8  flex-1">
                     <h2 className=" text-xl md:text-2xl lg:text-4xl mb-4 font-semibold">
-                      Shop the latest {category.name.toLowerCase()}
+                      Shop {category.name.toLowerCase()}
                     </h2>
                     <p className="hidden md:block mb-4 text-muted-foreground line-clamp-2 h-[50px] max-w-[420px] text-ellipsis">
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.

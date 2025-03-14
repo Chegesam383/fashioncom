@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cart | Fashionist",
+  title: "Fashionist",
   description: "your cart for Online fashion store",
 };
 

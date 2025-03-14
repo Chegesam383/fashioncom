@@ -20,7 +20,8 @@ const Category = async ({
   bg: string;
   description: string;
 }) => {
-  const products = await getProducts({});
+  let products = await getProducts({ limit: 10 });
+  products = title.includes("picks") ? products.reverse() : products;
 
   if (!products || products.length === 0) {
     return (
@@ -49,7 +50,7 @@ const Category = async ({
       </div>
 
       <CarouselContent className="-ml-4">
-        {products.map((product, index) => (
+        {products.slice(1, 20).map((product, index) => (
           <CarouselItem
             key={index}
             className="pl-4  xxs:basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"

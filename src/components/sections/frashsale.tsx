@@ -6,7 +6,7 @@ import { getProducts } from "@/actions/productActions";
 import Empty from "@/components/shared/empty";
 
 export default async function FlashSaleDeals() {
-  const products = await getProducts({});
+  const products = await getProducts({ limit: 20 });
 
   if (!products || products.length === 0) {
     return (
@@ -34,7 +34,7 @@ export default async function FlashSaleDeals() {
           <CountdownTimer days={3} />
         </div>
         <div className="grid gap-4 grid-col-1 xxs:grid-cols-2  sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 ">
-          {products.slice(0, 12).map((product) => (
+          {products.slice(7, 19).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
