@@ -50,7 +50,7 @@ export default function CarouselPlugin({
   }, [api]);
 
   return (
-    <section className="lg:container max-w-5xl mx-auto">
+    <section className="lg:container max-w-5xl mx-auto p-4">
       <Carousel
         opts={{
           align: "start",
