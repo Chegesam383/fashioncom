@@ -65,7 +65,7 @@ export default function CarouselPlugin({
           {categories.length > 0 ? (
             categories.map((category) => (
               <CarouselItem key={category.id}>
-                <Card className="flex items-center shadow-none bg-gray-100 dark:bg-gray-800 justify-around h-full p-4">
+                <Card className="flex items-center shadow-none bg-gray-100 dark:bg-gray-800 justify-around h-full pb-4">
                   <div className=" md:h-[330px] flex-1">
                     <Image
                       src={category.imageUrl || "/placeholder.png"}
