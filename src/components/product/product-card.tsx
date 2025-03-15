@@ -42,8 +42,8 @@ export default function ProductCard({ product }: { product: Product }) {
           <Image
             src={image}
             alt={product.name}
-            width={200}
-            height={150}
+            width={80}
+            height={80}
             className="w-full h-44 object-contain rounded-lg hover:scale-[1.02] transition-transform "
           />
         </Link>

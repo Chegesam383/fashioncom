@@ -174,6 +174,7 @@ export default function SearchWithDropdown() {
       return (
         <div className="p-4 text-center text-muted-foreground">
           No results found for &quot;{searchTerm}&quot;
+          <br />
           <small className="text-muted-foreground">
             Check your spelling and try again
           </small>
@@ -220,12 +221,11 @@ export default function SearchWithDropdown() {
 
       {showDropdown && (
         <div
-          className="absolute left-0 right-0 z-10 mt-1 bg-muted border rounded-md shadow-md max-h-[60vh] overflow-hidden"
+          className="absolute left-0 right-0 z-10 mt-1  border rounded-md shadow-md max-h-[60vh] overflow-hidden"
           id="search-results"
         >
-          <ScrollArea className="h-[60vh]">
-            {renderResults()}
-            <ScrollBar className="bg-muted" />
+          <ScrollArea className="h-[60vh] ">
+            {renderResults()} <ScrollBar className="bg-gray-500" />
           </ScrollArea>
         </div>
       )}

@@ -105,12 +105,12 @@ export default function CategoryDropdown() {
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="fixed left-0 right-0 z-50 mt-[12px] bg-background shadow-lg transition-all container mx-auto lg:p-6 rounded-2xl duration-200 ease-in-out text-white"
+          className="fixed left-0 right-0 z-50 mt-[12px] bg-background shadow-lg transition-all container lg:mx-auto ml-3 rounded-xl duration-200 ease-in-out text-white"
           style={{ top: `${dropdownTop}px` }}
         >
-          <div className="mx-2 lg:mx-0">
+          <div>
             <div className="lg:flex">
-              <div className="min-w-64 border-r bg-background">
+              <div className="min-w-64 border-r bg-background rounded-xl">
                 <div className="p-2">
                   <div className="relative">
                     <Input
@@ -123,7 +123,7 @@ export default function CategoryDropdown() {
                     <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
                 </div>
-                <ScrollArea className="h-[70vh]">
+                <ScrollArea className="h-[65vh]">
                   {categoriesLoading ? (
                     <div className="flex items-center justify-center p-4">
                       <Loader2 className="animate-spin h-6 w-6" />
@@ -157,12 +157,9 @@ export default function CategoryDropdown() {
                 </ScrollArea>
               </div>
 
-              <div className="hidden lg:block min-h-[250px] w-full bg-background p-4">
-                <ScrollArea className="h-[45vh]">
-                  {activeCategory &&
-                  categories &&
-                  (categories.find((c) => c.slug === activeCategory)
-                    ?.subcategories?.length ?? 0) > 0 ? (
+              <div className="hidden lg:block min-h-[250px] w-full bg-background p-4 rounded-xl">
+                <ScrollArea className="h-[45vh] lg:h-[65vh]">
+                  {activeCategory && (
                     <div>
                       <h3 className="mb-2 text-lg font-semibold">
                         {categories &&
@@ -187,10 +184,6 @@ export default function CategoryDropdown() {
                             </div>
                           ))}
                       </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center p-4">
-                      {activeCategory && "No subcategories found."}
                     </div>
                   )}
                 </ScrollArea>

@@ -96,7 +96,7 @@ function SubcategoryFilter() {
 
   const renderSkeleton = () => {
     return (
-      <div className="space-y-4 w-full">
+      <div className="space-y-4 w-full mt-8">
         {Array.from({ length: 8 }).map((_, index) => (
           <div key={index} className="flex items-center">
             <Skeleton className="h-4 w-5 rounded-full" />
