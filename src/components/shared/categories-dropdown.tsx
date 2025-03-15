@@ -90,8 +90,8 @@ export default function CategoryDropdown() {
       <Button
         size={"sm"}
         ref={buttonRef}
-        variant="outline"
-        className="w-full justify-between bg-stone-700 text-stone-300 text-sm"
+        variant="ghost"
+        className="w-full justify-between  text-sm"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>All Categories</span>
@@ -105,12 +105,12 @@ export default function CategoryDropdown() {
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="fixed left-0 right-0 z-50 mt-[12px] bg-background shadow-lg transition-all container lg:mx-auto ml-3 rounded-xl duration-200 ease-in-out text-white"
+          className="border bg-muted fixed left-0 right-0 z-50 mt-[12px]  shadow-lg transition-all container lg:mx-auto ml-3 rounded-xl duration-200 ease-in-out text-current"
           style={{ top: `${dropdownTop}px` }}
         >
           <div>
             <div className="lg:flex">
-              <div className="min-w-64 border-r bg-background rounded-xl">
+              <div className="min-w-64 border-r bg-background rounded-l-xl rounded-r-xl lg:rounded-r-none">
                 <div className="p-2">
                   <div className="relative">
                     <Input
@@ -129,7 +129,7 @@ export default function CategoryDropdown() {
                       <Loader2 className="animate-spin h-6 w-6" />
                     </div>
                   ) : filteredCategories.length > 0 ? (
-                    <ul className="py-1">
+                    <ul className="py-1 ">
                       {filteredCategories.map((category) => (
                         <li
                           key={category.id}
@@ -150,18 +150,16 @@ export default function CategoryDropdown() {
                       ))}
                     </ul>
                   ) : (
-                    <div className="flex items-center justify-center p-4">
-                      No categories found.
-                    </div>
+                    <div className="flex items-center justify-center p-4"></div>
                   )}
                 </ScrollArea>
               </div>
 
-              <div className="hidden lg:block min-h-[250px] w-full bg-background p-4 rounded-xl">
+              <div className="hidden lg:block min-h-[250px] w-full bg-background p-4 rounded-r-xl">
                 <ScrollArea className="h-[45vh] lg:h-[65vh]">
                   {activeCategory && (
                     <div>
-                      <h3 className="mb-2 text-lg font-semibold">
+                      <h3 className="mb-2 text-lg font-semibold ">
                         {categories &&
                           categories.find((c) => c.slug === activeCategory)
                             ?.name}

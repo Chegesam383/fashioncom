@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import Header from "@/components/shared/header";
@@ -8,13 +8,8 @@ import Footer from "@/components/shared/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { CartSyncWrapper } from "@/components/shared/cartsyncWrapper";
 
-const geistSans = Geist({
+const geistSans = Inter({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -31,9 +26,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} mt-48 md:mt-36`}
-        >
+        <body className={`${geistSans.variable} mt-48 md:mt-28`}>
           <ThemeProvider
             attribute="class"
             defaultTheme="light"

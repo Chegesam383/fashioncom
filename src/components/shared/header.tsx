@@ -33,7 +33,7 @@ const Header = ({
   categoryNavHidden?: boolean;
 }) => {
   return (
-    <header className="fixed dark border-b mb-64 top-0 z-50 w-full bg-background shadow overflow-visible">
+    <header className="fixed  border-b-gray-50 mb-64 top-0 z-50 w-full bg-background  overflow-visible">
       <nav className=" lg:container p-4 pb-2 mx-auto flex  items-center justify-between gap-4 ">
         <div>
           <Link
@@ -109,9 +109,7 @@ const CartIcon = () => {
       </span>
       <div className="hidden md:flex flex-col ">
         <small className="text-xs text-muted-foreground">Your Cart</small>
-        <span className="text-sm font-semibold text-white">
-          {formatPrice(subtotal)}
-        </span>
+        <span className="text-sm font-semibold ">{formatPrice(subtotal)}</span>
       </div>
     </Link>
   );
@@ -168,11 +166,11 @@ const AccountDropdown = ({
             <small className="text-xs text-muted-foreground">
               Hello, {userName}
             </small>
-            <span className="text-sm font-semibold text-white">{`Account & orders`}</span>
+            <span className="text-sm font-semibold ">{`Account & orders`}</span>
           </div>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 dark" avoidCollisions>
+      <DropdownMenuContent className="w-56 " avoidCollisions>
         <div className="flex gap-2 m-4 mt-2">
           <ModeToggle />
         </div>
@@ -212,14 +210,12 @@ const AnauthenticatedUserDropDown = () => {
           </span>
           <div className="hidden md:flex flex-col ">
             <small className="text-xs text-muted-foreground">Hello</small>
-            <span className="text-sm font-semibold text-white">
-              Sign In/sign Up
-            </span>
+            <span className="text-sm font-semibold ">Sign In/sign Up</span>
           </div>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
-        <DropdownMenuContent className="w-56 dark relative" align="start">
+        <DropdownMenuContent className="w-56  relative" align="start">
           <div className="flex gap-2 m-4 mt-2">
             <ModeToggle />
           </div>
