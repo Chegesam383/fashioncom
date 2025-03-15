@@ -66,7 +66,7 @@ const Category = async ({
     <section className={`bg-${bg} py-16`}>
       <div className="p-4 py-6 lg:container mx-auto">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold">{title}</h2>
+          <h2 className="text-2xl lg:text-3xl font-bold">{title}</h2>
           <p className="mt-2 text-muted-foreground">{description}</p>
         </div>
 

@@ -16,6 +16,8 @@ import { Card } from "../ui/card";
 export default function ProductCard({ product }: { product: Product }) {
   const attributes = product.attributes?.availableAttributes;
   const hasAttributes = !(attributes && JSON.stringify(attributes) === "{}");
+  const image =
+    product.imageUrls?.[1] || product.imageUrls?.[0] || "/placeholder.png";
 
   const priceDiff =
     Number(product?.oldPrice || 0) - Number(product?.price || 0);
@@ -38,7 +40,7 @@ export default function ProductCard({ product }: { product: Product }) {
         ) : null}
         <Link href={"product/" + product.id}>
           <Image
-            src={product?.imageUrls?.[0] || "/placeholder.png"}
+            src={image}
             alt={product.name}
             width={200}
             height={150}

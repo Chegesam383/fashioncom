@@ -65,7 +65,7 @@ export default function CarouselPlugin({
           {categories.length > 0 ? (
             categories.map((category) => (
               <CarouselItem key={category.id}>
-                <Card className="flex items-center shadow-none bg-gray-100 dark:bg-gray-800 justify-around h-full pb-4">
+                <Card className="flex items-center shadow-none bg-gray-100 dark:bg-gray-800 justify-around h-full pb-9 lg:pb-4">
                   <div className=" md:h-[330px] flex-1">
                     <Image
                       src={category.imageUrl || "/placeholder.png"}
@@ -77,10 +77,10 @@ export default function CarouselPlugin({
                   </div>
 
                   <div className="mt-4 px-8  flex-1">
-                    <h2 className=" text-xl md:text-2xl lg:text-4xl mb-4 font-semibold">
+                    <h2 className="text-3xl lg:text-4xl mb-4 font-semibold line-clamp-2 text-ellipsis">
                       Shop {category.name.toLowerCase()}
                     </h2>
-                    <p className="hidden md:block mb-4 text-muted-foreground line-clamp-2 h-[50px] max-w-[420px] text-ellipsis">
+                    <p className="hidden md:block mb-4 text-muted-foreground line-clamp-2 text-ellipsis max-h-12 max-w-[420px]">
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       Delectus, rerum dolore. Quia, ipsum quidem deserunt quo
                       cumque, mollitia veniam impedit alias beatae architecto

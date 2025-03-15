@@ -16,10 +16,10 @@ export default async function CategorySection() {
   }
   return (
     <section className="py-12 ">
-      <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
+      <div className="lg:container mx-auto">
+        <h2 className="text-2xl font-bold px-4">Shop by Category</h2>
         <div className="relative">
-          <div className="flex overflow-x-auto space-x-4 p-4 no-scrollbar">
+          <div className="flex overflow-x-auto no-scrollbar">
             {categories.map((category) => (
               <Link
                 href={`/shop?category=${category.slug}`}
