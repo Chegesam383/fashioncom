@@ -27,7 +27,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Card
       key={product.id}
-      className="p-2 shadow-none backdrop-blur relative transition-shadow rounded-xl  hover:shadow-lg"
+      className="p-2 shadow-none backdrop-blur border-0 relative transition-shadow rounded-xl  hover:shadow-lg"
     >
       <div className="flex flex-col gap-4 h-[320px]">
         {discount && discount > 15 ? (
