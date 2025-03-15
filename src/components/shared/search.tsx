@@ -98,7 +98,7 @@ export default function SearchWithDropdown() {
     if (isSearching) {
       return (
         <div className="flex items-center justify-center p-4">
-          <Loader2 className="animate-spin h-6 w-6 text-white" />
+          <Loader2 className="animate-spin h-6 w-6 " />
         </div>
       );
     }
@@ -123,7 +123,7 @@ export default function SearchWithDropdown() {
               className="rounded-md object-cover"
             />
           )}
-          <span className="text-white text-sm">
+          <span className=" text-sm">
             &quot;{searchTerm}&quot;
             <span className="text-muted-foreground">
               &nbsp; in &nbsp;{category.name}
@@ -156,7 +156,7 @@ export default function SearchWithDropdown() {
             }}
           />
           <div className="flex flex-col">
-            <span className="text-white">{product.name}</span>
+            <span className="">{product.name}</span>
             <span className="text-sm text-muted-foreground">
               ${product.price}
             </span>
@@ -186,10 +186,13 @@ export default function SearchWithDropdown() {
   };
 
   return (
-    <div className="relative w-full max-w-md mx-auto" ref={dropdownRef}>
+    <div
+      className="relative w-full bg-background max-w-md mx-auto"
+      ref={dropdownRef}
+    >
       <div className="relative">
         <Input
-          className="bg-muted peer pe-9 ps-9 border shadow-none rounded-lg text-white"
+          className="bg-muted peer pe-9 ps-9 border shadow-none rounded-lg"
           placeholder="I am looking for..."
           type="search"
           value={searchTerm}
@@ -221,11 +224,11 @@ export default function SearchWithDropdown() {
 
       {showDropdown && (
         <div
-          className="absolute left-0 right-0 z-10 mt-1  border rounded-md shadow-md max-h-[60vh] overflow-hidden"
+          className="absolute left-0 right-0 z-10 mt-1 border rounded-md shadow-md max-h-[60vh] overflow-hidden"
           id="search-results"
         >
-          <ScrollArea className="h-[60vh] ">
-            {renderResults()} <ScrollBar className="bg-gray-500" />
+          <ScrollArea className="h-[60vh] bg-background">
+            {renderResults()}
           </ScrollArea>
         </div>
       )}
