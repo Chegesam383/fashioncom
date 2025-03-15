@@ -105,7 +105,7 @@ export default function CategoryDropdown() {
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="fixed left-0 right-0 z-50 mt-[10px] bg-background shadow-lg transition-all container mx-auto lg:p-6 rounded-2xl duration-200 ease-in-out text-white"
+          className="fixed left-0 right-0 z-50 mt-[12px] bg-background shadow-lg transition-all container mx-auto lg:p-6 rounded-2xl duration-200 ease-in-out text-white"
           style={{ top: `${dropdownTop}px` }}
         >
           <div className="mx-2 lg:mx-0">
@@ -123,7 +123,7 @@ export default function CategoryDropdown() {
                     <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
                 </div>
-                <ScrollArea className="h-[45vh]">
+                <ScrollArea className="h-[70vh]">
                   {categoriesLoading ? (
                     <div className="flex items-center justify-center p-4">
                       <Loader2 className="animate-spin h-6 w-6" />

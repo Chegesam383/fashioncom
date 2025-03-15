@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Search, Loader2, X } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getProductsBySearchTerm } from "@/actions/productActions";
 import { getCategoriesBySearchTerm } from "@/actions/categoryActions";
 import type { ProductCategory } from "@/lib/types";
@@ -174,6 +174,9 @@ export default function SearchWithDropdown() {
       return (
         <div className="p-4 text-center text-muted-foreground">
           No results found for &quot;{searchTerm}&quot;
+          <small className="text-muted-foreground">
+            Check your spelling and try again
+          </small>
         </div>
       );
     }
@@ -220,15 +223,10 @@ export default function SearchWithDropdown() {
           className="absolute left-0 right-0 z-10 mt-1 bg-muted border rounded-md shadow-md max-h-[60vh] overflow-hidden"
           id="search-results"
         >
-          <ScrollArea className="max-h-[55vh]">{renderResults()}</ScrollArea>
-          {searchTerm &&
-            !isSearching &&
-            categories.length === 0 &&
-            products.length === 0 && (
-              <div className="p-4 text-center text-muted-foreground">
-                No results found.
-              </div>
-            )}
+          <ScrollArea className="h-[60vh]">
+            {renderResults()}
+            <ScrollBar className="bg-muted" />
+          </ScrollArea>
         </div>
       )}
     </div>
