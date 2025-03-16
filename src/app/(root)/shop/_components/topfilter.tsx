@@ -232,7 +232,7 @@ const FilterControls = () => {
           </p>
         )}
         <div className="inline-block lg:hidden flex-1 mr-4">
-          {renderActiveFilters(1, 0)}
+          {renderActiveFilters(1, 1)}
         </div>
         <div className="hidden lg:inline-block xl:hidden flex-1 mr-4">
           {renderActiveFilters(2, 2)}
@@ -247,7 +247,7 @@ const FilterControls = () => {
           value={String(itemsPerPage)}
           onValueChange={handleItemsPerPageChange}
         >
-          <SelectTrigger className="">
+          <SelectTrigger className="h-8">
             <SelectValue placeholder="Items per page" />
           </SelectTrigger>
           <SelectContent>
@@ -259,7 +259,7 @@ const FilterControls = () => {
         </Select>
 
         <Select value={priceSort || ""} onValueChange={handlePriceSortChange}>
-          <SelectTrigger className="">
+          <SelectTrigger className="h-8">
             <SelectValue placeholder="Sort by price" />
           </SelectTrigger>
           <SelectContent>

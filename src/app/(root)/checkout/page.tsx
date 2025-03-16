@@ -50,7 +50,7 @@ export default function Page() {
   return (
     <section className="min-h-screen p-4 md:p-6 ">
       <div className="lg:container mx-auto flex justify-between items-center ">
-        <div className="flex w-full lg:w-[60%] justify-between">
+        <div className="flex w-full lg:w-[63%] justify-between">
           <h2 className="text-3xl font-semibold mb-4">Checkout</h2>
           {products.length > 0 && (
             <Link href="/cart">
@@ -62,8 +62,8 @@ export default function Page() {
         </div>
         <div className="div"></div>
       </div>
-      <div className="lg:container mx-auto w-full lg:grid gap-4 space-y-2 lg:space-y-0 grid-cols-10">
-        <div className="col-span-6">
+      <div className="lg:container mx-auto w-full lg:grid gap-4 space-y-2 lg:space-y-0 grid-cols-11">
+        <div className="col-span-7">
           <div className="">
             {currentStep === "address" && (
               <AddressSelection onSelect={handleNext} />
@@ -92,7 +92,7 @@ const CartSummary: React.FC<CartSummary> = ({ subtotal }) => {
 
   return (
     <Card className="col-span-4 shadow-sm w-full h-fit mx-auto">
-      <CardContent className="p-6">
+      <CardContent className="p-2">
         <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
         <div className="space-y-6">
           <ShoppingCart />
@@ -164,11 +164,11 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
           className="rounded-md object-cover w-20 h-20"
         />
       </Link>
-      <div className="flex-1 space-y-1">
+      <div className="flex-1 space-y-2">
         <div className="flex justify-between">
           <div className="space-y-1">
             <Link href={"product/" + item.id}>
-              <p className=" text-md">{item.name}</p>
+              <p className="text-base">{item.name}</p>
             </Link>
             <p>
               <span className="font-extralight text-sm">
@@ -176,12 +176,12 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
               </span>
 
               {item.quantity > 1 && (
-                <small className="text-muted-foreground">
+                <small className="text-muted-foreground text-xs">
                   &nbsp; {formatPrice(Number(item.price))} each
                 </small>
               )}
             </p>
-            <p className="text-sm text-muted-foreground text-wrap">
+            <p className="text-xs text-muted-foreground text-wrap">
               {attributeString}
             </p>
           </div>

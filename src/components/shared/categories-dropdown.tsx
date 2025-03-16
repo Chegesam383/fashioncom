@@ -13,7 +13,11 @@ import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { CategoryWithSubcategories } from "@/lib/types";
 
-export default function CategoryDropdown() {
+export default function CategoryDropdown({
+  isNotOutline = false,
+}: {
+  isNotOutline?: boolean;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [dropdownTop, setDropdownTop] = useState(0);
@@ -80,7 +84,7 @@ export default function CategoryDropdown() {
     subcategorySlug: string
   ) => {
     router.push(
-      `/shop?category=${categorySlug}&subcategory=${subcategorySlug}`
+      `/shop?category=${categorySlug}&subcategories=${subcategorySlug}`
     );
     setIsOpen(false);
   };
@@ -90,15 +94,15 @@ export default function CategoryDropdown() {
       <Button
         size={"sm"}
         ref={buttonRef}
-        variant="ghost"
-        className="w-full justify-between  text-sm"
+        variant={isNotOutline ? "ghost" : "outline"}
+        className="w-full justify-between px-2 py-0 text-sm"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>All Categories</span>
         {isOpen ? (
-          <ChevronUp className="ml-2 h-4 w-4" />
+          <ChevronUp className=" h-4 w-4" />
         ) : (
-          <ChevronDown className="ml-2 h-4 w-4" />
+          <ChevronDown className="h-4 w-4" />
         )}
       </Button>
 

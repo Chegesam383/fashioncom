@@ -33,7 +33,7 @@ const Header = ({
   categoryNavHidden?: boolean;
 }) => {
   return (
-    <header className="fixed  border-b-gray-50 mb-64 top-0 z-50 w-full bg-background  overflow-visible">
+    <header className="fixed  mb-64 top-0 z-50 w-full bg-background  overflow-visible">
       <nav className=" lg:container p-4 pb-2 mx-auto flex  items-center justify-between gap-4 ">
         <div>
           <Link
@@ -44,14 +44,14 @@ const Header = ({
           </Link>
 
           {categoryNavHidden && (
-            <div className="hidden lg:inline-block">
-              <CategoriesDropDown />
+            <div className="hidden lg:inline-block mb-2">
+              <CategoriesDropDown isNotOutline />
             </div>
           )}
         </div>
 
         {/* Search Box - Hidden on small screens */}
-        <div className=" hidden md:flex justify-center  w-1/3">
+        <div className=" hidden md:flex justify-center  md:w-[42%] lg:w-1/3">
           <div className="w-full">
             <SearchBox />
           </div>
@@ -210,7 +210,7 @@ const AnauthenticatedUserDropDown = () => {
           </span>
           <div className="hidden md:flex flex-col ">
             <small className="text-xs text-muted-foreground">Hello</small>
-            <span className="text-sm font-semibold ">Sign In/sign Up</span>
+            <span className="text-sm font-semibold ">Sign In/Sign Up</span>
           </div>
         </div>
       </DropdownMenuTrigger>

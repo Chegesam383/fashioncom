@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Loader2, X } from "lucide-react";
+import { Search, Loader2, X, ArrowRight } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getProductsBySearchTerm } from "@/actions/productActions";
 import { getCategoriesBySearchTerm } from "@/actions/categoryActions";
@@ -12,6 +12,12 @@ import Image from "next/image";
 import { debounce } from "lodash";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import {
+  ScrollAreaScrollbar,
+  ScrollAreaThumb,
+  ScrollAreaViewport,
+} from "@radix-ui/react-scroll-area";
+import Form from "next/form";
 
 export interface ProductWithCategory {
   id: string;
@@ -186,50 +192,63 @@ export default function SearchWithDropdown() {
   };
 
   return (
-    <div
-      className="relative w-full bg-background max-w-md mx-auto"
-      ref={dropdownRef}
-    >
-      <div className="relative">
-        <Input
-          className="bg-muted peer pe-9 ps-9 border shadow-none rounded-lg"
-          placeholder="I am looking for..."
-          type="search"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setShowDropdown(e.target.value.length > 0);
-          }}
-          aria-expanded={showDropdown}
-          aria-controls="search-results"
-          aria-autocomplete="list"
-        />
-        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-          <Search size={16} strokeWidth={2} />
-        </div>
-        {searchTerm && (
-          <button
-            type="button"
-            onClick={() => {
-              setSearchTerm("");
-              setShowDropdown(false);
+    <div className="relative bg-background mx-auto" ref={dropdownRef}>
+      <Form action={"shop"}>
+        <div className="relative">
+          <Input
+            className="bg-muted border-0 peer pe-9 ps-9 shadow-none rounded-xl"
+            placeholder="Search  Products and Categories..."
+            type="text"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setShowDropdown(e.target.value.length > 0);
             }}
+            aria-expanded={showDropdown}
+            aria-controls="search-results"
+            aria-autocomplete="list"
+          />
+          <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+            <Search size={16} strokeWidth={2} />
+          </div>
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm("");
+                setShowDropdown(false);
+              }}
+              className="absolute inset-y-0 right-5 flex items-center pr-3 text-muted-foreground/80 hover:text-muted-foreground"
+              aria-label="Clear search"
+            >
+              <X size={16} strokeWidth={2} />
+            </button>
+          )}
+          <button
+            type="submit"
             className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground/80 hover:text-muted-foreground"
-            aria-label="Clear search"
+            aria-label="Submit search"
           >
-            <X size={16} strokeWidth={2} />
+            <ArrowRight size={16} strokeWidth={2} />
           </button>
-        )}
-      </div>
-
+        </div>
+      </Form>
       {showDropdown && (
         <div
-          className="absolute left-0 right-0 z-10 mt-1 border rounded-md shadow-md max-h-[60vh] overflow-hidden"
+          className="absolute left-0 right-0 z-10 mt-1  border rounded-md shadow-md"
           id="search-results"
         >
-          <ScrollArea className="h-[60vh] bg-background">
-            {renderResults()}
-          </ScrollArea>
+          <div>
+            <ScrollArea className="bg-background">
+              <ScrollAreaViewport className="max-h-[60vh] p-4">
+                {renderResults()}
+              </ScrollAreaViewport>
+              <ScrollAreaScrollbar orientation="vertical">
+                <ScrollAreaThumb />
+              </ScrollAreaScrollbar>
+              <ScrollBar className="bg-gray-500" />
+            </ScrollArea>
+          </div>
         </div>
       )}
     </div>

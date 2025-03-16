@@ -54,8 +54,6 @@ const expectedDelivaryDate: {
 const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
   const { userId } = useAuth();
 
-  console.log(item);
-
   let attributeString;
 
   if (
@@ -77,14 +75,14 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
         <Image
           src={item.imageUrls?.[0] || "/placeholder.png"}
           alt={item.name}
-          width={100}
-          height={80}
-          className="rounded-md object-cover w-36 h-36"
+          width={60}
+          height={60}
+          className="rounded-md object-cover w-24 h-24"
         />
       </Link>
-      <div className="flex-1 space-y-1">
+      <div className="flex-1 space-y-[10px]">
         <div className="flex justify-between">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Link href={"product/" + item.id}>
               <h3 className="font-bold">{item.name}</h3>
             </Link>
@@ -94,9 +92,8 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart }) => {
               </span>
 
               {item.quantity > 1 && (
-                <small className="text-muted-foreground">
-                  {" "}
-                  ${item.price} each
+                <small className="text-muted-foreground text-xs">
+                  &nbsp; ${item.price} each
                 </small>
               )}
             </p>

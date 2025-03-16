@@ -17,7 +17,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   let products: Product[] = [];
   let errorMessage: string | null = null;
   let loading: boolean = true;
-  let totalCount: number = 0;
+  let totalPages: number = 1;
   const params = await loadSearchParams(searchParams);
 
   let filtersData: {
@@ -28,13 +28,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     minMaxPrices: { minPrice: 0, maxPrice: 100 },
   };
 
-  console.log("p", params);
-
   try {
     const result = await getProductsAndFilters(params);
     products = result.products;
     filtersData = result.filters; // Extract filters data
-    totalCount = result.totalCount;
+    totalPages = Math.round(result.totalCount / (params.limit || 10));
   } catch (error) {
     console.error("Error fetching products:", error);
     errorMessage = "An error occurred while fetching products.";
@@ -118,9 +116,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               </div>
             )}
           </div>
-          <ShopPagination
-            totalPages={Math.round(totalCount / (params.limit || 10))}
-          />
+          {totalPages > 1 ? <ShopPagination totalPages={totalPages} /> : null}
         </div>
       </div>
     </section>

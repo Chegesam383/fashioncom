@@ -7,7 +7,7 @@ import { Copy, Check } from "lucide-react"; // Icons from lucide-react (Shadcn d
 export default function Info() {
   const [copied, setCopied] = useState(false);
 
-  const cardNumber = "4242424242424242";
+  const cardNumber = "4242 4242 4242 4242";
 
   const handleCopy = async () => {
     try {
@@ -20,16 +20,16 @@ export default function Info() {
   };
 
   return (
-    <div className="bg-green-50 border border-green-200 text-green-950 p-4 rounded-lg shadow-sm ">
+    <div className="bg-blue-50 border border-blue-200 text-blue-950 p-4 rounded-lg shadow-sm ">
       <p className="text-sm font-medium">
         Use the Stripe testing Visa card:
-        <span className="font-mono bg-green-100 px-2 py-1 rounded mx-1">
+        <span className="font-mono bg-blue-100 px-2 py-1 rounded mx-1">
           {cardNumber}
         </span>
         <Button
           variant="ghost"
           size="sm"
-          className="ml-2 p-1 text-green-700 hover:bg-green-200 hover:text-green-900"
+          className="ml-2 p-1 text-blue-700 hover:bg-blue-200 hover:text-blue-900"
           onClick={handleCopy}
           aria-label="Copy card number"
         >

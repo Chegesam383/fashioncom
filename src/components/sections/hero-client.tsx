@@ -77,12 +77,12 @@ export default function CarouselPlugin({
                   </div>
 
                   <div className="mt-4 px-8  flex-1">
-                    <h2 className="text-3xl lg:text-4xl mb-4 font-semibold line-clamp-2 text-ellipsis">
-                      Shop {category.name.toLowerCase()}
-                    </h2>
+                    <h1 className="text-xl sm:text-3xl lg:text-4xl mb-4 font-semibold line-clamp-2 text-ellipsis text-capitalize">
+                      Shop {category.name}.
+                    </h1>
                     <p className="hidden md:block mb-4 text-muted-foreground line-clamp-2 text-ellipsis max-h-12 max-w-[420px]">
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Delectus, rerum dolore. Quia, ipsum quidem deserunt quo
+                      Delectus, rerum dolore. Quia, ipsum quidem deserunt quo...
                       cumque, mollitia veniam impedit alias beatae architecto
                       minima, enim quam magnam! Harum, voluptates porro.
                     </p>
