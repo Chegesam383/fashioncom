@@ -28,12 +28,18 @@ interface CarouselPluginProps {
 export default function CarouselPlugin({
   categories = [],
 }: CarouselPluginProps) {
-  const plugin1 = React.useRef(Autoplay({ delay: 5000, playOnInit: true }));
+  const plugin1 = React.useRef(
+    Autoplay({
+      delay: 2000,
+      playOnInit: true,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+    })
+  );
   const plugin2 = React.useRef(Fade());
   const [api, setApi] = React.useState<CarouselApi | null>(null);
   const [current, setCurrent] = React.useState(0);
 
-  // Update current slide when carousel changes
   React.useEffect(() => {
     if (!api) return;
 
@@ -57,9 +63,7 @@ export default function CarouselPlugin({
           loop: true,
         }}
         plugins={[plugin1.current, plugin2.current]}
-        onMouseEnter={() => plugin1.current.stop()}
-        onMouseLeave={() => plugin1.current.reset()}
-        setApi={setApi} // Connect Carousel API
+        setApi={setApi}
       >
         <CarouselContent>
           {categories.length > 0 ? (

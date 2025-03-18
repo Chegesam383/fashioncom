@@ -1,9 +1,7 @@
 "use client";
 import { LogIn, LogOut, Settings, User, UserRoundPen } from "lucide-react";
 
-import { Switch } from "@/components/ui/switch";
-import { MoonIcon, SunIcon } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +21,7 @@ import { Badge } from "../ui/badge";
 import { useCartStore } from "../../../store/cart-store";
 import Image from "next/image";
 import { useClerk, useUser } from "@clerk/nextjs";
-import { useTheme } from "next-themes";
+
 import { formatPrice } from "@/lib/utils";
 import CategoriesDropDown from "./categories-dropdown";
 import { useRouter } from "next/navigation";
@@ -145,6 +143,7 @@ const AccountDropdown = ({
   hasImage: boolean;
   signOut: () => void;
 }) => {
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -171,28 +170,22 @@ const AccountDropdown = ({
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 " avoidCollisions>
-        <div className="flex gap-2 m-4 mt-2">
-          <ModeToggle />
-        </div>
-
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/profile")}>
             <User />
             <span>Profile</span>
           </DropdownMenuItem>
 
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/profile/settings")}>
             <Settings />
             <span>Settings</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOut()}>
           <LogOut />
-          <span onClick={() => signOut()} className="w-full">
-            Log out
-          </span>
+          Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -216,10 +209,6 @@ const AnauthenticatedUserDropDown = () => {
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent className="w-56  relative" align="start">
-          <div className="flex gap-2 m-4 mt-2">
-            <ModeToggle />
-          </div>
-
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
@@ -238,46 +227,3 @@ const AnauthenticatedUserDropDown = () => {
     </DropdownMenu>
   );
 };
-
-function ModeToggle() {
-  const id = useId();
-  const { theme, setTheme } = useTheme();
-  const [checked, setChecked] = useState<boolean>(theme === "light");
-
-  const handleToggle = () => {
-    const newTheme = checked ? "dark" : "light";
-    setTheme(newTheme);
-    setChecked(!checked);
-  };
-
-  return (
-    <div
-      className="group inline-flex items-center gap-2"
-      data-state={checked ? "checked" : "unchecked"}
-    >
-      <span
-        id={`${id}-off`}
-        className="group-data-[state=checked]:text-muted-foreground/70 flex-1 cursor-pointer text-right text-sm font-medium"
-        aria-controls={id}
-        onClick={handleToggle}
-      >
-        <MoonIcon size={16} aria-hidden="true" />
-      </span>
-      <Switch
-        id={id}
-        checked={checked}
-        onCheckedChange={handleToggle}
-        aria-labelledby={`${id}-off ${id}-on`}
-        aria-label="Toggle between dark and light mode"
-      />
-      <span
-        id={`${id}-on`}
-        className="group-data-[state=unchecked]:text-muted-foreground/70 flex-1 cursor-pointer text-left text-sm font-medium"
-        aria-controls={id}
-        onClick={() => setChecked(true)}
-      >
-        <SunIcon size={16} aria-hidden="true" />
-      </span>
-    </div>
-  );
-}

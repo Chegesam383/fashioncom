@@ -26,7 +26,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} mt-48 md:mt-28`}>
+        <body
+          className={`${geistSans.variable} mt-48 md:mt-28 min-h-screen flex flex-col`}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
