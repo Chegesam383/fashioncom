@@ -124,6 +124,7 @@ const data: Order[] = [
 
 interface OrdersTableProps {
   title?: string;
+  data?: Order[];
 }
 
 export function OrdersTable({ title = "Recent Orders" }: OrdersTableProps) {
@@ -227,7 +228,7 @@ export function OrdersTable({ title = "Recent Orders" }: OrdersTableProps) {
   });
 
   return (
-    <Card className="w-full">
+    <Card className="w-full shadow-none">
       <CardHeader className="p-6">
         <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <CardTitle>{title}</CardTitle>

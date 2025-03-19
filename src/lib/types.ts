@@ -6,6 +6,8 @@ export interface Product {
   price: string;
   imageUrls: string[] | null;
   category?: string | null;
+  categoryId?: string | null;
+  stock?: number;
   subcategory?: string | null;
   brand?: string | null;
   rating?: string | null;

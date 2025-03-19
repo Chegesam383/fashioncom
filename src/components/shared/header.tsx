@@ -182,6 +182,14 @@ const AccountDropdown = ({
             <Settings />
             <span>Settings</span>
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/orders")}>
+            <User />
+            <span>Orders</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/admin")}>
+            <User />
+            <span>Admin panel</span>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuItem onClick={() => signOut()}>
           <LogOut />

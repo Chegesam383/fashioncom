@@ -31,7 +31,7 @@ export default function StatsCard({
   className,
 }: StatsCardProps) {
   return (
-    <Card className={cn("overflow-hidden p-0", className)}>
+    <Card className={cn("overflow-hidden p-0 shadow-none", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2">
         <CardTitle className="text-lg font-medium">
           {title}

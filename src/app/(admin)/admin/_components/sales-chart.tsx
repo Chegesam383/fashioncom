@@ -33,7 +33,7 @@ const chartConfig = {
 
 export function SalesChart() {
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Sales</CardTitle>
         <CardDescription>January - June 2024</CardDescription>

@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import ModeToggle from "@/components/shared/theme-toggle";
+// import ModeToggle from "@/components/shared/theme-toggle";
 
 export function Header() {
   const { open, isMobile } = useSidebar();
@@ -46,8 +46,8 @@ export function Header() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <ModeToggle />
+        <div className="flex items-center gap-1">
+          <div className="hidden md:inline-block">{/* <ModeToggle /> */}</div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">

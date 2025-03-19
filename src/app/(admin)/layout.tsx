@@ -8,6 +8,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { AppSidebar } from "./admin/_components/sidebar";
 
 import { Header } from "./admin/_components/header";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Inter({
   variable: "--font-geist-sans",
@@ -42,7 +43,9 @@ export default async function RootLayout({
 
               <SidebarInset>
                 <Header />
-                <main>{children}</main>
+                <NuqsAdapter>
+                  <main>{children}</main>
+                </NuqsAdapter>
               </SidebarInset>
             </SidebarProvider>
           </ThemeProvider>

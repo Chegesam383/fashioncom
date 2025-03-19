@@ -1,9 +1,11 @@
+"use client";
 import {
   ChartAreaIcon,
   Home,
   Inbox,
   Settings,
   ShoppingBag,
+  Store,
   User,
 } from "lucide-react";
 
@@ -23,35 +25,41 @@ import NavUser from "./sidebar-footer";
 const items = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/admin",
     icon: Home,
   },
 
   {
     title: "Orders",
-    url: "#",
+    url: "/admin/orders",
     icon: ShoppingBag,
   },
 
   {
     title: "Products",
-    url: "#",
+    url: "/admin/products",
     icon: Inbox,
   },
   {
     title: "Users",
-    url: "#",
+    url: "/admin/users",
     icon: User,
   },
   {
     title: "Analytics",
-    url: "#",
+    url: "/admin/analytics",
     icon: ChartAreaIcon,
   },
   {
     title: "Settings",
-    url: "#",
+    url: "/admin/settings",
     icon: Settings,
+  },
+
+  {
+    title: "Store",
+    url: "/",
+    icon: Store,
   },
 ];
 

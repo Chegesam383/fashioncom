@@ -7,7 +7,7 @@ import { Search, Loader2, X, ArrowRight } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getProductsBySearchTerm } from "@/actions/productActions";
 import { getCategoriesBySearchTerm } from "@/actions/categoryActions";
-import type { ProductCategory } from "@/lib/types";
+import type { Product, ProductCategory } from "@/lib/types";
 import Image from "next/image";
 import { debounce } from "lodash";
 import { Input } from "@/components/ui/input";
@@ -19,18 +19,8 @@ import {
 } from "@radix-ui/react-scroll-area";
 import Form from "next/form";
 
-export interface ProductWithCategory {
-  id: string;
-  name: string;
-  description?: string | undefined | null;
-  price: string;
-  imageUrls: string[] | null;
-  categoryId?: string;
-  subcategories?: string[];
-  categorySlug?: string;
-  categoryImage?: string;
+export interface ProductWithCategory extends Product {
   categoryName?: string;
-  attributes?: Record<string, string>;
 }
 
 export default function SearchWithDropdown() {
