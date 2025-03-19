@@ -28,6 +28,58 @@ interface ProductVariantsTableProps {
   ) => void;
 }
 
+export function formatAttributesForSubmission(variants: Variant[]) {
+  if (variants.length === 0) return null;
+
+  // Initialize the structure
+  const formattedData: {
+    availableAttributes: Record<string, string[]>;
+    attributeCombinations: Array<Record<string, string>>;
+  } = {
+    availableAttributes: {},
+    attributeCombinations: [],
+  };
+
+  // Get all attribute names
+  const attributeNames = new Set<string>();
+  variants.forEach((variant) => {
+    Object.keys(variant.combination).forEach((attrName) => {
+      attributeNames.add(attrName);
+    });
+  });
+
+  // Populate availableAttributes
+  attributeNames.forEach((attrName) => {
+    // Get all unique values for this attribute
+    const values = new Set<string>();
+    variants.forEach((variant) => {
+      if (variant.combination[attrName]) {
+        values.add(variant.combination[attrName].value);
+      }
+    });
+
+    formattedData.availableAttributes[attrName] = Array.from(values);
+  });
+
+  // Populate attributeCombinations
+  variants.forEach((variant) => {
+    const combination: Record<string, string> = {
+      price: variant.price.toString(),
+      stock: variant.stock.toString(),
+      sku: variant.sku,
+    };
+
+    // Add each attribute value to the combination
+    Object.entries(variant.combination).forEach(([attrName, attrValue]) => {
+      combination[attrName] = attrValue.value;
+    });
+
+    formattedData.attributeCombinations.push(combination);
+  });
+
+  return formattedData;
+}
+
 export function ProductVariantsTable({
   variants,
   onChange,

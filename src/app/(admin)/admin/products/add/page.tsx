@@ -1,12 +1,11 @@
 "use client";
-import { useState } from "react";
+
+import { ChangeEvent, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
-import { Save, ArrowLeft, Tag, Pencil } from "lucide-react";
+import { Save, ArrowLeft, Tag, Pencil, X } from "lucide-react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -30,9 +29,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import {
   AttributeEditor,
@@ -40,7 +39,15 @@ import {
   ProductAttribute,
 } from "../attributes-editor";
 import { useRouter } from "next/navigation";
-import { ProductVariantsTable } from "../attribute-table";
+import {
+  formatAttributesForSubmission,
+  ProductVariantsTable,
+} from "../attribute-table";
+import Image from "next/image";
+import { addProductAction } from "@/actions/productActions";
+import { getCategoriesWithSubcategories } from "@/actions/categoryActions";
+import { CategoryWithSubcategories, ProductCategory } from "@/lib/types";
+
 // Define the validation schema for the product form
 const productFormSchema = z.object({
   name: z
@@ -58,22 +65,7 @@ const productFormSchema = z.object({
     .int()
     .nonnegative({ message: "Stock must be a non-negative integer." }),
   sku: z.string().optional(),
-  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional(),
 });
-
-// Categories for the select dropdown
-const categories = [
-  "Electronics",
-  "Clothing",
-  "Home & Kitchen",
-  "Beauty & Personal Care",
-  "Sports & Outdoors",
-  "Books",
-  "Toys & Games",
-  "Health & Wellness",
-  "Jewelry",
-  "Automotive",
-];
 
 interface Variant {
   id: string;
@@ -85,12 +77,23 @@ interface Variant {
 
 type FormValues = z.infer<typeof productFormSchema>;
 
+// Interface for image data
+interface ImageData {
+  file: File;
+  preview: string;
+}
+
 const AddProduct = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("basic");
   const [attributes, setAttributes] = useState<ProductAttribute[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
   const [isGeneratingVariants, setIsGeneratingVariants] = useState(false);
+  const [images, setImages] = useState<ImageData[]>([]);
+  const [categories, setCategories] = useState<
+    CategoryWithSubcategories[] | null | undefined
+  >([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(productFormSchema),
@@ -101,17 +104,60 @@ const AddProduct = () => {
       category: "",
       stock: 0,
       sku: "",
-      imageUrl: "",
     },
   });
 
   const basePrice = form.watch("price") || 0;
 
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const fetchedCategories = await getCategoriesWithSubcategories();
+        setCategories(fetchedCategories || []);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Failed to load categories");
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Handle file input change
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newFiles = Array.from(files).filter(
+      (file) => !images.some((img) => img.file.name === file.name)
+    );
+
+    if (newFiles.length === 0) {
+      toast.warning("All selected files are duplicates.");
+      return;
+    }
+
+    const newImages = newFiles.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setImages((prev) => [...prev, ...newImages]);
+  };
+
+  // Handle removing an image
+  const handleRemoveImage = (indexToRemove: number) => {
+    setImages((prev) => {
+      const imageToRemove = prev[indexToRemove];
+      URL.revokeObjectURL(imageToRemove.preview);
+      return prev.filter((_, index) => index !== indexToRemove);
+    });
+  };
+
   // Generate all possible variants when attributes change
   const generateVariants = () => {
     setIsGeneratingVariants(true);
 
-    // Check if there are any attributes with values
     const attributesWithValues = attributes.filter(
       (attr) => attr.values.length > 0
     );
@@ -122,13 +168,11 @@ const AddProduct = () => {
       return;
     }
 
-    // Helper function to generate all combinations recursively
     const generateCombinations = (
       attributes: ProductAttribute[],
       currentIndex: number,
       currentCombination: Record<string, AttributeValue> = {}
     ): Record<string, AttributeValue>[] => {
-      // Base case: we've gone through all attributes
       if (currentIndex === attributes.length) {
         return [currentCombination];
       }
@@ -136,7 +180,6 @@ const AddProduct = () => {
       const currentAttribute = attributes[currentIndex];
       const combinations: Record<string, AttributeValue>[] = [];
 
-      // Skip attributes with no values
       if (currentAttribute.values.length === 0) {
         return generateCombinations(
           attributes,
@@ -145,61 +188,44 @@ const AddProduct = () => {
         );
       }
 
-      // For each possible value of the current attribute
       currentAttribute.values.forEach((value) => {
-        // Create a new combination with this value
         const newCombination = {
           ...currentCombination,
           [currentAttribute.name]: value,
         };
-
-        // Recursively generate combinations for the remaining attributes
         const newCombinations = generateCombinations(
           attributes,
           currentIndex + 1,
           newCombination
         );
-
         combinations.push(...newCombinations);
       });
 
       return combinations;
     };
 
-    // Generate all possible combinations
     const combinations = generateCombinations(attributesWithValues, 0);
 
-    // Create variant objects for each combination
     const newVariants = combinations.map((combination, index) => {
-      // Check if this combination already exists in our variants
       const existingVariant = variants.find((v) => {
-        // Check if the keys and values match
         const combinationKeys = Object.keys(combination);
         const variantKeys = Object.keys(v.combination);
-
         if (combinationKeys.length !== variantKeys.length) return false;
-
-        return combinationKeys.every((key) => {
-          return (
+        return combinationKeys.every(
+          (key) =>
             v.combination[key] && v.combination[key].id === combination[key].id
-          );
-        });
+        );
       });
 
-      // If it exists, keep its current price and stock
-      if (existingVariant) {
-        return existingVariant;
-      }
+      if (existingVariant) return existingVariant;
 
-      // Create a combination string for SKU (e.g., "Red-Large")
       const combinationStr = Object.values(combination)
         .map((v) => v.value)
         .join("-");
 
-      // Create a new variant with the base price
       return {
         id: `variant-${index}-${Date.now()}`,
-        combination: combination,
+        combination,
         price: basePrice,
         stock: 0,
         sku: `${form.watch("sku") || "SKU"}-${combinationStr}`,
@@ -212,7 +238,7 @@ const AddProduct = () => {
     toast.success(`Generated ${newVariants.length} variants`);
   };
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     if (attributes.length > 0 && variants.length === 0) {
       toast.warning(
         "You have attributes but haven't generated variants. Please generate variants first."
@@ -220,22 +246,34 @@ const AddProduct = () => {
       return;
     }
 
-    const product = {
-      ...data,
-      attributes,
-      variants: variants.length > 0 ? variants : undefined,
-    };
+    setIsSubmitting(true);
 
-    console.log("Submitting product:", product);
+    const formattedAttributes =
+      variants.length > 0 ? formatAttributesForSubmission(variants) : null;
 
-    // Here you would normally send the data to your API
-    // For now, we'll just simulate success
-    toast.success("Product created successfully!");
+    // Create FormData to send to server action
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("price", String(data.price));
+    formData.append("category", data.category);
+    formData.append("stock", String(data.stock));
+    if (data.sku) formData.append("sku", data.sku);
+    if (formattedAttributes) {
+      formData.append("attributes", JSON.stringify(formattedAttributes));
+    }
+    images.forEach((img) => formData.append("images", img.file));
 
-    // Navigate back to products page
-    setTimeout(() => {
+    try {
+      await addProductAction(formData);
+      toast.success("Product added successfully!");
       router.push("/products");
-    }, 1500);
+    } catch (error) {
+      console.error("Error adding product:", error);
+      toast.error("Failed to add product");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleVariantChange = (
@@ -251,7 +289,7 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background ">
+    <div className="min-h-screen bg-background">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -262,7 +300,7 @@ const AddProduct = () => {
           </div>
           <Button
             variant="outline"
-            onClick={() => router.push("/admin/products")}
+            onClick={() => router.push("/products")}
             className="gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -344,14 +382,16 @@ const AddProduct = () => {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {categories.map((category) => (
-                                  <SelectItem
-                                    key={category}
-                                    value={category.toLowerCase()}
-                                  >
-                                    {category}
-                                  </SelectItem>
-                                ))}
+                                {(categories || []).map(
+                                  (category: ProductCategory) => (
+                                    <SelectItem
+                                      key={category.id}
+                                      value={category.id} // Use category ID instead of slug
+                                    >
+                                      {category.name}
+                                    </SelectItem>
+                                  )
+                                )}
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -427,42 +467,55 @@ const AddProduct = () => {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle>Product Image</CardTitle>
+                        <CardTitle>Product Images</CardTitle>
                         <CardDescription>
-                          Add an image for your product.
+                          Add images for your product.
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <FormField
-                          control={form.control}
-                          name="imageUrl"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Image URL</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="https://example.com/image.jpg"
-                                  {...field}
+                        <FormItem>
+                          <div className="flex flex-wrap gap-4 mt-4">
+                            <div>
+                              <input
+                                type="file"
+                                id="image-upload"
+                                multiple
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleFileChange}
+                              />
+                              <label
+                                htmlFor="image-upload"
+                                className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-gray-400 rounded cursor-pointer hover:bg-gray-100"
+                              >
+                                <span className="text-4xl text-gray-400">
+                                  +
+                                </span>
+                              </label>
+                            </div>
+
+                            {images.map((img, index) => (
+                              <div key={index} className="relative w-32 h-32">
+                                <Image
+                                  src={img.preview}
+                                  alt={`Preview ${index}`}
+                                  layout="fill"
+                                  objectFit="cover"
+                                  className="rounded"
                                 />
-                              </FormControl>
-                              <FormMessage />
-                              {field.value && (
-                                <div className="mt-2 border rounded-md overflow-hidden aspect-square w-full max-w-[200px]">
-                                  <img
-                                    src={field.value}
-                                    alt="Product preview"
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      // Handle image loading error
-                                      (e.target as HTMLImageElement).src =
-                                        "https://placehold.co/400x400/FAFAFA/AAAAAA?text=Image+Error";
-                                    }}
-                                  />
-                                </div>
-                              )}
-                            </FormItem>
-                          )}
-                        />
+                                <Button
+                                  variant="destructive"
+                                  size="icon"
+                                  className="absolute top-1 right-1 h-6 w-6 rounded-full"
+                                  onClick={() => handleRemoveImage(index)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
                       </CardContent>
                     </Card>
                   </div>
@@ -487,8 +540,7 @@ const AddProduct = () => {
                       </Button>
                     </CardTitle>
                     <CardDescription>
-                      Add attributes like size, color, material, etc. These will
-                      be used to generate product variants.
+                      Add attributes like size, color, material, etc.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -553,9 +605,9 @@ const AddProduct = () => {
               >
                 Cancel
               </Button>
-              <Button type="submit">
+              <Button type="submit" disabled={isSubmitting}>
                 <Save className="h-4 w-4 mr-2" />
-                Save Product
+                {isSubmitting ? "Saving..." : "Save Product"}
               </Button>
             </div>
           </form>

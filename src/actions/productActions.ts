@@ -23,6 +23,9 @@ import {
 } from "drizzle-orm";
 
 import { revalidatePath } from "next/cache";
+import { UTApi } from "uploadthing/server";
+
+const utapi = new UTApi(); // Uses UPLOADTHING_SECRET from .env
 
 interface ProductFilters {
   category?: string;
@@ -35,6 +38,85 @@ interface ProductFilters {
   limit?: number;
   page?: number;
   sort?: string;
+}
+
+export async function addProductAction(formData: FormData) {
+  try {
+    // Extract data dynamically from FormData
+    const data: Record<string, unknown> = {};
+    const images: File[] = [];
+
+    for (const [key, value] of formData.entries()) {
+      if (key === "images" && value instanceof File) {
+        images.push(value);
+      } else {
+        data[key] = value;
+      }
+    }
+
+    // Parse core fields
+    const name = data.name as string;
+    const description = data.description as string;
+    const price = parseFloat(data.price as string);
+    const categoryId = data.category as string;
+    const stock = parseInt(data.stock as string, 10);
+    const sku = (data.sku as string) || null;
+    const attributes = data.attributes
+      ? JSON.parse(data.attributes as string)
+      : { availableAttributes: {}, attributeCombination: {} };
+
+    // Upload images to Uploadthing
+    let imageUrls: string[] = [];
+    if (images.length > 0) {
+      // Ensure images is treated as FileEsque[]
+      const uploadResults = await utapi.uploadFiles(images); // No options object needed here
+
+      // Extract URLs and handle errors
+      imageUrls = uploadResults
+        .map((result) => {
+          if (result.error) {
+            console.error(`Upload failed: ${result.error.message}`);
+            return null;
+          }
+          return result.data?.url;
+        })
+        .filter((url): url is string => url !== null);
+
+      if (imageUrls.length !== images.length) {
+        throw new Error("Some images failed to upload");
+      }
+    }
+
+    // Construct product object
+    const product = {
+      name,
+      description,
+      price: price.toString(),
+      categoryId,
+      stock,
+      sku,
+      attributes,
+      imageUrls,
+    };
+
+    // Replace with your database logic
+    console.log("Saving product:", product);
+
+    const savedProduct = await db
+      .insert(products)
+      .values(product)
+      .returning({ id: products.id });
+
+    revalidatePath("/admin/products");
+    return {
+      success: true,
+      product: savedProduct,
+      message: "Product added successfully",
+    };
+  } catch (error) {
+    console.error("Error in addProductAction:", error);
+    throw new Error("Failed to add product");
+  }
 }
 
 export async function getProducts(filters: ProductFilters) {
@@ -192,20 +274,6 @@ export async function getProductsBySearchTerm(
     console.error("Error fetching products by search term:", error);
     return [];
   }
-}
-
-export async function addProduct(formData: FormData) {
-  const name = formData.get("name") as string;
-  const price = formData.get("price") as string;
-  const imageUrls = formData.get("imageUrls") as string;
-
-  await db.insert(products).values({
-    name,
-    price,
-    imageUrls: imageUrls.split(","),
-  });
-
-  revalidatePath("/products");
 }
 
 export async function getProductsAndFilters(filters: ProductFilters) {

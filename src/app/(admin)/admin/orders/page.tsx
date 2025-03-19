@@ -309,10 +309,10 @@ const OrdersPage = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button className="h-9">
+              {/* <Button className="h-9">
                 <ShoppingBag className="h-4 w-4 mr-2" />
                 New Order
-              </Button>
+              </Button> */}
             </div>
           </div>
 

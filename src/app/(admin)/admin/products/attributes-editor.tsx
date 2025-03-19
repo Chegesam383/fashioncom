@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Plus, Trash, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { useState } from "react";
+import { Plus, Trash, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
 export interface AttributeValue {
   id: string;
@@ -28,74 +28,82 @@ interface AttributeEditorProps {
   onChange: (attributes: ProductAttribute[]) => void;
 }
 
-export function AttributeEditor({ attributes, onChange }: AttributeEditorProps) {
-  const [newAttributeName, setNewAttributeName] = useState('');
-  const [newAttributeValue, setNewAttributeValue] = useState('');
-  const [editingAttributeId, setEditingAttributeId] = useState<string | null>(null);
+export function AttributeEditor({
+  attributes,
+  onChange,
+}: AttributeEditorProps) {
+  const [newAttributeName, setNewAttributeName] = useState("");
+  const [newAttributeValue, setNewAttributeValue] = useState("");
+
+  // Now we don't need to track editingAttributeId since we'll show the UI for all attributes
 
   const addAttribute = () => {
     if (!newAttributeName.trim()) return;
-    
+
     // Check for duplicate attribute names
-    if (attributes.some(attr => attr.name.toLowerCase() === newAttributeName.toLowerCase())) {
+    if (
+      attributes.some(
+        (attr) => attr.name.toLowerCase() === newAttributeName.toLowerCase()
+      )
+    ) {
       // Could show an error toast here
       return;
     }
-    
+
     const newAttribute: ProductAttribute = {
       id: `attr-${Date.now()}`,
       name: newAttributeName.trim(),
       values: [],
     };
-    
+
     onChange([...attributes, newAttribute]);
-    setNewAttributeName('');
-    setEditingAttributeId(newAttribute.id);
+    setNewAttributeName("");
   };
-  
+
   const removeAttribute = (id: string) => {
-    onChange(attributes.filter(attr => attr.id !== id));
-    if (editingAttributeId === id) {
-      setEditingAttributeId(null);
-    }
+    onChange(attributes.filter((attr) => attr.id !== id));
   };
-  
-  const addAttributeValue = (attributeId: string) => {
-    if (!newAttributeValue.trim()) return;
-    
-    onChange(attributes.map(attr => {
-      if (attr.id !== attributeId) return attr;
-      
-      // Check for duplicate values
-      if (attr.values.some(v => v.value.toLowerCase() === newAttributeValue.toLowerCase())) {
-        // Could show an error toast here
-        return attr;
-      }
-      
-      return {
-        ...attr,
-        values: [
-          ...attr.values,
-          {
-            id: `val-${Date.now()}`,
-            value: newAttributeValue.trim(),
-          }
-        ]
-      };
-    }));
-    
-    setNewAttributeValue('');
+
+  const addAttributeValue = (attributeId: string, value: string) => {
+    if (!value.trim()) return;
+
+    onChange(
+      attributes.map((attr) => {
+        if (attr.id !== attributeId) return attr;
+
+        // Check for duplicate values
+        if (
+          attr.values.some((v) => v.value.toLowerCase() === value.toLowerCase())
+        ) {
+          // Could show an error toast here
+          return attr;
+        }
+
+        return {
+          ...attr,
+          values: [
+            ...attr.values,
+            {
+              id: `val-${Date.now()}`,
+              value: value.trim(),
+            },
+          ],
+        };
+      })
+    );
   };
-  
+
   const removeAttributeValue = (attributeId: string, valueId: string) => {
-    onChange(attributes.map(attr => {
-      if (attr.id !== attributeId) return attr;
-      
-      return {
-        ...attr,
-        values: attr.values.filter(v => v.id !== valueId)
-      };
-    }));
+    onChange(
+      attributes.map((attr) => {
+        if (attr.id !== attributeId) return attr;
+
+        return {
+          ...attr,
+          values: attr.values.filter((v) => v.id !== valueId),
+        };
+      })
+    );
   };
 
   return (
@@ -106,7 +114,7 @@ export function AttributeEditor({ attributes, onChange }: AttributeEditorProps) 
           value={newAttributeName}
           onChange={(e) => setNewAttributeName(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               e.preventDefault();
               addAttribute();
             }
@@ -124,7 +132,7 @@ export function AttributeEditor({ attributes, onChange }: AttributeEditorProps) 
           Add
         </Button>
       </div>
-      
+
       {attributes.length > 0 ? (
         <Table>
           <TableHeader>
@@ -139,70 +147,55 @@ export function AttributeEditor({ attributes, onChange }: AttributeEditorProps) 
               <TableRow key={attribute.id}>
                 <TableCell className="font-medium">{attribute.name}</TableCell>
                 <TableCell>
-                  {editingAttributeId === attribute.id ? (
-                    <div className="flex items-center gap-2">
-                      <Input
-                        placeholder={`Add ${attribute.name} value`}
-                        value={newAttributeValue}
-                        onChange={(e) => setNewAttributeValue(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            addAttributeValue(attribute.id);
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {attribute.values.map((value) => (
+                      <Badge
+                        key={value.id}
+                        variant="outline"
+                        className="group flex items-center gap-1"
+                      >
+                        {value.value}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeAttributeValue(attribute.id, value.id)
                           }
-                        }}
-                        className="max-w-xs"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => addAttributeValue(attribute.id)}
-                        disabled={!newAttributeValue.trim()}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setEditingAttributeId(null)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {attribute.values.map((value) => (
-                        <Badge 
-                          key={value.id} 
-                          variant="outline"
-                          className="group flex items-center gap-1"
+                          className="h-3 w-3 rounded-full opacity-0 group-hover:opacity-100 hover:bg-destructive/20 transition-opacity"
                         >
-                          {value.value}
-                          <button
-                            type="button"
-                            onClick={() => removeAttributeValue(attribute.id, value.id)}
-                            className="h-3 w-3 rounded-full opacity-0 group-hover:opacity-100 hover:bg-destructive/20 transition-opacity"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                      {attribute.values.length === 0 && (
-                        <span className="text-muted-foreground text-sm italic">No values</span>
-                      )}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 rounded-full"
-                        onClick={() => setEditingAttributeId(attribute.id)}
-                      >
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+
+                  {/* We always show the input for adding new values */}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      placeholder={`Add ${attribute.name} value`}
+                      value={newAttributeValue}
+                      onChange={(e) => setNewAttributeValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addAttributeValue(attribute.id, newAttributeValue);
+                          setNewAttributeValue("");
+                        }
+                      }}
+                      className="max-w-xs"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        addAttributeValue(attribute.id, newAttributeValue);
+                        setNewAttributeValue("");
+                      }}
+                      disabled={!newAttributeValue.trim()}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
@@ -224,7 +217,8 @@ export function AttributeEditor({ attributes, onChange }: AttributeEditorProps) 
           <div className="text-center">
             <p className="text-muted-foreground">No attributes defined yet</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Add attributes like Size, Color, Material to create product variants
+              Add attributes like Size, Color, Material to create product
+              variants
             </p>
           </div>
         </div>

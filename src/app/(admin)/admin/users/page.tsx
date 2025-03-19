@@ -4,24 +4,17 @@ import {
   Search,
   Plus,
   Filter,
-  Users as UsersIcon,
-  UserPlus,
   ArrowUpDown,
-  Mail,
+  UsersIcon,
+  UserPlus,
   Calendar,
   ShoppingBag,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -31,14 +24,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Define sample user data structure
 interface User {
@@ -154,183 +141,6 @@ const sampleUsers: User[] = [
   },
 ];
 
-// User Card component for Grid View
-const UserCard = ({ user }: { user: User }) => {
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase();
-  };
-
-  return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="p-2">
-        <div className="flex justify-between items-start">
-          <Avatar className="h-12 w-12">
-            <AvatarImage src={user.avatar} alt={user.name} />
-            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-          </Avatar>
-          <Badge
-            variant={user.status === "active" ? "default" : "secondary"}
-            className={
-              user.status === "active" ? "bg-green-500" : "bg-gray-300"
-            }
-          >
-            {user.status}
-          </Badge>
-        </div>
-        <CardTitle className="text-base mt-2">{user.name}</CardTitle>
-        <div className="text-sm text-muted-foreground flex items-center">
-          <Mail className="h-3.5 w-3.5 mr-1" />
-          {user.email}
-        </div>
-      </CardHeader>
-      <CardContent className="p-2 flex-grow">
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div>
-            <p className="text-muted-foreground">Role</p>
-            <p className="font-medium capitalize">{user.role}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Joined</p>
-            <p className="font-medium">
-              {new Date(user.joinDate).toLocaleDateString()}
-            </p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Orders</p>
-            <p className="font-medium">{user.ordersCount}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Spent</p>
-            <p className="font-medium">${user.totalSpent.toFixed(2)}</p>
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="pt-2">
-        <Button variant="outline" size="sm" className="w-full">
-          View Profile
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-};
-
-// User Grid component
-const UserGrid = ({ users }: { users: User[] }) => {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {users.map((user) => (
-        <UserCard key={user.id} user={user} />
-      ))}
-    </div>
-  );
-};
-
-// User Table component
-const UserTable = ({ users }: { users: User[] }) => {
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase();
-  };
-
-  return (
-    <div className="rounded-md border">
-      <div className="overflow-x-auto">
-        <table className="w-full divide-y divide-border">
-          <thead>
-            <tr className="bg-muted/50">
-              <th className="px-4 py-3.5 text-left text-sm font-semibold">
-                User
-              </th>
-              <th className="px-4 py-3.5 text-left text-sm font-semibold">
-                Role
-              </th>
-              <th className="px-4 py-3.5 text-left text-sm font-semibold">
-                Status
-              </th>
-              <th className="px-4 py-3.5 text-left text-sm font-semibold">
-                Join Date
-              </th>
-              <th className="px-4 py-3.5 text-left text-sm font-semibold">
-                Orders
-              </th>
-              <th className="px-4 py-3.5 text-left text-sm font-semibold">
-                Total Spent
-              </th>
-              <th className="px-4 py-3.5 text-right text-sm font-semibold">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {users.map((user) => (
-              <tr key={user.id} className="hover:bg-muted/50">
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <Avatar className="h-8 w-8 mr-3">
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-medium">{user.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {user.email}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap capitalize">
-                  {user.role}
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <Badge
-                    variant={user.status === "active" ? "default" : "secondary"}
-                    className={
-                      user.status === "active" ? "bg-green-500" : "bg-gray-300"
-                    }
-                  >
-                    {user.status}
-                  </Badge>
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  {new Date(user.joinDate).toLocaleDateString()}
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  {user.ordersCount}
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  ${user.totalSpent.toFixed(2)}
-                </td>
-                <td className="px-4 py-3 whitespace-nowrap text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        Actions
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Edit User</DropdownMenuItem>
-                      <DropdownMenuItem>View Orders</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-// User stats
 const userStats = [
   {
     label: "Total Users",
@@ -540,11 +350,11 @@ const UsersPage = () => {
           </div>
 
           <TabsContent value="grid" className="mt-0">
-            <UserGrid users={filteredUsers} />
+            {/* <UserGrid users={filteredUsers} /> */}
           </TabsContent>
 
           <TabsContent value="list" className="mt-0">
-            <UserTable users={filteredUsers} />
+            {/* <UserTable users={filteredUsers} /> */}
           </TabsContent>
         </Tabs>
       </div>
