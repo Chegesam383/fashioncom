@@ -8,6 +8,7 @@ import { Product } from "@/lib/types";
 import AddToCartNoAttributes from "./add-to-cart-no-attributes";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
+import Image from "next/image";
 
 export default function ProductCard({ product }: { product: Product }) {
   const attributes = product.attributes?.availableAttributes;
@@ -35,7 +36,8 @@ export default function ProductCard({ product }: { product: Product }) {
           </Badge>
         ) : null}
         <Link href={"product/" + product.id}>
-          <img
+          <Image
+            unoptimized={true}
             src={image}
             alt={product.name}
             width={80}

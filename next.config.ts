@@ -1,17 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // async rewrites() {
-  //   return {
-  //     beforeFiles: [
-  //       {
-  //         source: "/product/:productId/:path*",
-  //         destination: "/:path*",
-  //       },
-  //     ],
-  //     afterFiles: [],
-  //     fallback: [],
-  //   };
-  // },
   eslint: {
     ignoreDuringBuilds: true,
   },
