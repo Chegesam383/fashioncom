@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Button } from "../ui/button";
 import { Heart } from "lucide-react";
 import Rating from "../rating/ratings";
@@ -36,7 +35,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </Badge>
         ) : null}
         <Link href={"product/" + product.id}>
-          <Image
+          <img
             src={image}
             alt={product.name}
             width={80}

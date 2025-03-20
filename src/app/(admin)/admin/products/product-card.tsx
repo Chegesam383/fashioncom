@@ -8,7 +8,6 @@ import { formatPrice } from "@/lib/utils";
 import Rating from "@/components/rating/ratings";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/lib/types";
-import Image from "next/image";
 
 export default function ProductCard({ product }: { product: Product }) {
   const image =
@@ -34,7 +33,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </Badge>
         ) : null}
         <Link href={"product/" + product.id}>
-          <Image
+          <img
             src={image}
             alt={product.name}
             width={80}
