@@ -46,7 +46,15 @@ import {
 import Image from "next/image";
 import { addProductAction } from "@/actions/productActions";
 import { getCategoriesWithSubcategories } from "@/actions/categoryActions";
-import { CategoryWithSubcategories, ProductCategory } from "@/lib/types";
+import { CategoryWithSubcategories, ProductSubcategory } from "@/lib/types";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 // Define the validation schema for the product form
 const productFormSchema = z.object({
@@ -60,6 +68,7 @@ const productFormSchema = z.object({
     .number()
     .positive({ message: "Price must be a positive number." }),
   category: z.string().min(1, { message: "Please select a category." }),
+  subcategories: z.array(z.string()).optional(), // Array of subcategory slugs
   stock: z.coerce
     .number()
     .int()
@@ -77,7 +86,6 @@ interface Variant {
 
 type FormValues = z.infer<typeof productFormSchema>;
 
-// Interface for image data
 interface ImageData {
   file: File;
   preview: string;
@@ -90,10 +98,11 @@ const AddProduct = () => {
   const [variants, setVariants] = useState<Variant[]>([]);
   const [isGeneratingVariants, setIsGeneratingVariants] = useState(false);
   const [images, setImages] = useState<ImageData[]>([]);
-  const [categories, setCategories] = useState<
-    CategoryWithSubcategories[] | null | undefined
-  >([]);
+  const [categories, setCategories] = useState<CategoryWithSubcategories[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availableSubcategories, setAvailableSubcategories] = useState<
+    ProductSubcategory[]
+  >([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(productFormSchema),
@@ -102,12 +111,14 @@ const AddProduct = () => {
       description: "",
       price: 0,
       category: "",
+      subcategories: [],
       stock: 0,
       sku: "",
     },
   });
 
   const basePrice = form.watch("price") || 0;
+  const selectedCategory = form.watch("category");
 
   // Fetch categories on mount
   useEffect(() => {
@@ -122,6 +133,25 @@ const AddProduct = () => {
     };
     fetchCategories();
   }, []);
+
+  // Update available subcategories when category changes
+  useEffect(() => {
+    if (selectedCategory) {
+      const categoryData = categories.find(
+        (cat) => cat.id === selectedCategory
+      );
+      setAvailableSubcategories(categoryData?.subcategories || []);
+      // Reset subcategories if they’re no longer valid
+      const currentSubs = form.getValues("subcategories") || [];
+      const validSubs = currentSubs.filter((sub) =>
+        categoryData?.subcategories?.some((s) => s.slug === sub)
+      );
+      form.setValue("subcategories", validSubs);
+    } else {
+      setAvailableSubcategories([]);
+      form.setValue("subcategories", []);
+    }
+  }, [selectedCategory, categories, form]);
 
   // Handle file input change
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -154,10 +184,9 @@ const AddProduct = () => {
     });
   };
 
-  // Generate all possible variants when attributes change
+  // Generate variants (unchanged)
   const generateVariants = () => {
     setIsGeneratingVariants(true);
-
     const attributesWithValues = attributes.filter(
       (attr) => attr.values.length > 0
     );
@@ -173,10 +202,7 @@ const AddProduct = () => {
       currentIndex: number,
       currentCombination: Record<string, AttributeValue> = {}
     ): Record<string, AttributeValue>[] => {
-      if (currentIndex === attributes.length) {
-        return [currentCombination];
-      }
-
+      if (currentIndex === attributes.length) return [currentCombination];
       const currentAttribute = attributes[currentIndex];
       const combinations: Record<string, AttributeValue>[] = [];
 
@@ -207,22 +233,16 @@ const AddProduct = () => {
     const combinations = generateCombinations(attributesWithValues, 0);
 
     const newVariants = combinations.map((combination, index) => {
-      const existingVariant = variants.find((v) => {
-        const combinationKeys = Object.keys(combination);
-        const variantKeys = Object.keys(v.combination);
-        if (combinationKeys.length !== variantKeys.length) return false;
-        return combinationKeys.every(
-          (key) =>
-            v.combination[key] && v.combination[key].id === combination[key].id
-        );
-      });
-
+      const existingVariant = variants.find((v) =>
+        Object.keys(combination).every(
+          (key) => v.combination[key]?.id === combination[key].id
+        )
+      );
       if (existingVariant) return existingVariant;
 
       const combinationStr = Object.values(combination)
         .map((v) => v.value)
         .join("-");
-
       return {
         id: `variant-${index}-${Date.now()}`,
         combination,
@@ -251,23 +271,25 @@ const AddProduct = () => {
     const formattedAttributes =
       variants.length > 0 ? formatAttributesForSubmission(variants) : null;
 
-    // Create FormData to send to server action
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("price", String(data.price));
     formData.append("category", data.category);
+    if (data.subcategories && data.subcategories.length > 0) {
+      formData.append("subcategories", JSON.stringify(data.subcategories)); // Send as JSON string
+    }
     formData.append("stock", String(data.stock));
     if (data.sku) formData.append("sku", data.sku);
-    if (formattedAttributes) {
+    if (formattedAttributes)
       formData.append("attributes", JSON.stringify(formattedAttributes));
-    }
     images.forEach((img) => formData.append("images", img.file));
 
     try {
-      await addProductAction(formData);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const response = await addProductAction(formData);
       toast.success("Product added successfully!");
-      router.push("/products");
+      router.push("/admin/products");
     } catch (error) {
       console.error("Error adding product:", error);
       toast.error("Failed to add product");
@@ -281,8 +303,8 @@ const AddProduct = () => {
     field: "price" | "stock" | "sku",
     value: number | string
   ) => {
-    setVariants(
-      variants.map((variant) =>
+    setVariants((prev) =>
+      prev.map((variant) =>
         variant.id === variantId ? { ...variant, [field]: value } : variant
       )
     );
@@ -347,7 +369,6 @@ const AddProduct = () => {
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="description"
@@ -365,7 +386,6 @@ const AddProduct = () => {
                           </FormItem>
                         )}
                       />
-
                       <FormField
                         control={form.control}
                         name="category"
@@ -382,18 +402,93 @@ const AddProduct = () => {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {(categories || []).map(
-                                  (category: ProductCategory) => (
-                                    <SelectItem
-                                      key={category.id}
-                                      value={category.id} // Use category ID instead of slug
-                                    >
-                                      {category.name}
-                                    </SelectItem>
-                                  )
-                                )}
+                                {categories.map((category) => (
+                                  <SelectItem
+                                    key={category.id}
+                                    value={category.id}
+                                  >
+                                    {category.name}
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="subcategories"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Subcategories</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full justify-start text-left",
+                                    field.value &&
+                                      field.value.length > 0 &&
+                                      "text-muted-foreground"
+                                  )}
+                                  disabled={!selectedCategory}
+                                >
+                                  {field.value && field.value.length > 0
+                                    ? `${field.value.length} selected`
+                                    : "Select subcategories"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-[200px] p-0">
+                                <div className="p-4 space-y-2">
+                                  {availableSubcategories.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground">
+                                      No subcategories available
+                                    </p>
+                                  ) : (
+                                    availableSubcategories.map((sub) => (
+                                      <div
+                                        key={sub.slug}
+                                        className="flex items-center space-x-2"
+                                      >
+                                        <Checkbox
+                                          id={`sub-${sub.slug}`}
+                                          checked={
+                                            field.value?.includes(sub.slug) ||
+                                            false
+                                          }
+                                          onCheckedChange={(checked) => {
+                                            const currentSubs =
+                                              field.value || [];
+                                            if (checked) {
+                                              field.onChange([
+                                                ...currentSubs,
+                                                sub.slug,
+                                              ]);
+                                            } else {
+                                              field.onChange(
+                                                currentSubs.filter(
+                                                  (s) => s !== sub.slug
+                                                )
+                                              );
+                                            }
+                                          }}
+                                        />
+                                        <Label
+                                          htmlFor={`sub-${sub.slug}`}
+                                          className="text-sm"
+                                        >
+                                          {sub.name}
+                                        </Label>
+                                      </div>
+                                    ))
+                                  )}
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                            <FormDescription>
+                              Select applicable subcategories.
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -431,7 +526,6 @@ const AddProduct = () => {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="stock"
@@ -448,7 +542,6 @@ const AddProduct = () => {
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="sku"
@@ -493,7 +586,6 @@ const AddProduct = () => {
                                 </span>
                               </label>
                             </div>
-
                             {images.map((img, index) => (
                               <div key={index} className="relative w-32 h-32">
                                 <Image
@@ -522,6 +614,7 @@ const AddProduct = () => {
                 </div>
               </TabsContent>
 
+              {/* Attributes and Variants tabs remain unchanged */}
               <TabsContent value="attributes" className="space-y-6 mt-6">
                 <Card>
                   <CardHeader>

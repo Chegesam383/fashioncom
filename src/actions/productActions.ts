@@ -59,6 +59,9 @@ export async function addProductAction(formData: FormData) {
     const description = data.description as string;
     const price = parseFloat(data.price as string);
     const categoryId = data.category as string;
+    const subcategories = data.subcategories
+      ? JSON.parse(data.subcategories as string)
+      : [];
     const stock = parseInt(data.stock as string, 10);
     const sku = (data.sku as string) || null;
     const attributes = data.attributes
@@ -93,20 +96,20 @@ export async function addProductAction(formData: FormData) {
       description,
       price: price.toString(),
       categoryId,
+      subcategories,
       stock,
       sku,
       attributes,
       imageUrls,
     };
 
-    // Replace with your database logic
-    console.log("Saving product:", product);
-
     const savedProduct = await db
       .insert(products)
       .values(product)
       .returning({ id: products.id });
 
+    revalidatePath("/");
+    revalidatePath("/shop");
     revalidatePath("/admin/products");
     return {
       success: true,
@@ -305,18 +308,18 @@ export async function getProductsAndFilters(filters: ProductFilters) {
 
     if (filters?.subcategories && filters?.subcategories.length > 0) {
       const subcategoryIds = await db
-        .select({ id: productSubcategories.id })
+        .select({ slug: productSubcategories.slug })
         .from(productSubcategories)
         .where(inArray(productSubcategories.slug, filters.subcategories));
 
-      const ids = subcategoryIds.map((sub) => sub.id);
+      const slugs = subcategoryIds.map((sub) => sub.slug);
 
-      if (ids.length > 0) {
+      if (slugs.length > 0) {
         whereClauses.push(
-          sql`${products.subcategories} @> ${JSON.stringify(ids)}::jsonb`
+          sql`${products.subcategories} @> ${JSON.stringify(slugs)}::jsonb`
         );
         categorySubcategoryClauses.push(
-          sql`${products.subcategories} @> ${JSON.stringify(ids)}::jsonb`
+          sql`${products.subcategories} @> ${JSON.stringify(slugs)}::jsonb`
         );
       }
     }
